@@ -1,0 +1,110 @@
+<div class="left-sidenav">
+                    
+    <ul class="metismenu left-sidenav-menu" id="side-nav">
+        {% set nbZone = 0 %}
+        <li class="menu-title">Main</li>
+        {% if app.user.enterprise.accountType == 'PRO' %}
+            {% for site in app.user.enterprise.sites %}
+                {% set active = false %}
+                {% set url = '' %} {# path('sites_show',{'slug':site.slug}) #}
+                
+                <li>
+                    <a href="javascript: void(0);"><i class="mdi mdi-office-building"></i><span>{{site.name}}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                    <ul class="nav-second-level" aria-expanded="false">
+                        <li>
+                            <a href="javascript: void(0);"><i class="mdi mdi-chart-areaspline"></i><span>Energy Management</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                            <ul class="nav-second-level" aria-expanded="false">
+                                <li class="active"><a href="#"><i class="mdi mdi-monitor"></i><span>Dashboard</span></a></li>
+                                {% set categorie = ['GRID', 'FUEL', 'DC'] %}
+                                {% for cat in categorie %}
+                                    {% for type in site.smartMods %}
+                                        {#{{dump(type)}}#}
+                                        {% if type.modType == cat %}
+                                            <li class="">
+                                                <a href="#">
+                                                    {% if cat == 'GRID' %}<i class="mdi mdi-tower-beach"></i>{% elseif cat == 'FUEL' %}<i class="mdi mdi-engine"></i>{% elseif cat == 'DC' %}<i class="mdi mdi-battery-charging"></i>{% endif %}<span>{{type.name}}</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </li> 
+                        {% if site.cleverBoxes|length > 0 %} 
+                        <li><a href="#"><i class="mdi mdi-remote"></i><span>Devices Control</span></a></li>
+                        {% endif %}
+
+                        {% if site.zones|length > 0 %}
+                            {% set nbZone = nbZone + site.zones|length %}                              
+                            {% for zone in site.zones %}
+                            <li>
+                                <a href="javascript: void(0);"><i class="mdi mdi-crop-free"></i><span>{{zone.name}}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                                <ul class="nav-second-level" aria-expanded="false">
+                                    <li><a href="#"><i class="mdi mdi-monitor"></i><span>Dashboard</span></a></li>
+                                    <li><a href="#">
+                                    {% for modZone in zone.smartMods %}
+                                        {% if modZone.levelZone == 2 %}
+                                            <li><a href="#"><i class="mdi mdi-monitor"></i><span>{{modZone.name}}</span></a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}        
+                                    
+                                </ul>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+
+                    </ul>
+                </li>
+
+            {% endfor %} 
+        {% elseif app.user.enterprise.accountType == 'PERSONNAL' %}   
+            {% for site in app.user.enterprise.sites %}
+                {% set active = false %}
+                {% set url = '' %} {# path('sites_show',{'slug':site.slug}) #}
+                
+                <li>
+                    <a href="javascript: void(0);"><i class="mdi mdi-office-building"></i><span>{{site.name}}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                    <ul class="nav-second-level" aria-expanded="false">
+                        <li class="{% if site.smartMods|length > 0 %}active{% endif %}">
+                            <a href="#">
+                                <i class="mdi mdi-chart-areaspline"></i><span>Energy Management</span>
+                            </a>
+                        </li>
+                        {% if site.cleverBoxes|length > 0 %} 
+                        <li><a href="#"><i class="mdi mdi-remote"></i><span>Devices Control</span></a></li>
+                        {% endif %}
+
+                        {% if site.zones|length > 0 %}
+                            {% set nbZone = nbZone + site.zones|length %}                              
+                            {% for zone in site.zones %}
+                            <li>
+                                <a href="javascript: void(0);"><i class="mdi mdi-crop-free"></i><span>{{zone.name}}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
+                                <ul class="nav-second-level" aria-expanded="false">
+                                    <li><a href="#"><i class="mdi mdi-monitor"></i><span>Dashboard</span></a></li>
+                                    <li><a href="#">
+                                    {% for modZone in zone.smartMods %}
+                                        {% if modZone.levelZone == 2 %}
+                                            <li><a href="#"><i class="mdi mdi-monitor"></i><span>{{modZone.name}}</span></a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}        
+                                    
+                                </ul>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+
+                    </ul>
+                </li>
+
+            {% endfor %} 
+        {% endif %}                       
+        {% if is_granted('ROLE_ADMIN') %}
+        <li class="menu-title">Paramètres</li>
+        <li><a href="#"><i class="dripicons-user-group"></i>Users</a></li>
+        <li><a href="#"><i class="mdi mdi-office-building"></i>Sites</a></li>
+        {# <li><a href="#"><i class="mdi mdi-crop-free"></i>Zones</a></li> #}
+        {% endif %}                       
+    </ul>
+</div>

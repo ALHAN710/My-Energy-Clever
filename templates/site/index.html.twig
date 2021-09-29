@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Site index{% endblock %}
+
+{% block body %}
+    <h1>Site index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>CreatedAt</th>
+                <th>EditedAt</th>
+                <th>PowerSubscribed</th>
+                <th>Currency</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Subscription</th>
+                <th>SubscriptionType</th>
+                <th>ActivityArea</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+            <tr>
+                <td>{{ site.id }}</td>
+                <td>{{ site.name }}</td>
+                <td>{{ site.slug }}</td>
+                <td>{{ site.createdAt ? site.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ site.editedAt ? site.editedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ site.powerSubscribed }}</td>
+                <td>{{ site.currency }}</td>
+                <td>{{ site.latitude }}</td>
+                <td>{{ site.longitude }}</td>
+                <td>{{ site.subscription }}</td>
+                <td>{{ site.subscriptionType }}</td>
+                <td>{{ site.activityArea }}</td>
+                <td>
+                    <a href="{{ path('site_show', {'id': site.id}) }}">show</a>
+                    <a href="{{ path('site_edit', {'id': site.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="13">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('site_new') }}">Create new</a>
+{% endblock %}

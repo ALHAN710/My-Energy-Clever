@@ -1,0 +1,1927 @@
+{% extends 'base1.html.twig' %}
+
+{% block title %}{{site.name}} | Accueil{% endblock %}
+
+{% block stylesheets %}
+<!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+<link href="/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+<link href="/plugins/animate/animate.css" rel="stylesheet" type="text/css">
+<script src="/plugins/sweetalerts/promise-polyfill.js"></script>
+<link href="/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css">
+<link href="/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css">
+<link href="/plugins/apex/apexcharts.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/css/widgets/modules-widgets.css">  
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/datatables.css">
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/dt-global_style.css">
+<link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />
+<link href="/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+{% block body %}
+<div class="border-top-tab">
+    <ul class="nav nav-tabs mb-3 mt-3 justify-content-center" id="borderTop" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16C1,17.1 1.9,18 3,18H10V20H8V22H16V20H14V18H21C22.1,18 23,17.1 23,16V4C23,2.89 22.1,2 21,2Z" /></svg>
+             Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="historical-tab" data-toggle="tab" href="#historical" role="tab" aria-controls="historical" aria-selected="false">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M3,22V8H7V22H3M10,22V2H14V22H10M17,22V14H21V22H17Z" /></svg>
+             Historique</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="borderTopContent">
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            
+            <div class="row widget-statistic layout-top-spacing">
+
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-followers">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> #}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            <p class="w-value"><span id="currentkWh">{{currentMonthkWh|number_format(2, '.', ' ')}}</span> kWh <span id="conso-progress-color" class="text-{% if currentMonthkWhProgress < 0 or currentMonthkWhProgress == 'INF' %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-progress-value">{% if currentMonthkWhProgress > 0 or currentMonthkWhProgress == 'INF'  %}+{% endif %}{{currentMonthkWhProgress}}</span>% 
+                            <svg id="conso-progress-up-icon" class="{% if currentMonthkWhProgress <= 0 or currentMonthkWhProgress == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            <svg id="conso-progress-down-icon" class="{% if currentMonthkWhProgress > 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                            </span>            
+                            <h5 class="">Consommation du mois en cours</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-conso"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                {# <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                
+                    <div class="widget widget-card-four">
+                        <div class="widget-content">
+                            <div class="w-content">
+                                <div class="w-info">
+                                    <h6 class="value"><span id="emission-value">45 141</span> FCFA</h6>
+                                    <p class="">Montant</p>
+                                </div>
+                                <div class="">
+                                    <div class="w-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M3,6H21V18H3V6M12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15C10.34,15 9,13.66 9,12C9,10.34 10.34,9 12,9M7,8C7,9.1 6.1,10 5,10V14C6.1,14 7,14.9 7,16H17C17,14.9 17.9,14 19,14V10C17.9,10 17,9.1 17,8H7Z" /></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="float-right mt-2">
+                                <a href="#" id="editAmount" class="btn btn-primary">Budget</a>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-gradient-secondary" role="progressbar" style="width: 57%" aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div> #}
+
+                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing layout-spacing">
+                    <div class="widget-three">
+                        <div class="widget-heading">
+                            <h5 class="">Montant</h5>
+                            <p><h4><span id="conso_amount">{{currentMonthXAF|number_format(2, '.', ' ')}}</span> FCFA</h4></p>
+                        </div>
+                        <div class="widget-content">
+
+                            <div class="order-summary">
+
+                                <div class="summary-list">
+                                    <div class="w-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M3,6H21V18H3V6M12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15C10.34,15 9,13.66 9,12C9,10.34 10.34,9 12,9M7,8C7,9.1 6.1,10 5,10V14C6.1,14 7,14.9 7,16H17C17,14.9 17.9,14 19,14V10C17.9,10 17,9.1 17,8H7Z" /></svg>
+                                    </div>
+                                    <div class="w-summary-details">
+                                        
+                                        <div class="w-summary-info">
+                                            {% set ratio = (currentMonthXAF * 100.0) / budget %}
+                                            <h6><span id="ratio_budget">{{ ratio|number_format(1, '.', ' ')}}</span>%</h6>
+                                            <p class="summary-count"><span id="budget">{{budget|number_format(0, '.', ' ')}}</span> FCFA</p>
+                                        </div>
+
+                                        <div class="w-summary-stats">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-gradient-{% if ratio <= 50 %}success{% else %}danger{% endif %}" id="budget-progressbar" role="progressbar" style="width: {{ratio}}%" aria-valuenow="{{ratio}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="summary-list">
+                                    {# <div class="w-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+                                    </div> #}
+                                    <div class="w-summary-details">
+                                        
+                                        <div class="w-summary-info">
+                                            <h6>  </h6>
+                                            <p class="summary-count">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn  btn-outline-primary btn-rounded float-right" data-toggle="modal" data-target="#editBudgetModal">
+                                                Budget
+                                                </button>
+                                                {# <a href="#" id="edit-budget" class="btn btn-outline-primary btn-rounded float-right">Budget</a> #}
+                                            </p>
+                                        </div>
+
+                                        <div><small>Last update <span id="last_update">26/09/2021 17:35</span></small></div>
+
+                                        {# <div class="w-summary-stats">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div> #}
+
+                                        {# Modal d'dition de budget #}
+                                        <div class="modal fade register-modal" id="editBudgetModal" tabindex="-1" role="dialog" aria-labelledby="editBudgetModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+
+                                                    <div class="modal-header" id="editBudgetModalLabel">
+                                                        <h4 class="modal-title">Définissez votre Budget pour le mois en cours</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form class="mt-0" id="edit-bg-form">
+                                                            <div class="form-group">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                                                <input type="number" min="0" step="1" class="form-control mb-2" id="amount-bg" value={{budget}} placeholder="Montant" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                                <input type="text" class="form-control mb-2" id="date-bg" value="{{'now'|date('F Y') }}" placeholder="Mois" readonly="readonly">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M19,3V21H13V17.5H11V21H5V3H19M15,7H17V5H15V7M11,7H13V5H11V7M7,7H9V5H7V7M15,11H17V9H15V11M11,11H13V9H11V11M7,11H9V9H7V11M15,15H17V13H15V15M11,15H13V13H11V15M7,15H9V13H7V15M15,19H17V17H15V19M7,19H9V17H7V19M21,1H3V23H21V1Z" /></svg>
+                                                                <input type="text" class="form-control mb-4" id="site-bg" value="{{site.name}}" placeholder="Installation" readonly="readonly">
+                                                            </div>
+                                                            <button type="button" id="edit-bg" class="btn btn-primary mt-2 mb-2 btn-block">Enregistrer</button>
+                                                        </form>
+
+                                                        {# <div class="division">
+                                                            <span>OR</span>
+                                                        </div>
+
+                                                        <div class="social">
+                                                            <a href="javascript:void(0);" class="btn social-fb"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> <span class="brand-name">Facebook</span></a>
+                                                            <a href="javascript:void(0);" class="btn social-github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg> <span class="brand-name">Github</span></a>
+                                                        </div> #}
+
+                                                    </div>
+                                                    {# <div class="modal-footer justify-content-center">
+                                                        <div class="forgot login-footer">
+                                                            <span>Already have <a href="javascript:void(0);">Login</a>?</span>
+                                                        </div>
+                                                    </div> #}
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+                                {# <div class="summary-list">
+                                    <div class="w-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                                    </div>
+                                    <div class="w-summary-details">
+                                        
+                                        <div class="w-summary-info">
+                                            <h6>Expenses</h6>
+                                            <p class="summary-count">$55,085</p>
+                                        </div>
+
+                                        <div class="w-summary-stats">
+                                            <div class="progress">
+                                                <div class="progress-bar bg-gradient-warning" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div> #}
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-referral">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                            </div>
+                            <p class="w-value"><span id="emission-value">{{currentMonthGasEmission|number_format(2, '.', ' ')}}</span> kgCO<sub>2</sub></p>
+                            <h5 class="">Émission de gaz à effet de serre</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-co2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <div class="row sales layout-spacing">
+
+                <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-one">
+                        <div class="widget-heading">
+                            <h5 class="">Courbe de charge</h5>
+                            <ul class="tabs tab-pills">
+                                <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">{{'now'|date('F')}}</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="widget-content">
+                            <div class="tabs tab-content">
+                                <div id="content_1" class="tabcontent"> 
+                                    {# <div id="revenueMonthly"></div> #}
+                                    <div id="load_chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-two">
+                        <div class="widget-heading">
+                            <h5 class="">Statistiques Énergie</h5>
+                        </div>
+                        <div class="widget-content">
+                            <div class="table-responsive">
+                                <table class="table mb-4">
+                                    {# <caption>List of all users</caption> #}
+                                    <thead>
+                                        {# <tr>
+                                            <th class="text-center">#</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th class="">Status</th>
+                                            <th>Register</th>
+                                        </tr> #}
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <tr>
+                                            <td class="text-left">Conso Moy (kWh/jr)</td>
+                                            <td class="text-primary">
+                                                <span id="t-consoMoy">{{currentMonthDataTable['consoMoy']|number_format(2, '.', ' ')}}</span> <span class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;">-16.44% <svg style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">Variation (%)</td>
+                                            <td class="text-primary" id="variation">{{currentMonthDataTable['variation']|number_format(2, '.', ' ')}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">+Forte Conso</td>
+                                            <td class="text-primary" id="kWhMax">{{currentMonthDataTable['+forteConso']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">+Faible Conso</td>
+                                            <td class="text-primary" id="kWhMin">{{currentMonthDataTable['+faibleConso']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">Pic de puissance</td>
+                                            <td class="text-primary" id="Pmax">{{currentMonthDataTable['Pic']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">Talon de puissance</td>
+                                            <td class="text-primary" id="talon">{{currentMonthDataTable['Talon']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">Conso 00-06h (kWh)</td>
+                                            <td class="text-primary" id="conso-00-06">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">Conso 06-18h (kWh)</td>
+                                            <td class="text-primary" id="conso-06-18">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left">Conso 18-00h (kWh)</td>
+                                            <td class="text-primary" id="conso-18-00">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>       
+        </div>
+
+        <div class="tab-pane fade " id="historical" role="tabpanel" aria-labelledby="historical-tab">
+            <div class="widget-content widget-content-area br-6 layout-top-spacing layout-top-spacing">
+                <div class="table-responsive mb-4 mt-4">
+                    <table id="historic-dataTable" class="table table-hover" style="width:100%">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Mois</th>
+                                <th>Conso (kWh)</th>
+                                <th>Émission (kgCO<sub>2</sub>)</th>
+                                <th>Conso Moy (kWh/jr)</th>
+                                <th>Puissance Max (W)</th>
+                                <th>Talon de puissance (W)</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in MonthByMonthDataTable %}
+                            <tr class="text-center">
+                                <td>{{data['dt']|date('M Y')}}</td>
+                                <td>{{data['EA']|number_format('2','.',' ')}}</td>
+                                <td>{{data['kgCO2']|number_format('2','.',' ')}}</td>
+                                <td>A gérer</td>
+                                <td>{{(data['Pmax']*1000)|number_format('2','.',' ')}}</td>
+                                <td>{{(data['talon']*1000)|number_format('2','.',' ')}}</td>
+                                
+                            </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+                        <tfoot>
+                            <tr class="text-center">
+                                <th>Mois</th>
+                                <th>Conso (kWh)</th>
+                                <th>Émission (kgCO<sub>2</sub>)</th>
+                                <th>Conso Moy (kWh/jr)</th>
+                                <th>Puissance Max (W)</th>
+                                <th>Talon de puissance (W)</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>    
+            </div>
+
+            <div class="statbox widget box layout-spacing layout-top-spacing">
+                <div class="widget-header">                                 
+                    <div class="row">
+                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                            <h4>Selecteur de date</h4> 
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-content widget-content-area">
+                    {# <p>Date time picker is powered by <span class="text-primary">flatpickr.js</span> that gives the ability to user to select date or time.</p> #}
+                    <div class="form-group mb-0">
+                        <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget widget-one layout-spacing layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Courbe de charge</h5>
+                    </div>
+
+                    {# <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> #}
+                </div>
+
+                <div class="widget-content">
+                    <div id="load-chart-histo"></div>
+                </div>
+            </div>
+
+            <div class="widget widget-chart-three layout-spacing layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Diagramme Énergie, Émission CO<sub>2</sub></h5>
+                    </div>
+
+                    {# <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> #}
+                </div>
+
+                <div class="widget-content">
+                    <div id="mixed-conso"></div>
+                </div>
+            </div>
+                
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+<script src="/js/scrollspyNav.js"></script>
+<script src="/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script src="/plugins/apex/apexcharts.min.js"></script>
+<script src="/js/widgets/modules-widgets.js"></script>
+
+<script src="/plugins/moment/moment.js"></script>
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<script src="/plugins/highlight/highlight.pack.js"></script>
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+
+{# Overview tab panel scripts #}
+<script>
+
+    var conso_options = {
+      chart: {
+        id: 'kWh',
+        group: 'Conso',
+        type: 'bar',
+        height: 160,
+        sparkline: {
+          enabled: true
+        },
+      },
+      stroke: {
+          curve: 'smooth',
+          width: 2,
+      },
+      series: [{
+        name: 'Énergie',
+        data: {{ dayBydayConsoData['kWh'] | json_encode | raw }}
+        {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
+      }],
+      labels: {{ dayBydayConsoData['dateConso'] | json_encode | raw }},
+      {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
+      xaxis: {
+        //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+        categories: [],
+        labels: {
+            datetimeFormatter: {
+                year: 'yyyy',
+                month: 'MMM \'yy',
+                day: 'dd MMM',
+                hour: 'HH:mm'
+            }
+        },
+        title: {
+            text: moment().format('DD MMMM').toString(),
+            style: {
+                fontSize: '14px',
+                fontWeight: 'bold',
+                fontFamily: undefined,
+                color: '#444'
+            },
+        }
+      },
+      yaxis: {
+        min: 0
+      },
+      colors: ['#1b55e2'],
+      tooltip: {
+        theme: "dark",
+        //followCursor: true,
+        y: {
+            formatter: function (y) {
+                //console.log(y)
+                if (typeof y !== "undefined") {
+                    return y.toFixed(2) + " kWh"
+                }
+                return y;
+            }
+        },
+        x: {
+            formatter: function (val, timestamp) {
+                return moment(new Date(val)).format("DD MMM YYYY")
+            }
+        }
+      },
+      /*tooltip: {
+        x: {
+          show: false,
+        }
+      },*/
+      fill: {
+          type:"gradient",
+          gradient: {
+              type: "vertical",
+              shadeIntensity: 1,
+              inverseColors: !1,
+              opacityFrom: .40,
+              opacityTo: .05,
+              stops: [45, 100]
+          }
+      },
+    }
+
+    // w-conso Chart
+    var w_consoChart = new ApexCharts(document.querySelector("#w-conso"), conso_options);
+    w_consoChart.render()
+
+    var w_co2Chart_options = {
+      chart: {
+        id: 'kgCO2',
+        group: 'Conso',
+        type: 'bar',
+        height: 160,
+        sparkline: {
+          enabled: true
+        },
+      },
+      stroke: {
+          curve: 'smooth',
+          width: 2,
+      },
+      series: [{
+        name: 'Émission CO2',
+        data: {{ dayBydayConsoData['kgCO2'] | json_encode | raw }}
+        {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
+      }],
+      labels: {{ dayBydayConsoData['dateConso'] | json_encode | raw }},
+      {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
+      xaxis: {
+        //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+        categories: [],
+        labels: {
+            datetimeFormatter: {
+                year: 'yyyy',
+                month: 'MMM \'yy',
+                day: 'dd MMM',
+                hour: 'HH:mm'
+            }
+        },
+        title: {
+            text: moment().format('DD MMMM').toString(),
+            style: {
+                fontSize: '14px',
+                fontWeight: 'bold',
+                fontFamily: undefined,
+                color: '#444'
+            },
+        }
+      },
+      yaxis: {
+        min: 0
+      },
+      colors: ['#e7515a'],
+      tooltip: {
+        theme: "dark",
+        //followCursor: true,
+        y: {
+            formatter: function (y) {
+                //console.log(y)
+                if (typeof y !== "undefined") {
+                    return y.toFixed(2) + " kgCO2"
+                }
+                return y;
+            }
+        },
+        x: {
+            formatter: function (val, timestamp) {
+                return moment(new Date(val)).format("DD MMM YYYY")
+            }
+        }
+      },
+      /*tooltip: {
+        x: {
+          show: false,
+        }
+      },*/
+      fill: {
+          type:"gradient",
+          gradient: {
+              type: "vertical",
+              shadeIntensity: 1,
+              inverseColors: !1,
+              opacityFrom: .40,
+              opacityTo: .05,
+              stops: [45, 100]
+          }
+      },
+    }
+
+    // w-co2 Chart
+    var w_co2Chart = new ApexCharts(document.querySelector("#w-co2"), w_co2Chart_options);
+    w_co2Chart.render()
+
+    var loadChart_options = {
+        chart: {
+            fontFamily: 'Nunito, sans-serif',
+            height: 415,
+            type: 'area',
+            zoom: {
+                enabled: true
+            },
+            stacked: false,
+            dropShadow: {
+                enabled: true,
+                opacity: 0.3,
+                blur: 5,
+                left: -7,
+                top: 22
+            },
+            toolbar: {
+                show: true
+            },
+            events: {
+                mounted: function(ctx, config) {
+                    const highest1 = ctx.getHighestValueInSeries(0);
+                    
+                    ctx.addPointAnnotation({
+                        x: new Date(ctx.w.globals.seriesX[0][ctx.w.globals.series[0].indexOf(highest1)]).getTime(),
+                        y: highest1,
+                        label: {
+                            style: {
+                                cssClass: 'd-none'
+                            }
+                        },
+                        customSVG: {
+                            SVG: '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#1b55e2" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>',
+                            cssClass: undefined,
+                            offsetX: -8,
+                            offsetY: 5
+                        }
+                    })
+                    
+                },
+            }
+        },
+        colors: ['#1b55e2'],
+        dataLabels: {
+            enabled: false
+        },
+        markers: {
+            discrete: [{
+                seriesIndex: 0,
+                dataPointIndex: 7,
+                fillColor: '#000',
+                strokeColor: '#000',
+                size: 5
+            }]
+        },
+        subtitle: {
+            text: 'Puissance Actuelle',
+            align: 'left',
+            margin: 0,
+            offsetX: -10,
+            offsetY: 35,
+            floating: false,
+            style: {
+            fontSize: '14px',
+            color:  '#888ea8'
+            }
+        },
+        title: {
+            text: '{{ loadChartData['Pnow'] }} W',
+            align: 'left',
+            margin: 0,
+            offsetX: -10,
+            offsetY: 0,
+            floating: false,
+            style: {
+                fontSize: '25px',
+                color:  '#8dbf42', //'#0e1726'
+            },
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    position: 'top', // top, center, bottom
+                },
+            }
+        },
+        stroke: {
+            //show: true,
+            curve: 'smooth',
+            width: 2,
+            //lineCap: 'square'
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Puissance',
+            data: {{ loadChartData['kW'] | json_encode | raw }}
+            {# data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000] #}
+        }],
+        {# labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
+        xaxis: {
+            type: 'datetime',
+            categories: {{ loadChartData['dateP'] | json_encode | raw }},
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            },
+            crosshairs: {
+                show: true
+            },
+            labels: {
+                offsetX: 0,
+                offsetY: 5,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+            {# title: {
+                text: moment().format('DD MMMM YYYY').toString(),
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                    //fontWeight: 'bold',
+                    //fontFamily: undefined,
+                    //color: '#444'
+                },
+            } #}
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value, index) {
+                    return (value) + ' W'
+                },
+                offsetX: -22,
+                offsetY: 0,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-yaxis-title',
+                },
+            }
+        },
+        grid: {
+            borderColor: '#e0e6ed',
+            strokeDashArray: 5,
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },   
+            yaxis: {
+                lines: {
+                    show: false,
+                }
+            },
+            padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: -10
+            }, 
+        }, 
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            offsetY: -50,
+            fontSize: '16px',
+            fontFamily: 'Nunito, sans-serif',
+            markers: {
+                width: 10,
+                height: 10,
+                strokeWidth: 0,
+                strokeColor: '#fff',
+                fillColors: undefined,
+                radius: 12,
+                onClick: undefined,
+                offsetX: 0,
+                offsetY: 0
+            },    
+            itemMargin: {
+                horizontal: 0,
+                vertical: 20
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            marker: {
+                show: true,
+            },
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " W"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        },
+        fill: {
+            type:"gradient",
+            gradient: {
+                type: "vertical",
+                shadeIntensity: 1,
+                inverseColors: !1,
+                opacityFrom: .28,
+                opacityTo: .05,
+                stops: [45, 100]
+            }
+        },
+        responsive: [{
+            breakpoint: 575,
+            options: {
+                legend: {
+                    offsetY: -30,
+                },
+            },
+        }]
+    }
+    var loadChart = new ApexCharts(
+        document.querySelector("#load_chart"),
+        loadChart_options
+    );
+    loadChart.render()
+
+    var loadChart_histo_options = {
+        chart: {
+            fontFamily: 'Nunito, sans-serif',
+            height: 415,
+            type: 'area',
+            zoom: {
+                enabled: true
+            },
+            stacked: false,
+            dropShadow: {
+                enabled: true,
+                opacity: 0.3,
+                blur: 5,
+                left: -7,
+                top: 22
+            },
+            toolbar: {
+                show: true
+            },
+            events: {
+                mounted: function(ctx, config) {
+                    const highest1 = ctx.getHighestValueInSeries(0);
+                    
+                    ctx.addPointAnnotation({
+                        x: new Date(ctx.w.globals.seriesX[0][ctx.w.globals.series[0].indexOf(highest1)]).getTime(),
+                        y: highest1,
+                        label: {
+                            style: {
+                                cssClass: 'd-none'
+                            }
+                        },
+                        customSVG: {
+                            SVG: '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#1b55e2" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>',
+                            cssClass: undefined,
+                            offsetX: -8,
+                            offsetY: 5
+                        }
+                    })
+                    
+                },
+            }
+        },
+        colors: ['#1b55e2'],
+        dataLabels: {
+            enabled: false
+        },
+        markers: {
+            discrete: [{
+                seriesIndex: 0,
+                dataPointIndex: 7,
+                fillColor: '#000',
+                strokeColor: '#000',
+                size: 5
+            }]
+        },
+        /*subtitle: {
+            text: 'Puissance Actuelle',
+            align: 'left',
+            margin: 0,
+            offsetX: -10,
+            offsetY: 35,
+            floating: false,
+            style: {
+            fontSize: '14px',
+            color:  '#888ea8'
+            }
+        },*/
+        title: {
+            text: '',
+            align: 'left',
+            margin: 0,
+            offsetX: -10,
+            offsetY: 0,
+            floating: false,
+            style: {
+                fontSize: '25px',
+                color:  '#8dbf42', //'#0e1726'
+            },
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    position: 'top', // top, center, bottom
+                },
+            }
+        },
+        stroke: {
+            //show: true,
+            curve: 'smooth',
+            width: 2,
+            //lineCap: 'square'
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Puissance',
+            data: []
+            {# data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000] #}
+        }],
+        {# labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
+        xaxis: {
+            type: 'datetime',
+            categories: [],
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            },
+            crosshairs: {
+                show: true
+            },
+            labels: {
+                offsetX: 0,
+                offsetY: 5,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+            {# title: {
+                text: moment().format('DD MMMM YYYY').toString(),
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                    //fontWeight: 'bold',
+                    //fontFamily: undefined,
+                    //color: '#444'
+                },
+            } #}
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value, index) {
+                    return (value) + ' W'
+                },
+                offsetX: -22,
+                offsetY: 0,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-yaxis-title',
+                },
+            }
+        },
+        grid: {
+            borderColor: '#e0e6ed',
+            strokeDashArray: 5,
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },   
+            yaxis: {
+                lines: {
+                    show: false,
+                }
+            },
+            padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: -10
+            }, 
+        }, 
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            offsetY: -50,
+            fontSize: '16px',
+            fontFamily: 'Nunito, sans-serif',
+            markers: {
+                width: 10,
+                height: 10,
+                strokeWidth: 0,
+                strokeColor: '#fff',
+                fillColors: undefined,
+                radius: 12,
+                onClick: undefined,
+                offsetX: 0,
+                offsetY: 0
+            },    
+            itemMargin: {
+                horizontal: 0,
+                vertical: 20
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            marker: {
+                show: true,
+            },
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " W"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        },
+        fill: {
+            type:"gradient",
+            gradient: {
+                type: "vertical",
+                shadeIntensity: 1,
+                inverseColors: !1,
+                opacityFrom: .28,
+                opacityTo: .05,
+                stops: [45, 100]
+            }
+        },
+        responsive: [{
+            breakpoint: 575,
+            options: {
+                legend: {
+                    offsetY: -30,
+                },
+            },
+        }]
+    }
+    var loadChart_histo = new ApexCharts(
+        document.querySelector("#load-chart-histo"),
+        loadChart_histo_options
+    );
+    loadChart_histo.render()
+
+    var mixed_conso_options = {
+      chart: {
+          height: 350,
+          type: 'bar',
+          toolbar: {
+            show: false,
+          },
+          dropShadow: {
+              enabled: true,
+              top: 1,
+              left: 1,
+              blur: 2,
+              color: '#acb0c3',
+              opacity: 0.7,
+          }
+      },
+      colors: ['#5c1ac3', '#ffbb44'],
+      plotOptions: {
+          bar: {
+              horizontal: false,
+              columnWidth: '55%',
+              //endingShape: 'rounded'  
+          },
+      },
+      dataLabels: {
+          enabled: false
+      },
+      legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '14px',
+            markers: {
+              width: 10,
+              height: 10,
+            },
+            itemMargin: {
+              horizontal: 0,
+              vertical: 8
+            }
+      },
+      stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+      },
+      series: [{
+          name: 'Énergie Active',
+          data: []
+          {# data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63] #}
+      }, {
+          name: 'Émission de gaz à effet de serre',
+          data: []
+          {# data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70] #}
+      }],
+      xaxis: {
+          type: 'datetime',
+          categories: [],
+          {# categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
+          labels: {
+            datetimeFormatter: {
+                year: 'yyyy',
+                month: 'MMM \'yy',
+                day: 'dd MMM',
+                hour: 'HH:mm'
+            }
+          },
+      },
+      yaxis: [
+        {
+            axisTicks: {
+                show: true,
+            },
+            axisBorder: {
+                show: true,
+                color: '#5c1ac3'
+            },
+            labels: {
+                style: {
+                    color: '#5c1ac3',
+                }
+            },
+            title: {
+                text: "kWh"
+            },
+        },
+        {
+            opposite: true,
+            axisTicks: {
+                show: true,
+            },
+            axisBorder: {
+                show: true,
+                color: '#ffbb44'
+            },
+            labels: {
+                style: {
+                    color: '#ffbb44',
+                }
+            },
+            title: {
+                text: "kgCO2"
+            }
+        },
+      ],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'light',
+          type: 'vertical',
+          shadeIntensity: 0.3,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 0.8,
+          stops: [0, 100]
+        }
+      },
+      tooltip: {
+        theme: "dark",
+        //followCursor: true,
+        y: {
+            formatter: function (y) {
+                //console.log(y)
+                if (typeof y !== "undefined") {
+                    return y.toFixed(2) + ""
+                }
+                return y;
+            }
+        },
+        x: {
+            formatter: function (val, timestamp) {
+                return moment(new Date(val)).format("DD MMM YYYY")
+            }
+        }
+      },
+    }
+    
+    var MixedConsoChart = new ApexCharts(
+        document.querySelector("#mixed-conso"),
+        mixed_conso_options
+    );
+    MixedConsoChart.render()
+
+{# w_consoChart
+w_co2Chart
+conso-progress-color
+conso-progress-value
+conso-progress-up-icon
+conso-progress-down-icon
+
+conso_amount
+ratio_budget
+budget-progressbar
+
+emission-value
+
+t-consoMoy
+variation
+kWhMax
+kWhMin
+Pmax
+talon    
+    setInterval(function () {
+        $.getJSON("{{ path('update_overview_data', {'slug': site.slug}) }}", function (result) {//{'selectedDate': $date},
+            
+            if( Object.keys(result).length > 0 ){
+                
+                //Mise à jour des données de la card Consommation du mois cours
+                $('#currentkWh').text(String(result['Vcg'][0] + " V"))
+                $('#l1l3').text(String(result['Vcg'][1] + " V"))
+                $('#l2l3').text(String(result['Vcg'][2] + " V"))
+                
+                $('#update').text(String( moment( new Date(result['Date1']) ).format("DD MMM YYYY HH:mm:ss")) )
+                displayNewData(LoadLevel_overview_Linechart, Object.values(result['date']), Object.values(result['Load_Level']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                                
+                
+                //Day 
+                prog = parseFloat(result['prevPOE'][0]) > 0 ? (parseFloat(result['POE'][0]) - parseFloat(result['prevPOE'][0])) * 100.0 / parseFloat(result['prevPOE'][0]) : parseFloat(result['POE'][0]);
+                progressVal($('#poedProgVal'), $('#poedProg'), prog, true, false);
+                //Month
+                prog = parseFloat(result['prevPOE'][1]) > 0 ? (parseFloat(result['POE'][1]) - parseFloat(result['prevPOE'][1])) * 100.0 / parseFloat(result['prevPOE'][1]) : parseFloat(result['POE'][1]);
+                progressVal($('#poemProgVal'), $('#poemProg'), prog, true, false);
+                //Year
+                prog = parseFloat(result['prevPOE'][2]) > 0 ? (parseFloat(result['POE'][2]) - parseFloat(result['prevPOE'][2])) * 100.0 / parseFloat(result['prevPOE'][2]) : parseFloat(result['POE'][2]);
+                progressVal($('#poeyProgVal'), $('#poeyProg'), prog, true, false);                      
+                
+                //Update Nb performed starts-up
+                $('#npsd').text(result['NPS'][0])
+                $('#nmid').text(result['NMI'][0])
+
+                $('#npsm').text(result['NPS'][1])
+                $('#nmim').text(result['NMI'][1])
+
+                $('#npsy').text(result['NPS'][2])
+                $('#nmiy').text(result['NMI'][2])
+            }        
+            else{
+                //$('.spin').addClass('d-none');
+                
+            }
+        }).fail(function() { 
+            
+            console.log('FAIL to get overview Data')
+            
+        });
+    }, 60000); #}
+</script>
+
+<!-- -->
+
+<!-- Gestion de la MAJ du budget de consommation -->
+<script>
+    $('#edit-bg').click(function(){
+        console.log($('#budget-progress').attr('aria-valuenow'));
+        {# $('#budget-progress').css('width', '50%'); #}
+        $('#budget-progress').attr('aria-valuenow', '50');
+        console.log($('#budget-progress').attr('aria-valuenow'));
+        // Fetch form to apply custom Bootstrap validation
+        var form = $("#edit-bg-form")
+
+        if (form[0].checkValidity() === false)
+        {
+            event.preventDefault()
+            event.stopPropagation()
+            console.log('form[0] = ' + form[0])
+        }
+        else{
+            console.log($('#amount-bg').val());
+            $data = JSON.stringify({
+                //"selectedDate": $dat, // tabGridId,
+                'amount': parseFloat($('#amount-bg').val()),
+            });
+
+            // Danger
+
+            swal.queue([{
+                title: 'Budget pour le mois en cours',
+                confirmButtonText: 'Confirmer',
+                cancelButtonText: 'Annuler',
+                text: 'Montant : ' + $('#amount-bg').val() + ' F CFA',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                //confirmButtonClass: 'btn btn-primary',
+                //cancelButtonClass: 'btn btn-danger ml-2',
+                preConfirm: function () {
+                    return new Promise(function (resolve) { 
+                        
+                        $.ajax({
+                            type: "POST", // method type
+                            contentType: "application/json; charset=utf-8",
+                            url:"{{path('site_budget', {'slug':site.slug})}}", // /Target function that will be return result
+                            data: $data, // parameter pass data is parameter name param is value
+                            dataType: "json",
+                            timeout: 120000, // 64241
+                            success: function (result) {
+                                // $('.fa-sync').removeClass('fa-spin');
+                                console.log(result);
+                                
+                                swal({
+                                    type: 'success', 
+                                    title: 'Le budget a été défini avec succès !',
+                                    // html: 'Submitted email: ' + email
+                                });
+
+                                $('#budget').html($('#amount-bg').val());
+
+                                setTimeout(function () {
+                                    resolve();
+                                    //Fermer le modal d'édition
+                                    $('#editBudgetModal').modal('toggle');
+                                }, 1000);
+                                
+                                    
+                            },
+                            error: function (result) {
+                                // console.log("Error");
+                                console.log(result);
+                                swal('Oups...', "Une erreur s'est produite !", 'error'
+                                // footer: '<a href>Why do I have this issue?</a>'
+                                );
+
+                                setTimeout(function () {
+                                    resolve()
+                                }, 5000);
+                            }
+                        });
+                    })
+                },
+                allowOutsideClick: false
+            }]);
+
+        }
+        
+        form.addClass('was-validated');
+    })
+</script>
+
+{# Historical tab panel scripts #}
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script>
+<!-- Responsive examples -->
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    var now = new Date();
+    //var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
+    var FileName = 'Historique Consommation | ' + now.getFullYear();
+    var historicTable = $('#historic-dataTable').DataTable({
+        //lengthChange: false,
+        //buttons: ['copy', 'excel', 'pdf', 'colvis']
+        //buttons: ['excel', 'pdf'],
+        searching: false, 
+        paging: false, 
+        info: false,
+        //ordering: false,
+        lengthChange: false,
+        //buttons: ['copy', 'excel', 'pdf', 'colvis']
+        buttons: [
+            {
+                //text: 'Exporter Disponibilité',
+                extend: 'pdfHtml5',
+                filename: 'Historique Consommation - ' + now.getFullYear(),//function () { return getExportFileName();},//
+                exportOptions: {
+                    //columns: [ 0, 1, 4 ],
+                    //columns: ':visible'
+                    search: 'applied',
+                    order: 'applied'
+                },
+                title: function( thead, data, start, end, display ) {
+                    return "{{site.name}}\r\n" + FileName;
+                },
+                customize: function (doc) {
+                    //Remove the title created by datatTables
+                    
+                    //Create a date string that we use in the footer. Format is dd-mm-yyyy
+                    var now = new Date();
+                    var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
+                    // Logo converted to base64
+                    // var logo = getBase64FromImageUrl('https://datatables.net/media/images/logo.png');
+                    // The above call should work, but not when called from codepen.io
+                    // So we use a online converter and paste the string in.
+                    // Done on http://codebeautify.org/image-to-base64-converter
+                    // It's a LONG string scroll down to see the rest of the code !!!
+                    //var logo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAICAgICAQICAgIDAgIDAwYEAwMDAwcFBQQGCAcJCAgHCAgJCg0LCQoMCggICw8LDA0ODg8OCQsQERAOEQ0ODg7/2wBDAQIDAwMDAwcEBAcOCQgJDg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg7/wAARCAAwADADASIAAhEBAxEB/8QAGgAAAwEAAwAAAAAAAAAAAAAABwgJBgIFCv/EADUQAAEDAgQDBgUDBAMAAAAAAAECAwQFBgAHESEIEjEJEyJBUXEUI0JhgRVSYhYXMpEzcrH/xAAYAQADAQEAAAAAAAAAAAAAAAAEBQYHAv/EAC4RAAEDAgMGBQQDAAAAAAAAAAECAxEABAUGEhMhMUFRcSIyYaHBFkKB0ZGx8P/aAAwDAQACEQMRAD8Avy44hlhTrqw22kEqUo6BIG5JPkMSxz67RlFPzFquWnDParOaN4QVlmqXDKcKKLS19CCsf8qh6A6e+OfaK573LDTanDJllVV0q8r3ZVIuGqR1fMpdJSdHCCOinN0j7e+FjymydjRKdSbGsikpbSlG5O3/AHfeX5nU6knck6DFdg+DovkquLlWllHE8yeg+f4FBPvluEpEqNC657/4yr4ecm3ZxH1OghzxfptpQERI7X8QrqdPXGNpucXGLltU0SbZ4jazW0tHX4C6IiJcd37HUEj8YoHNtTKOzwuHVPj79rTfhkfCudxEbUOqQQd9Pc4HlaoGRt2JVAcptRsOe54WZZkd6yFHpzakgD3098ahYWuVVDQ/YrKD9wJnvGqfb8UAHH584npWw4eu0+iVO+6Vl3xO2zHy1uKa4GafdcBwqos5w7AOE6lgk+epT68uK8MvNPxmnmHEvMuJCm3EKCkqSRqCCNiCPPHmbzdyWcozkq1rpitVSkzGyqHNbT4HU+S0H6Vp22/9Bw8XZkcQ1wuzLg4V8yqq5U69a0X42zalJXq5NpeuhZJO5LWo0/idPpxI5ryszgyG77D3Nrau+U8weh/cDgQRI3sGXi54VCCKXK6Ku5fnbOcTt2znO/8A0SfFtymcx17llpGqgPTUjDj5WOIOUmYFPpLgjXQ5ES627r43I6R40I9D16fuGEfzPZeyq7afiRtec0W03O/GuSj82wdbdb8ZB89FEjb0xvrIzGk2pmnSrgcdUttl3lkoB2UyrZadPbf8DFFhGHuX+W0bASUyY6kKJg96XPK0XJmt9MrkFuIQw2XNup8IwFbruVaWXkttMgadCCcEfNuPTbbzPkiK87+jVRsTqctlIKVNubkD2J/0RgBVFDVQUpTTEksjdTjpG4xc4TYOvBu5AhB3yf8AcfmgTIUUmiMxcs27+CG42Koy3JqFqym3YLytebuVfRr9gVD2AwvOWt5u2f2qXDle0FK4UhVwijzgFbPMSUlBSftqdcMAqN/TfCVV0yGBDl3O+huMwvZXw6Oqzr67n8jC85VWw/fnakZD2tAaL/wtwGsSuTfu2YyCeY+6ikY5x1yzVlDECB4C8Nn3lEx6SFe9MWtW3R1jfVTu0l4a7lv6wbaz8yqp6p2Z2X6FmXT2U6uVelq8TrQA3UtG6gPMFQG+mJe2Xf8ASL5s1qp0p35qfDLhuHR2M4P8kLT5aH/ePUSpIUnQjUemJh8SXZs2fmVf8/MvJevKyfzNkEuTPhGeamVNZ3JeZGnKonqpPXqQTjE8tZmdwF4hSdbSjvHMHqP1zo24tw8J4EUn9MvWz7iymo9tX27PgTqQ4tMCfGY735SuiFdenTTTyGOIrGV1DSJLCqndb7Z1aamIDEZJHQqGg5vyDga3Fw28bVhS1wqrlHAzAjtkhFSt2sIQHR5HkXoQftjrqJw5cYt81BESDkuxaCVnRU24K0Fpb+/I3qT7Y1b6kygptSi88lKiSWxIEkyRygE8tUUDsbieA71mM2M0mZxlVytTQ0w0jkQlIIQ2PpabR1JJ6Abk4oP2bHDhW6O9WuITMKlLplxV9hMeg06Sn5lPgjdIUPJayedX4HljvOHvs16VbF7Uy/c86/8A3DuyIoOwoAaDdPgL66ts7gqH7lan2xVaJEjQaezFiMIjx2khLbaBoEgYyzMmZTjWi2t0bK3b8qfk+v8AW/jNMGWdn4lGVGv/2SAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA=';
+                    // A documentation reference can be found at
+                    // https://github.com/bpampuch/pdfmake#getting-started
+                    // Set page margins [left,top,right,bottom] or [horizontal,vertical]
+                    // or one number for equal spread
+                    // It's important to create enough space at the top for a header !!!
+                    doc.pageMargins = [60,60,60,30];
+                    // Set the font size fot the entire document
+                    doc.defaultStyle.fontSize = 12;
+                    // Set the fontsize for the table header
+                    doc.styles.tableHeader.fontSize = 13;
+                    //doc.styles.tableBodyOdd.fillColor = "yellow";
+                    doc.styles.tableBodyOdd.alignment = function (rowIndex, node, columnIndex) {
+                                                    return (rowIndex >= 0) ? 'center' : null;
+                                                };
+                    doc.styles.tableHeader.fillColor = "#6c757d";
+                    console.log(doc);
+                    var objTable = {};
+                    //objTable['heights'] = (function(i) { return 100; });
+                    //objTable['widths'] = ['*', 'auto', '*', 'auto', 'auto', 'auto'];
+                    //objTable['widths']   = (function(i) { return ['*', 'auto', '*', 'auto', 'auto', 'auto']; });
+                    //doc.content[1].table = objTable; 
+                    doc.content[1].table.widths = ['auto', '*', 'auto', '*', 'auto', '*']; 
+                    //doc.content[1].table.heights = (function(i) { return 100; }); 
+                    doc.content[1].layout = {
+                                                fillColor: function (rowIndex, node, columnIndex) {
+                                                    return (rowIndex % 2 === 0) ? '#CCCCCC' : null;
+                                                }
+                                            }; 
+                        
+                    // Create a header object with 3 columns
+                    // Left side: Logo
+                    // Middle: brandname
+                    // Right side: A document title
+                    /*doc['header']=(function() {
+                        return {
+                            columns: [
+                                {
+                                    //image: logo,
+                                    "width": 24
+                                },
+                                {
+                                    alignment: 'left',
+                                    italics: true,
+                                    text: 'dataTables',
+                                    fontSize: 18,
+                                    margin: [10,0]
+                                },
+                                {
+                                    alignment: 'right',
+                                    fontSize: 14,
+                                    text: 'Custom PDF export with dataTables'
+                                }
+                            ],
+                            margin: 20
+                        }
+                    });*/
+                    // Create a footer object with 2 columns
+                    // Left side: report creation date
+                    // Right side: current page and total pages
+                    doc['footer']=(function(page, pages) {
+                        return {
+                            columns: [
+                                {
+                                    alignment: 'left',
+                                    text: ['Crée le : ', { text: jsDate.toString() }]
+                                },
+                                {
+                                    alignment: 'center',
+                                    text: ['{{app.user.enterprise.socialReason}} {% if app.user.enterprise.niu is not empty %}- NIU : {{app.user.enterprise.niu}} {% endif %} {% if app.user.enterprise.rccm is not empty %}- RCCM : {{app.user.enterprise.rccm}}{% endif %}']
+                                },
+                                {
+                                    alignment: 'right',
+                                    text: ['page ', { text: page.toString() },	' de ',	{ text: pages.toString() }]
+                                }
+                            ],
+                            margin: 20
+                        }
+                    });
+                    // Change dataTable layout (Table styling)
+                    // To use predefined layouts uncomment the line below and comment the custom lines below
+                    // doc.content[0].layout = 'lightHorizontalLines'; // noBorders , headerLineOnly
+                    var objLayout = {};
+                    objLayout['hLineWidth']   = (function(i) { return .5; });
+                    objLayout['vLineWidth']   = (function(i) { return .5; });
+                    objLayout['hLineColor']   = (function(i) { return '#ccc'; });
+                    objLayout['vLineColor']   = (function(i) { return '#ccc'; });
+                    objLayout['paddingLeft']  = (function(i) { return 4; });
+                    objLayout['paddingRight'] = (function(i) { return 4; });
+                    doc.content[0].layout = objLayout;
+                } 
+            },
+            {
+                //text: 'Exporter Disponibilité',
+                extend: 'excel',
+                filename: FileName,
+                exportOptions: {
+                    //columns: [ 0, 1, 4 ],
+                    //columns: ':visible'
+                    search: 'applied',
+                    order: 'applied'
+                },
+            }
+        ] 
+    });
+
+    historicTable.buttons().container().appendTo('#historic-dataTable_wrapper .col-md-6:eq(0)');
+
+    $('.buttons-pdf').children('span').prepend('<i class="mdi mdi-download mr-2"></i>');
+    $('.buttons-pdf').removeClass('btn-secondary').addClass('btn-outline-danger')
+    $('.buttons-excel').removeClass('btn-secondary').addClass('btn-outline-success')
+</script>
+
+<script>
+    var firstTabHistorical = true;
+    //console.log( parseFloat( String( $('#budget').html() ).replace(' ', '') ) )
+    $('.nav-tabs a').on('shown.bs.tab', function(event){
+        var tab = $(event.target).text();         // active tab
+        var prevTab = $(event.relatedTarget).text();  // previous tab
+        console.log(tab)
+        console.log(prevTab)
+        if( String(tab).indexOf('Historique') >= 0){
+            if(firstTabHistorical){
+                firstTabHistorical = false; 
+                var drp_ = $('#gendaterange').data('daterangepicker');
+                console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+                var startDate_ = drp.startDate.format('YYYY-MM-DD');
+                var endDate_ = drp.endDate.format('YYYY-MM-DD');
+
+                $data = JSON.stringify({
+                //"selectedDate": $dat, // tabGridId,
+                "startDate": startDate_ + ' 00:00:00', // tabGridId,
+                "endDate": endDate_ + '23:59:59', // tabFuelId,
+                });
+
+                // Danger
+
+                swal.queue([{
+                    title: 'Chargement...',
+                    confirmButtonText: 'Confirmez',
+                    text: 'Veuillez patienter svp !',
+                    //showCancelButton: true,
+                    showLoaderOnConfirm: true,
+                    //confirmButtonClass: 'btn btn-primary',
+                    //cancelButtonClass: 'btn btn-danger ml-2',
+                
+                    //title: 'The graphs will be updated for the date range :',
+                    //confirmButtonText: 'Confirm',
+                    //text: 'From ' + startDate_ + ' To ' + endDate_,
+                    //showCancelButton: true,
+                    //showLoaderOnConfirm: true,
+                    //confirmButtonClass: 'btn btn-primary',
+                    //cancelButtonClass: 'btn btn-danger ml-2',
+                    preConfirm: function () {
+                        return new Promise(function (resolve) { 
+                            
+                            $.ajax({
+                                type: "POST", // method type
+                                contentType: "application/json; charset=utf-8",
+                                url: _url, // /Target function that will be return result
+                                data: $data, // parameter pass data is parameter name param is value
+                                dataType: "json",
+                                timeout: 120000, // 64241
+                                success: function (result) {
+                                    // $('.fa-sync').removeClass('fa-spin');
+                                    console.log(result);
+                                    
+                                    swal({
+                                        type: 'success', 
+                                        title: 'Les graphes ont été actualisé !',
+                                        // html: 'Submitted email: ' + email
+                                    });
+
+                                    setTimeout(function () {
+                                        resolve()
+                                    }, 1000);
+
+                                    if( Object.keys(result).length > 0 ){
+                                        console.log(Object.values(result['Load_Chart']))
+                                        console.log(Object.values(result['Mixed_Conso']))
+                                        displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
+                                        displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
+                                        //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                        
+                                    }
+                                },
+                                error: function (result) {
+                                    // console.log("Error");
+                                    // console.log(result);
+                                    swal('Oups...', "Une erreur s'est produite !", 'error'
+                                    // footer: '<a href>Why do I have this issue?</a>'
+                                    );
+
+                                    setTimeout(function () {
+                                        resolve()
+                                    }, 5000);
+                                }
+                            });
+                        })
+                    },
+                    allowOutsideClick: false
+                }]); 
+
+                $(".swal2-confirm").click();
+            }
+            //alert("Active tab " + x);
+        }
+    });
+</script>
+<!-- Script de gestion du sélecteur de date -->
+<script>
+    var _url = "{{ path('site_histo_update', {'slug':site.slug}) }}";
+        
+    var start = moment().subtract(1, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('#daterange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        maxSpan: {
+            "days": 31
+        },
+        maxDate: moment().endOf('month'),
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    var drp = $('#daterange').data('daterangepicker');
+    console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+    var startDate = drp.startDate.format('YYYY-MM-DD');
+    var endDate = drp.endDate.format('YYYY-MM-DD');
+    
+
+    $('#daterange').on('apply.daterangepicker', function (ev, picker) {
+        //console.log(picker.startDate.format('YYYY-MM-DD'));
+        //console.log(picker.endDate.format('YYYY-MM-DD'));
+    
+        startDate = picker.startDate.format('YYYY-MM-DD');
+        endDate = picker.endDate.format('YYYY-MM-DD');
+        
+        console.log('startDate = ' + startDate);
+        console.log('endDate = ' + endDate);
+        updateHistoGraphs();
+        // block of code that runs when the click event triggers
+
+    });
+
+    function displayNewData(chart, label, data, dateopt, multiple, xscale){
+        //chart.data.labels = [];
+        chart.updateOptions({
+            xaxis: {
+                categories: []
+            },
+        });
+        /*chart.updateOptions({
+            xaxis: {
+                categories: label
+            },
+        });*/
+        //chart.opts.labels = label;
+        chart.updateOptions({
+            labels: label
+            
+        });
+        if(multiple > 1){
+            var i = 0;
+            chart.opts.series.forEach((dataset) => {
+                if( i < multiple){
+                    dataset.data = [];
+                    dataset.data = data[i++];
+                    console.log(dataset.name);
+                }
+            });
+        }
+        else if(multiple == 1){
+            chart.updateSeries([{
+                data: []
+            }]);
+        
+            chart.updateSeries([{
+                data: data
+            }]);
+        }
+
+        /*if(xscale === 'day'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        //text: moment(dateopt).format('DD MMMM').toString(),
+                        text: moment(dateopt[0]).format('DD MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('DD MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }
+        else if( xscale === 'month'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        text: moment(dateopt[0]).format('MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }*/
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        //chart.render();
+    }            
+
+    function updateHistoGraphs(){
+        
+        $data = JSON.stringify({
+            //"selectedDate": $dat, // tabGridId,
+            "startDate": startDate + ' 00:00:00', // tabGridId,
+            "endDate": endDate + '23:59:59', // tabFuelId,
+        });
+
+        // Danger
+
+        swal.queue([{
+            title: 'Les graphes seront actualisés pour la période :',
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: 'Annuler',
+            text: 'Du ' + startDate + ' Au ' + endDate,
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            //confirmButtonClass: 'btn btn-primary',
+            //cancelButtonClass: 'btn btn-danger ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) { 
+                    
+                    $.ajax({
+                        type: "POST", // method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url, // /Target function that will be return result
+                        data: $data, // parameter pass data is parameter name param is value
+                        dataType: "json",
+                        timeout: 120000, // 64241
+                        success: function (result) {
+                            // $('.fa-sync').removeClass('fa-spin');
+                            console.log(result);
+                            
+                            swal({
+                                type: 'success', 
+                                title: 'Les graphes ont été mis !',
+                                // html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 1000);
+
+                            if( Object.keys(result).length > 0 ){
+                                console.log(Object.values(result['Load_Chart']))
+                                console.log(Object.values(result['Mixed_Conso']))
+                                displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
+                                displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
+                                //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                
+                            }
+                        },
+                        error: function (result) {
+                            // console.log("Error");
+                            // console.log(result);
+                            swal('Oups...', "Une erreur s'est produite !", 'error'
+                            // footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]);
+    }
+
+    function progressVal(selectorVal, selectorIcon, prog, posLogique, isTime) {
+        var DESC = 'mdi-menu-down';
+        var ASC = 'mdi-menu-up';
+        var greenColor = 'text-success';
+        var redColor = 'text-danger';
+        if (!isTime) {
+            selectorVal.html(prog === null ? 0 : prog > 0 ? '+' + prog.toFixed(1) : prog.toFixed(1));
+        }
+        else {
+            var diff = new Date(Math.abs(prog));
+            var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
+            var str = $dat.format('HH:mm:ss').toString()
+            selectorVal.html(prog === null ? 0 : prog > 0 ? '+' + str : '-' + str);
+        }
+        if (posLogique) {
+            if (prog > 0) {
+                selectorIcon.removeClass(DESC).addClass(ASC);
+                selectorIcon.removeClass(greenColor).addClass(redColor);
+                /*if (selectorIcon.hasClass(oldClass)) {
+                    // it has class
+                } else {
+                    // it doesn't have specified class
+                }*/
+            }
+            else {
+                selectorIcon.removeClass(ASC).addClass(DESC);
+                selectorIcon.removeClass(redColor).addClass(greenColor);
+            }
+        }
+        else {
+            if (prog > 0) {
+                selectorIcon.removeClass(DESC).addClass(ASC);
+                selectorIcon.removeClass(redColor).addClass(greenColor);
+                /*if (selectorIcon.hasClass(oldClass)) {
+                    // it has class
+                } else {
+                    // it doesn't have specified class
+                }*/
+            }
+            else {
+                selectorIcon.removeClass(ASC).addClass(DESC);
+                selectorIcon.removeClass(greenColor).addClass(redColor);
+            }
+        }
+    }
+
+    
+</script>
+{% endblock %}

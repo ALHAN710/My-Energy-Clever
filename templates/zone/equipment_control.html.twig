@@ -1,0 +1,195 @@
+{% extends 'base1.html.twig' %}
+
+{% block title %}Hello ZoneController!{% endblock %}
+
+{% block stylesheets %}
+<link href="/css/iot-theme.css" rel="stylesheet" type="text/css">
+
+{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <!-- Interior lights  START -->
+        <div class="card" data-unit-group="switch-lights">
+            <div class="card-body">
+                <h3 class="card-title">Eclairages - intérieur</h3>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex" data-unit="switch-light-1">
+                    <svg class="icon-sprite">
+                        <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                    </svg>
+                    <h5>Kitchen</h5>
+                    <label class="switch ml-auto checked">
+                        <input type="checkbox" id="switch-light-1" checked>
+                    </label>
+                    <div class="info-holder info-rb" style="right:40px;">
+                        <div data-toggle="popover-all" data-content="Checkbox element using localStorage to remember the last status." data-original-title="Switch ON/OFF" data-container="body" data-placement="top" data-offset="0,-6"></div>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex" data-unit="switch-light-2">
+                    <svg class="icon-sprite">
+                        <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                    </svg>
+                    <h5>Dining room</h5>
+                    <label class="switch ml-auto">
+                        <input type="checkbox" id="switch-light-2">
+                    </label>
+                </li>
+                <li class="list-group-item d-flex" data-unit="switch-light-3">
+                    <svg class="icon-sprite">
+                        <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                    </svg>
+                    <h5>Living room</h5>
+                    <label class="switch ml-auto">
+                        <input type="checkbox" id="switch-light-3">
+                    </label>
+                </li>
+                <li class="list-group-item d-flex" data-unit="switch-light-4">
+                    <svg class="icon-sprite">
+                        <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                    </svg>
+                    <h5>Bedroom</h5>
+                    <label class="switch ml-auto">
+                        <input type="checkbox" id="switch-light-4">
+                    </label>
+                </li>
+                <li class="list-group-item d-flex" data-unit="switch-light-5">
+                    <svg class="icon-sprite">
+                        <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                    </svg>
+                    <h5>Bathroom</h5>
+                    <label class="switch ml-auto">
+                        <input type="checkbox" id="switch-light-5">
+                    </label>
+                </li>
+            </ul>
+            <div class="card-body">
+                <div class="lights-controls" data-controls="switch-lights">
+                    <button data-action="all-on" type="button" class="btn btn-secondary lights-control">All <strong>ON</strong></button>
+                    <button data-action="all-off" type="button" class="btn btn-primary lights-control">All <strong>OFF</strong></button>
+                </div>
+            </div>
+        </div>
+        <!-- Interior lights  END -->
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <!-- Exterior lights  START -->
+        <h3 class="card-title my-3">Eclairages - extérieur</h3>
+        <div class="card" data-unit="switch-light-6">
+            <div class="card-body d-flex flex-row justify-content-start">
+                <svg class="icon-sprite">
+                    <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                </svg>
+                <h5>Front doors</h5>
+                <label class="switch ml-auto">
+                    <input type="checkbox" id="switch-light-6">
+                </label>
+            </div>
+        </div>
+        <div class="card" data-unit="switch-light-7">
+            <div class="card-body d-flex">
+                <svg class="icon-sprite">
+                    <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                </svg>
+                <h5>Back doors</h5>
+                <label class="switch ml-auto">
+                    <input type="checkbox" id="switch-light-7">
+                </label>
+            </div>
+        </div>
+        <div class="card" data-unit="switch-light-8">
+            <div class="card-body d-flex">
+                <svg class="icon-sprite">
+                    <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                </svg>
+                <h5>Pool</h5>
+                <label class="switch ml-auto">
+                    <input type="checkbox" id="switch-light-8">
+                </label>
+            </div>
+        </div>
+        <div class="card" data-unit="switch-light-9">
+            <div class="card-body d-flex">
+                <svg class="icon-sprite">
+                    <use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
+                </svg>
+                <h5>Garage</h5>
+                <label class="switch ml-auto">
+                    <input type="checkbox" id="switch-light-9">
+                </label>
+            </div>
+        </div>
+        <div class="card" data-unit="">
+            <div class="card-body d-flex">
+                <div class="lights-controls" data-controls="switch-lights">
+                    <button data-action="all-on" type="button" class="btn btn-secondary lights-control">All <strong>ON</strong></button>
+                    <button data-action="all-off" type="button" class="btn btn-primary lights-control">All <strong>OFF</strong></button>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Exterior lights  END -->
+    </div>
+    <div class="col-sm-12 col-md-6 col-xl-4">
+        <!-- Appliances  START -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">Appareils</h3>
+            </div>
+            <hr class="my-0">
+            <!-- Washing machine  START -->
+            <ul class="list-group borderless active" data-unit="wash-machine">
+                <li class="list-group-item d-flex pb-0">
+                    <svg class="icon-sprite icon-1x">
+                        <use xlink:href="/img/icons-sprite.svg#wash-machine"/>
+                    </svg>
+                    <h5>Washing machine</h5>
+                    <p class="ml-auto status">ON</p>
+                </li>
+                <li class="list-group-item d-flex pt-0 pb-4">
+                    {# <p class="entry">Remaining time</p> #}
+                    <p id="wash-machine" class="ml-auto mb-0"></p>
+                </li>
+            </ul>
+            <!-- Washing machine  END -->
+            <hr class="my-0">
+            <!-- Fridge  START -->
+            <ul class="list-group borderless active" data-unit="home-fridge">
+                <li class="list-group-item d-flex pb-0">
+                    <svg class="icon-sprite icon-1x">
+                        <use xlink:href="/img/icons-sprite.svg#home-fridge"/>
+                    </svg>
+                    <h5>Fridge</h5>
+                    <p class="ml-auto status">ON</p>
+                </li>
+                <li class="list-group-item d-flex pt-0 pb-4">
+                    <p class="entry">Temperature</p>
+                    <p class="ml-auto mb-0">35<sup>°F</sup></p>
+                </li>
+            </ul>
+            <!-- Fridge  END -->
+            <hr class="my-0">
+            <!-- TV  START -->
+            <ul class="list-group borderless" data-unit="tv-lcd">
+                <li class="list-group-item d-flex">
+                    <svg class="icon-sprite icon-1x">
+                        <use xlink:href="/img/icons-sprite.svg#tv-lcd"/>
+                    </svg>
+                    <h5>TV</h5>
+                    <p class="ml-auto status">OFF</p>
+                </li>
+            </ul>
+            <!-- TV  END -->
+        </div>
+        <!-- Appliances  END -->
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<!-- Cross browser support for SVG icon sprites -->
+<script src="/js/svg4everybody.min.js"></script>
+<script src="/js/iot-functions.js"></script>
+{% endblock %}

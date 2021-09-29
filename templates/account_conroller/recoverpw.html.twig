@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>My Energy CLEVER - Password Recover</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A premium admin dashboard template by mannatthemes" name="description" />
+        <meta content="Mannatthemes" name="author" />
+
+        <!-- App favicon -->
+        <!-- <link rel="shortcut icon" href="/img/logo-CLETech.ico"> -->
+        <!-- <link rel="icon" type="image/ico" href="/img/logo-CLETEch48x48.ico"> -->
+        <link rel="icon" type="image/ico" href="/img/logoCLETech.ico">
+
+        <!-- App css /*rgba(24, 27, 46, 0.8)*/ -webkit-box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.8);
+          box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.8);-->
+        <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/icons.css" rel="stylesheet" type="text/css" />
+        <link href="/css/metismenu.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+
+        {#<style>
+            .field-icon {
+                float: right;
+                position: relative;
+                /*z-index: 2;*/
+            }
+            .input-icons i { 
+                position: relative;/* absolute; */ 
+            } 
+            
+            .input-icons { 
+                width: 100%; 
+                margin-bottom: 10px; 
+            } 
+            
+            .icon { 
+                float: right;
+                padding: 10px; 
+                min-width: 40px; 
+                
+            } 
+            
+            .input-field { 
+                width: 100%; 
+                padding: 10px; 
+                text-align: center; 
+            } 
+        </style>#}
+
+    </head>
+
+    <body class="account-body">
+
+        <!-- Log In page -->
+        <div class="row vh-100">
+            <div class="col-lg-3  pr-0">
+                <div class="card mb-0 shadow-none">
+                    <div class="card-body">
+                        
+                        <div class="px-3">
+                            {#<div class="media">
+                                <a href="#" class="logo logo-admin"><img src="/img/logo-CLETech.png" height="55" alt="logo" class="my-3"></a>
+                                <div class="media-body ml-3 align-self-center">                                                                                                                       
+                                    <h4 class="mt-0 mb-1">Reset Password</h4>
+                                    <p class="text-muted mb-0">Enter your Email and instructions will be sent to you!</p>
+                                </div>
+                            </div>#}                            
+                            <div class="media">
+                                <a href="#" class="logo logo-admin"><img src="/img/logo-CLETech.png" height="200" alt="logo" class="my-0"></a> 
+                            </div> 
+                            <div class="text-center">                                                                                                                       
+                                {#<h6 class="text-muted mt-0 mb-3">Welcome to My Energy CLEVER Portal</h6>#}
+                
+                                <h4 class="mt-0 mb-1">Reset Password</h4>
+                                <p class="text-muted mb-0">Enter your Email and instructions will be sent to you !</p>
+                            </div>    
+                                                
+                            <div class="alert alert-danger alert-dismissible fade show d-none" role="alert" id="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
+                                </button>
+                                Sorry, <strong>the Email Address does not match any User or Invalid</strong> Change a few things up and try submitting again.
+                            </div>
+
+                            <form class="form-horizontal my-4" action="{{path('account_codeverification')}}"> 
+
+                                <div class="form-group">
+                                    <label for="username">Email Address</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="mdi mdi-email-outline font-16"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="userEmail" placeholder="Email Address">
+                                    </div>                                    
+                                </div>
+    
+                                <div class="form-group mb-0 row">
+                                    <div class="col-12 mt-2">
+                                        <button class="btn btn-primary btn-block waves-effect waves-light" type="button" id="ResetBtn">
+                                            <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                            Reset <i class="fas fa-sign-in-alt ml-1"></i>
+                                        </button>
+                                    </div>
+                                </div>                            
+                            </form>
+                        </div>
+                        
+                        <div class="m-3 text-center bg-banner p-3 text-primary">
+                            <h5 class="">Remember It ?</h5>
+                            <p class="font-13">Sign In My Energy CLEVER Now</p>
+                            <a href="{{path('account_login2')}}" class="btn btn-primary btn-round waves-effect waves-light">Sign In here</a>                
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 p-0 d-flex justify-content-center">
+                <div class="accountbg d-flex align-items-center"> 
+                    <div class="account-title text-white text-center">
+                        {#<img src="assets/images/logo-sm.png" alt="" class="thumb-sm">
+                        <h4 class="mt-3">Welcome To Frogetor</h4>
+                        <div class="border w-25 mx-auto border-primary"></div>
+                        <h1 class="">Let's Get Started</h1>
+                        <p class="font-14 mt-3">Remember It ? <a href="" class="text-primary">Sign In here</a></p>#}
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Log In page -->
+
+        <!-- jQuery  -->
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/metisMenu.min.js"></script>
+        <script src="/js/waves.min.js"></script>
+        <script src="/js/jquery.slimscroll.min.js"></script>
+
+        <!-- App js -->
+        <script src="/js/app.js"></script>
+
+        <script>
+            /*$(".toggle-password").click(function() {
+
+                $(this).toggleClass("fa-eye-slash fa-eye");
+                var input = $($(this).attr("toggle"));
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                    $('#showPwd').html('Hide');
+                } else {
+                    input.attr("type", "password");
+                    $('#showPwd').html('Show');
+                }
+            });*/
+            var $email = "";
+            var _url = "{{path('account_userverification')}}"; 
+            $('#ResetBtn').click(function(){
+                //block of code that runs when the click event triggers
+                $(this).children('i').addClass('d-none');
+                $(this).children('span').removeClass('d-none');
+                $email = $("#userEmail").val();
+                //_url += "/" + $email;
+                console.log("userVerification url : " + _url);
+                var urlCodeVerif = "{{path('account_codeverification')}}";
+                console.log("userCodeVerification url : " + urlCodeVerif);       
+                var $data = JSON.stringify({
+                    "email": $email,
+                    "codeVerif": 0
+                });
+
+                $.ajax({
+                    type: "POST",//method type
+                    contentType: "application/json; charset=utf-8",
+                    url: _url,///Target function that will be return result
+                    data: $data,//parameter pass data is parameter name param is value 
+                    dataType: "json",
+                    //timeout: 120000,//64241
+                    success: function (data) {
+                        //alert("Success");
+                        console.log(data);
+                        if(data.code === 200){
+                            window.location.href = urlCodeVerif;
+                        }
+                        else{
+                            $('#alert').removeClass('d-none');
+                            $('#ResetBtn').children('i').removeClass('d-none');
+                            $('#ResetBtn').children('span').addClass('d-none');
+                
+                        }
+                                    
+                    },
+                    error: function (result) {
+                        console.log("+++++++++++ Error +++++++++++");
+                        console.log(result);
+                    }
+                });
+            });
+        </script>
+
+    </body>
+
+
+
+</html>

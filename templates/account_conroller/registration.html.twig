@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <h1>Créer un nouveau utilisateur</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {#{{ form_row(form.avatar) }}
+    {{ form_row(form.enterpriseLogo) }}#}
+    <button type="submit" class="btn btn-success">enregistrer</button>
+
+    {{ form_end(form) }}
+
+</div>
+
+{% endblock %}
+
+{% block footer %} 
+<footer class="mt-5 bg-light py-5 text-center">
+    <p> Copyright <a href="#">Clever Electric Company Ltd</a> </p>
+</footer>
+{% endblock %}

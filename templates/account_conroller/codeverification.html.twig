@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>My Energy CLEVER - Code Verification</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A premium admin dashboard template by mannatthemes" name="description" />
+        <meta content="Mannatthemes" name="author" />
+
+        <!-- App favicon -->
+        <link rel="icon" type="image/ico" href="/img/logoCLETech.ico">
+
+        <!-- App css -->
+        <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/icons.css" rel="stylesheet" type="text/css" />
+        <link href="/css/metismenu.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+
+    </head>
+
+    <body class="account-body">
+
+        <!-- Log In page -->
+        <div class="row vh-100">
+            <div class="col-lg-3  pr-0">
+                <div class="card mb-0 shadow-none">
+                    <div class="card-body">
+                        
+                        <div class="px-3">
+                            <div class="media">
+                                <a href="#" class="logo logo-admin"><img src="/img/logo-CLETech.png" height="200" alt="logo" class="my-0"></a> 
+                            </div> 
+                            <div class="text-center">
+                                <h4 class="mt-0 mb-1">Code Verification</h4>
+                                <p class="text-muted mb-0">check your email inbox and enter the verification code. If you haven't received an email in your inbox, please check spam</p>
+                            </div>    
+                                                
+                            <div class="alert alert-danger alert-dismissible fade show d-none mt-2" role="alert" id="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
+                                </button>
+                                Sorry, <strong>the Verification Code is invalid</strong> Change a few things up and try submitting again.
+                            </div>
+
+                            <form class="form-horizontal my-4" action="#"> 
+
+                                <div class="form-group">
+                                    <label for="userCode">Verification Code</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">MEC-</i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="userCode" placeholder="Code">
+                                    </div>                                    
+                                </div>
+    
+                                <div class="form-group mb-0 row">
+                                    <div class="col-12 mt-2">
+                                        <button class="btn btn-primary btn-block waves-effect waves-light" type="button" id="validBtn">
+                                            <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                            <i class="mdi mdi-check ml-1 font-16"></i> Validate 
+                                        </button>
+                                    </div>
+                                </div>                            
+                            </form>
+                        </div>
+                        
+                        {#<div class="m-3 text-center bg-banner p-3 text-primary">
+                            <h5 class="">Remember It ?</h5>
+                            <p class="font-13">Sign In My Energy CLEVER Now</p>
+                            <a href="#" class="btn btn-primary btn-round waves-effect waves-light">Sign In here</a>                
+                        </div>#}                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 p-0 d-flex justify-content-center">
+                <div class="accountbg d-flex align-items-center"> 
+                    <div class="account-title text-white text-center">
+                        {#<img src="assets/images/logo-sm.png" alt="" class="thumb-sm">
+                        <h4 class="mt-3">Welcome To Frogetor</h4>
+                        <div class="border w-25 mx-auto border-primary"></div>
+                        <h1 class="">Let's Get Started</h1>
+                        <p class="font-14 mt-3">Remember It ? <a href="" class="text-primary">Sign In here</a></p>#}
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Log In page -->
+
+        <!-- jQuery  -->
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/metisMenu.min.js"></script>
+        <script src="/js/waves.min.js"></script>
+        <script src="/js/jquery.slimscroll.min.js"></script>
+
+        <!-- App js -->
+        <script src="/js/app.js"></script>
+
+        <script>
+            var _url = "{{path('account_userverification')}}"; 
+            var userCode = $("#userCode");
+            userCode.on('input', function() { 
+                //console.log($(this).val()); // get the current value of the input field.
+                if( $(this).val().indexOf("MEC") >= 0  ){
+                    userCode.addClass("is-invalid");
+                    $('#validBtn').prop('disabled', true);
+                                        
+                }
+                else{
+                    userCode.removeClass("is-invalid");
+                    $('#validBtn').prop('disabled', false);
+                }
+            });
+
+            $('#validBtn').click(function(){
+                //block of code that runs when the click event triggers
+                $(this).children('i').addClass('d-none');
+                $(this).children('span').removeClass('d-none');
+                var $code = userCode.val();
+                if($code.indexOf("MEC") < 0){
+                    console.log("userVerification url : " + _url);
+                    var $data = JSON.stringify({
+                        "email": "null",
+                        "codeVerif": $code
+                    });
+
+                    $.ajax({
+                        type: "POST",//method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url,///Target function that will be return result
+                        data: $data,//parameter pass data is parameter name param is value 
+                        dataType: "json",
+                        //timeout: 120000,//64241
+                        success: function (data) {
+                            //alert("Success");
+                            console.log(data);
+                            if(data.code === 200){
+                                var urlPasswordReset = "{{path('account_passwordReset')}}" + "?key=2DBMRXXK3LQMFZWGYLMIBTW2YLJNQXGG33NUVTG64TDMXBLG5DXN5PWMYLDORXXEX3WMVZGSZTJMVSMFOTGN5ZGGZLEL53WKYLLL5YGC43TO5XXEZC7OJSXGZLUYI" + "&leng=WKYLLL5ZGSZTJMV43TO5X5QFCAKMXEZ" + "&d=" + data.message + "&csf=AOYGPYSRH5QFCAKMH5CEQIS6P74DVBFFMVWWC2LMXBQWY";
+                                console.log("Password Reset url : " + urlPasswordReset);       
+                                window.location.href = urlPasswordReset;
+                            }
+                            else{
+                                $('#alert').removeClass('d-none');
+                                $('#validBtn').children('i').removeClass('d-none');
+                                $('#validBtn').children('span').addClass('d-none');
+                                                    
+                            }
+                                        
+                        },
+                        error: function (result) {
+                            console.log("+++++++++++ Error +++++++++++");
+                            console.log(result);
+                        }
+                    });
+                }else{
+                    $('#validBtn').children('i').removeClass('d-none');
+                    $('#validBtn').children('span').addClass('d-none');
+                }
+            });
+        </script>
+
+    </body>
+
+
+
+</html>

@@ -1,0 +1,314 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+<form method="post">
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    <label for="inputEmail">Email</label>
+    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+    <label for="inputPassword">Password</label>
+    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+
+    <input type="hidden" name="_csrf_token"
+           value="{{ csrf_token('authenticate') }}"
+    >
+
+    <!--
+        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+        See https://symfony.com/doc/current/security/remember_me.html
+
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" name="_remember_me"> Remember me
+            </label>
+        </div>
+    -->
+
+    <button class="btn btn-lg btn-primary" type="submit">
+        Sign in
+    </button>
+</form>
+{% endblock %} #}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>My Energy CLEVER - Authentication</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A premium admin dashboard template by mannatthemes" name="description" />
+        <meta content="Mannatthemes" name="author" />
+
+        <!-- App favicon -->
+        <!-- <link rel="shortcut icon" href="/img/logo-CLETech.ico"> -->
+        <!-- <link rel="icon" type="image/ico" href="/img/logo-CLETEch48x48.ico"> -->
+        <link rel="icon" type="image/ico" href="/images/logoCLETech.ico">
+
+        <!-- App css /*rgba(24, 27, 46, 0.8)*/ -webkit-box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.8);
+          box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.8);-->
+        <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/icons.css" rel="stylesheet" type="text/css" />
+        <link href="/css/metismenu.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+
+        {#<style>
+            .field-icon {
+                float: right;
+                position: relative;
+                /*z-index: 2;*/
+            }
+            .input-icons i { 
+                position: relative;/* absolute; */ 
+            } 
+            
+            .input-icons { 
+                width: 100%; 
+                margin-bottom: 10px; 
+            } 
+            
+            .icon { 
+                float: right;
+                padding: 10px; 
+                min-width: 40px; 
+                
+            } 
+            
+            .input-field { 
+                width: 100%; 
+                padding: 10px; 
+                text-align: center; 
+            } 
+        </style>#}
+
+    </head>
+
+    <body class="account-body">
+
+        <!-- Log In page -->
+        <div class="row vh-100">
+            <div class="col-lg-3  pr-0">
+                <div class="card mb-0 shadow-none">
+                    <div class="card-body">
+                        
+                        <div class="px-3">
+                            <div class="media">
+                                <a href="#" class="logo logo-admin"><img src="/images/logo-CLETech.png" height="200" alt="logo" class="my-0"></a> 
+                            </div> 
+                            <div class="text-center">                                                                                                                       
+                                <h6 class="text-muted mt-0 mb-3">Welcome to My Energy CLEVER Portal</h6>
+                
+                                <h5 class="mt-0 mb-1">Let's Get Started</h5>
+                                <!-- <p class="text-muted mb-0">Sign in to continue to MEC.</p>-->
+                            </div>  
+
+                            {% if hasError %}
+                              {#<div class="alert alert-danger">An error has occurred, the username or password is invalid</div>#}
+                              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
+                                    </button>
+                                    <strong>An error has occurred, the username or password is invalid</strong> Change a few things up and try submitting again.
+                              </div>
+                            {% endif %}     
+
+                             {% for label, messages in app.flashes %}
+                                <div class="alert icon-custom-alert alert-outline-{{label}} alert-{{label}}-shadow alert-dismissible fade show" role="alert">
+                                    {% if label == 'success' %}<i class="mdi mdi-check-all alert-icon"></i>{% endif %}
+                                    <div class="alert-text">
+                                        {% for message in messages %}
+                                            <strong>{{ message | raw }}</strong>.
+                                        {% endfor %}
+                                    </div>    
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
+                                    </button>                                        
+                                </div>
+                                
+                            {% endfor %}                   
+                            
+                            <form class="form-horizontal my-4" id="login-form" method="POST" >
+    
+                                <div class="form-group">
+                                    <label for="username">Email</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="mdi mdi-account-outline font-16"></i></span>
+                                        </div>
+                                        <input type="email" class="form-control custom-focus" name="email" id="username" placeholder="Enter user email" value="{{last_username}}" autocomplete="email" required autofocus>
+                                    </div>                                    
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="userpassword">Password</label>
+                                    <div class="input-group mb-3 ">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon2">
+                                                <i class="mdi mdi-key font-16"></i>                    
+                                            </span>
+                                        </div>
+                            
+                                        {#<i toggle="#password-field" class="fa fa-fw fa-eye-slash field-icon toggle-password icon"></i> #}
+                                        <input type="password" class="form-control input-field" name="password" id="password-field"  placeholder="Enter password" autocomplete="current-password" required>
+                                        {# <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span> #}
+                                        {#<div class="input-group-append">
+                                            
+                                            <span class="input-group-text">
+                                                <a href="#" class="float-right"><i class="mdi mdi-eye-off-outline font-16"></i></a>
+                                            </span>
+                                            
+                                            
+                                        </div>#}
+                                        {# <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span> #}
+                                    </div>                                
+                                </div>
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                <div class="form-group row mt-4">
+                                    <div class="col-sm-6">
+                                        {#<div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="customControlInline">
+                                            <label class="custom-control-label" for="customControlInline">Remember me</label>
+                                        </div>#}
+                                        <span toggle="#password-field" class="fa fa-fw fa-eye-slash toggle-password mr-2"></span><span id="showPwd">Show</span> password
+                                    </div>
+                                    <div class="col-sm-6 text-right">
+                                        <a href="{{path('account_recoverpw')}}" class="text-muted font-13"><i class="mdi mdi-lock"></i> Forgot your password?</a>                                    
+                                    </div>
+                                </div>
+    
+                                <div class="form-group mb-0 row">
+                                    <div class="col-12 mt-2" id="divBtn">
+                                        <button class="btn btn-primary btn-block waves-effect waves-light " id="LogInBtn" type="submit" >
+                                            <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                            Log In <i class="fas fa-sign-in-alt ml-1"></i>
+                                            
+                                        </button>
+                                    </div>
+                                </div>                            
+                            </form>
+                        </div>
+                        {#<!--
+                        <div class="account-social text-center">
+                            <h6 class="my-4">Or Login With</h6>
+                            <ul class="list-inline mb-4">
+                                <li class="list-inline-item">
+                                    <a href="" class="">
+                                        <i class="fab fa-facebook-f facebook"></i>
+                                    </a>                                    
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="" class="">
+                                        <i class="fab fa-twitter twitter"></i>
+                                    </a>                                    
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="" class="">
+                                        <i class="fab fa-google google"></i>
+                                    </a>                                    
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="m-3 text-center bg-banner p-3 text-primary">
+                            <h5 class="">Don't have an account ? </h5>
+                            <p class="font-13">Join <span>Frogetor</span> Now</p>
+                            <a href="#" class="btn btn-primary btn-round waves-effect waves-light">Free Resister</a>                
+                        </div>
+                           -->    #}                 
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 p-0 d-flex justify-content-center">
+                <div class="accountbg d-flex align-items-center"> 
+                    <div class="account-title text-white text-center">
+                        {#
+                        <!-- <img src="/img/logo-CLETech.png" alt="" height="200" class="logo logo-admin "> -->
+                        <!-- <svg class="icon-sprite icon">
+                            <use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/> 
+                            <use style="background-color: white; width: 1rem; height: 2rem;" xlink:href="/img/logoCLETech.svg#Calque_1"/>
+                        </svg>
+                        -->
+                        <!-- <div class="border w-25 mx-auto border-primary"></div> -->
+                        <!-- <h1 class="">My Energy CLEVER make your energy BETTER</h1> -->
+                        <!-- <p class="font-14 mt-3">Don't have an account ? <a href="" class="text-primary">Sign up</a></p> -->
+                       #}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Log In page -->
+
+
+        <!-- jQuery  -->
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/metisMenu.min.js"></script>
+        <script src="/js/waves.min.js"></script>
+        <script src="/js/jquery.slimscroll.min.js"></script>
+
+        <!-- App js -->
+        <script src="/js/app.js"></script>
+
+        <script>
+            $(".toggle-password").click(function() {
+
+                $(this).toggleClass("fa-eye-slash fa-eye");
+                var input = $($(this).attr("toggle"));
+                if (input.attr("type") == "password") {
+                    input.attr("type", "text");
+                    $('#showPwd').html('Hide');
+                } else {
+                    input.attr("type", "password");
+                    $('#showPwd').html('Show');
+                }
+            });
+
+            /*$('input[type="checkbox"]').click(function(){
+                var input = $($(".toggle-password").attr("toggle"));
+                if($(this).prop("checked") == true){
+                    console.log("Checkbox is checked.");
+                    //$(".toggle-password").toggleClass("fa-eye-slash fa-eye");
+                    
+                    if (input.attr("type") == "password") {
+                        input.attr("type", "text");
+                    } 
+                }
+                else if($(this).prop("checked") == false){
+                    console.log("Checkbox is unchecked.");
+                    if(input.attr("type") == "text") {
+                        input.attr("type", "password");
+                    }
+                }
+            });*/
+
+            $('#LogInBtn').click(function(){
+                // Fetch form to apply custom Bootstrap validation
+                var form = $("#login-form")
+
+                if (form[0].checkValidity() === false)
+                {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    console.log('form[0] = ' + form[0])
+                }
+                else{
+                    $(this).children('i').addClass('d-none');
+                    $(this).children('span').removeClass('d-none');
+
+                }
+                
+                form.addClass('was-validated');
+            });
+        </script>
+
+    </body>
+</html>
