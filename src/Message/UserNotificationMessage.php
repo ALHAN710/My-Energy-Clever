@@ -12,17 +12,17 @@ class UserNotificationMessage
     /**
      * @var string
      */
-    private string $message;
+    private $message;
 
     /**
      * @var string
      */
-    private string $media;
+    private $media;
 
     /**
      * @var string
      */
-    private string $object;
+    private $object;
 
     public function __construct(int $userId, string $message, string $media, string $object)
     {
