@@ -19,13 +19,25 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class UserNotificationHandler implements MessageHandlerInterface
 {
-    private EntityManagerInterface $em;
+    /**
+     * @var EntityManagerInterface 
+     */
+    private $em;
 
-    private Environment $twig;
+    /**
+     * @var Environment 
+     */
+    private $twig;
 
-    private TexterInterface $texter;
+    /**
+     * @var TexterInterface 
+     */
+    private $texter;
 
-    private MailerInterface $mailer;
+    /**
+     * @var MailerInterface
+     */
+    private $mailer;
 
     private $client;
 
