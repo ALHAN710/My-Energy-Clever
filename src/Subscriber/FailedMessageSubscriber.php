@@ -9,7 +9,10 @@ use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 
 class FailedMessageSubscriber implements EventSubscriberInterface
 {
-    private MailerInterface $mailer;
+    /**
+     * @var MailerInterface   
+     */
+    private $mailer;
 
     public function __construct(MailerInterface $mailer)
     {
