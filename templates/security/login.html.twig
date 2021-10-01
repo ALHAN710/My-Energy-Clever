@@ -43,272 +43,162 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>My Energy CLEVER - Authentication</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="A premium admin dashboard template by mannatthemes" name="description" />
-        <meta content="Mannatthemes" name="author" />
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>My Energy CLEVER - Authentification</title>
+    <link rel="icon" type="image/x-icon" href="/img/logoCLETech.ico"/>
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/plugins.css" rel="stylesheet" type="text/css" />
+    <link href="/css/authentication/form-1.css" rel="stylesheet" type="text/css" />
+    <!-- END GLOBAL MANDATORY STYLES -->    
+    <link rel="stylesheet" type="text/css" href="/css/forms/theme-checkbox-radio.css">
+    <link rel="stylesheet" type="text/css" href="/css/forms/switches.css">
+</head>
+<body class="form">
 
-        <!-- App favicon -->
-        <!-- <link rel="shortcut icon" href="/img/logo-CLETech.ico"> -->
-        <!-- <link rel="icon" type="image/ico" href="/img/logo-CLETEch48x48.ico"> -->
-        <link rel="icon" type="image/ico" href="/images/logoCLETech.ico">
+    <div class="form-container">
+        <div class="form-form">
+            <div class="form-form-wrap">
+                <div class="form-container">
+                    <div class="form-content text-center">
 
-        <!-- App css /*rgba(24, 27, 46, 0.8)*/ -webkit-box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.8);
-          box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.8);-->
-        <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="/css/icons.css" rel="stylesheet" type="text/css" />
-        <link href="/css/metismenu.min.css" rel="stylesheet" type="text/css" />
-        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+                        <h2 class="">Bienvenue sur My Energy CLEVER Portal</h2>
+                        <p class="signup-link float-center">Let's Get Started</p>
+                        {% if hasError %}
+                            {#<div class="alert alert-danger">An error has occurred, the username or password is invalid</div>#}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
+                                </button>
+                                <strong>Une erreur s'est produite, l'adresse email ou le mot de passe est incorrect</strong> Modifiez quelques éléments et essayez de soumettre à nouveau.
+                            </div>
+                        {% endif %}     
 
-        {#<style>
-            .field-icon {
-                float: right;
-                position: relative;
-                /*z-index: 2;*/
-            }
-            .input-icons i { 
-                position: relative;/* absolute; */ 
-            } 
-            
-            .input-icons { 
-                width: 100%; 
-                margin-bottom: 10px; 
-            } 
-            
-            .icon { 
-                float: right;
-                padding: 10px; 
-                min-width: 40px; 
-                
-            } 
-            
-            .input-field { 
-                width: 100%; 
-                padding: 10px; 
-                text-align: center; 
-            } 
-        </style>#}
-
-    </head>
-
-    <body class="account-body">
-
-        <!-- Log In page -->
-        <div class="row vh-100">
-            <div class="col-lg-3  pr-0">
-                <div class="card mb-0 shadow-none">
-                    <div class="card-body">
-                        
-                        <div class="px-3">
-                            <div class="media">
-                                <a href="#" class="logo logo-admin"><img src="/images/logo-CLETech.png" height="200" alt="logo" class="my-0"></a> 
-                            </div> 
-                            <div class="text-center">                                                                                                                       
-                                <h6 class="text-muted mt-0 mb-3">Welcome to My Energy CLEVER Portal</h6>
-                
-                                <h5 class="mt-0 mb-1">Let's Get Started</h5>
-                                <!-- <p class="text-muted mb-0">Sign in to continue to MEC.</p>-->
-                            </div>  
-
-                            {% if hasError %}
-                              {#<div class="alert alert-danger">An error has occurred, the username or password is invalid</div>#}
-                              <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
-                                    </button>
-                                    <strong>An error has occurred, the username or password is invalid</strong> Change a few things up and try submitting again.
-                              </div>
-                            {% endif %}     
-
-                             {% for label, messages in app.flashes %}
-                                <div class="alert icon-custom-alert alert-outline-{{label}} alert-{{label}}-shadow alert-dismissible fade show" role="alert">
-                                    {% if label == 'success' %}<i class="mdi mdi-check-all alert-icon"></i>{% endif %}
-                                    <div class="alert-text">
-                                        {% for message in messages %}
-                                            <strong>{{ message | raw }}</strong>.
-                                        {% endfor %}
-                                    </div>    
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
-                                    </button>                                        
-                                </div>
-                                
-                            {% endfor %}                   
+                            {% for label, messages in app.flashes %}
+                            <div class="alert icon-custom-alert alert-outline-{{label}} alert-{{label}}-shadow alert-dismissible fade show" role="alert">
+                                {% if label == 'success' %}<i class="mdi mdi-check-all alert-icon"></i>{% endif %}
+                                <div class="alert-text">
+                                    {% for message in messages %}
+                                        <strong>{{ message | raw }}</strong>.
+                                    {% endfor %}
+                                </div>    
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true"><i class="mdi mdi-close"></i></span>
+                                </button>                                        
+                            </div>
                             
-                            <form class="form-horizontal my-4" id="login-form" method="POST" >
-    
-                                <div class="form-group">
-                                    <label for="username">Email</label>
-                                    <div class="input-group mb-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon1"><i class="mdi mdi-account-outline font-16"></i></span>
-                                        </div>
-                                        <input type="email" class="form-control custom-focus" name="email" id="username" placeholder="Enter user email" value="{{last_username}}" autocomplete="email" required autofocus>
-                                    </div>                                    
+                        {% endfor %}    
+                        <form class="text-left" id="login-form" method="POST">
+                            <div class="form">
+
+                                {# <div id="username-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <input id="username" name="username" type="text" class="form-control" placeholder="Username">
+                                </div> #}
+                                <div id="email-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-at-sign"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path></svg>
+                                    <input id="username" class="form-control custom-focus" name="email" type="email" value="{{last_username}}" placeholder="Email" autocomplete="email" required autofocus>
                                 </div>
-    
-                                <div class="form-group">
-                                    <label for="userpassword">Password</label>
-                                    <div class="input-group mb-3 ">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="basic-addon2">
-                                                <i class="mdi mdi-key font-16"></i>                    
-                                            </span>
-                                        </div>
-                            
-                                        {#<i toggle="#password-field" class="fa fa-fw fa-eye-slash field-icon toggle-password icon"></i> #}
-                                        <input type="password" class="form-control input-field" name="password" id="password-field"  placeholder="Enter password" autocomplete="current-password" required>
-                                        {# <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span> #}
-                                        {#<div class="input-group-append">
-                                            
-                                            <span class="input-group-text">
-                                                <a href="#" class="float-right"><i class="mdi mdi-eye-off-outline font-16"></i></a>
-                                            </span>
-                                            
-                                            
-                                        </div>#}
-                                        {# <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span> #}
-                                    </div>                                
+                                <div id="password-field" class="field-wrapper input mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    <input class="form-control custom-focus" id="password" name="password" type="password" value="" placeholder="Entrer le Mot de passe" autocomplete="current-password" required>
                                 </div>
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                                <div class="form-group row mt-4">
-                                    <div class="col-sm-6">
-                                        {#<div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="customControlInline">
-                                            <label class="custom-control-label" for="customControlInline">Remember me</label>
-                                        </div>#}
-                                        <span toggle="#password-field" class="fa fa-fw fa-eye-slash toggle-password mr-2"></span><span id="showPwd">Show</span> password
+                                
+                                <div class="d-sm-flex justify-content-between">
+                                    <div class="field-wrapper toggle-pass">
+                                        <p class="d-inline-block"><span id="showPwd">Afficher</span> Mot de passe</p>
+                                        <label class="switch s-primary">
+                                            <input type="checkbox" id="toggle-password" class="d-none">
+                                            <span class="slider round"></span>
+                                        </label>
                                     </div>
-                                    <div class="col-sm-6 text-right">
-                                        <a href="{{path('account_recoverpw')}}" class="text-muted font-13"><i class="mdi mdi-lock"></i> Forgot your password?</a>                                    
-                                    </div>
-                                </div>
-    
-                                <div class="form-group mb-0 row">
-                                    <div class="col-12 mt-2" id="divBtn">
-                                        <button class="btn btn-primary btn-block waves-effect waves-light " id="LogInBtn" type="submit" >
-                                            <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
-                                            Log In <i class="fas fa-sign-in-alt ml-1"></i>
-                                            
+                                    <div class="field-wrapper">
+                                        <button type="submit" id="LogInBtn" class="btn btn-primary" value="">
+                                        <span class="spinner-border spinner-border-sm mr-1 d-none" role="status" aria-hidden="true"></span>
+                                        Log In <i class="fas fa-sign-in-alt ml-1"></i>
                                         </button>
                                     </div>
-                                </div>                            
-                            </form>
-                        </div>
-                        {#<!--
-                        <div class="account-social text-center">
-                            <h6 class="my-4">Or Login With</h6>
-                            <ul class="list-inline mb-4">
-                                <li class="list-inline-item">
-                                    <a href="" class="">
-                                        <i class="fab fa-facebook-f facebook"></i>
-                                    </a>                                    
-                                </li>
-                                <li class="list-inline-item">
-                                    <a href="" class="">
-                                        <i class="fab fa-twitter twitter"></i>
-                                    </a>                                    
-                                </li>
-                                <li class="list-inline-item">
-                                    <a href="" class="">
-                                        <i class="fab fa-google google"></i>
-                                    </a>                                    
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="m-3 text-center bg-banner p-3 text-primary">
-                            <h5 class="">Don't have an account ? </h5>
-                            <p class="font-13">Join <span>Frogetor</span> Now</p>
-                            <a href="#" class="btn btn-primary btn-round waves-effect waves-light">Free Resister</a>                
-                        </div>
-                           -->    #}                 
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-9 p-0 d-flex justify-content-center">
-                <div class="accountbg d-flex align-items-center"> 
-                    <div class="account-title text-white text-center">
-                        {#
-                        <!-- <img src="/img/logo-CLETech.png" alt="" height="200" class="logo logo-admin "> -->
-                        <!-- <svg class="icon-sprite icon">
-                            <use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/> 
-                            <use style="background-color: white; width: 1rem; height: 2rem;" xlink:href="/img/logoCLETech.svg#Calque_1"/>
-                        </svg>
-                        -->
-                        <!-- <div class="border w-25 mx-auto border-primary"></div> -->
-                        <!-- <h1 class="">My Energy CLEVER make your energy BETTER</h1> -->
-                        <!-- <p class="font-14 mt-3">Don't have an account ? <a href="" class="text-primary">Sign up</a></p> -->
-                       #}
-                    </div>
+                                </div>
+
+                                <div class="field-wrapper text-center my-2 terms_condition">
+                                    <a href="{{path('account_recoverpw')}}" class="text-muted font-13"><i class="mdi mdi-lock"></i> Mot de passe oublié ?</a>                                    
+                                </div>
+
+                            </div>
+                        </form>                        
+                        <p class="terms-conditions">© 2021 MY Energy CLEVER Portal, All rights reserved. Engineered in Cameroon By <a target="_blank" href="https://cleverelectric-company.com" class="text-primary">CLEVER ELECTRIC Technologies</a>.</p>
+
+                    </div>                    
                 </div>
             </div>
         </div>
-        <!-- End Log In page -->
+        <div class="form-image">
+            <div class="l-image">
+            </div>
+        </div>
+    </div>
 
+    
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="bootstrap/js/popper.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+    <script src="/js/authentication/form-1.js"></script>
 
-        <!-- jQuery  -->
-        <script src="/js/jquery.min.js"></script>
-        <script src="/js/bootstrap.bundle.min.js"></script>
-        <script src="/js/metisMenu.min.js"></script>
-        <script src="/js/waves.min.js"></script>
-        <script src="/js/jquery.slimscroll.min.js"></script>
+    <script>
+        {# $(".toggle-password").click(function() {
 
-        <!-- App js -->
-        <script src="/js/app.js"></script>
+            $(this).toggleClass("fa-eye-slash fa-eye");
+            var input = $($(this).attr("toggle"));
+            if (input.attr("type") == "password") {
+                input.attr("type", "text");
+                $('#showPwd').html('Hide');
+            } else {
+                input.attr("type", "password");
+                $('#showPwd').html('Show');
+            }
+        }); #}
 
-        <script>
-            $(".toggle-password").click(function() {
+        $('input[type="checkbox"]').click(function(){
+            var input = $($(".toggle-password").attr("toggle"));
+            if($(this).prop("checked") == true){
+                console.log("Checkbox is checked.");
+                $('#password').attr("type", "text");
+                $('#showPwd').html('Masquer');
+            }
+            else if($(this).prop("checked") == false){
+                console.log("Checkbox is unchecked.");
+                $('#password').attr("type", "password");
+                $('#showPwd').html('Afficher');
+            }
+        });
 
-                $(this).toggleClass("fa-eye-slash fa-eye");
-                var input = $($(this).attr("toggle"));
-                if (input.attr("type") == "password") {
-                    input.attr("type", "text");
-                    $('#showPwd').html('Hide');
-                } else {
-                    input.attr("type", "password");
-                    $('#showPwd').html('Show');
-                }
-            });
+        $('#LogInBtn').click(function(){
+            // Fetch form to apply custom Bootstrap validation
+            var form = $("#login-form")
 
-            /*$('input[type="checkbox"]').click(function(){
-                var input = $($(".toggle-password").attr("toggle"));
-                if($(this).prop("checked") == true){
-                    console.log("Checkbox is checked.");
-                    //$(".toggle-password").toggleClass("fa-eye-slash fa-eye");
-                    
-                    if (input.attr("type") == "password") {
-                        input.attr("type", "text");
-                    } 
-                }
-                else if($(this).prop("checked") == false){
-                    console.log("Checkbox is unchecked.");
-                    if(input.attr("type") == "text") {
-                        input.attr("type", "password");
-                    }
-                }
-            });*/
+            if (form[0].checkValidity() === false)
+            {
+                event.preventDefault()
+                event.stopPropagation()
+                console.log('form[0] = ' + form[0])
+            }
+            else{
+                $(this).children('i').addClass('d-none');
+                $(this).children('span').removeClass('d-none');
 
-            $('#LogInBtn').click(function(){
-                // Fetch form to apply custom Bootstrap validation
-                var form = $("#login-form")
-
-                if (form[0].checkValidity() === false)
-                {
-                    event.preventDefault()
-                    event.stopPropagation()
-                    console.log('form[0] = ' + form[0])
-                }
-                else{
-                    $(this).children('i').addClass('d-none');
-                    $(this).children('span').removeClass('d-none');
-
-                }
-                
-                form.addClass('was-validated');
-            });
-        </script>
-
-    </body>
+            }
+            
+            form.addClass('was-validated');
+        });
+    </script>
+</body>
 </html>
