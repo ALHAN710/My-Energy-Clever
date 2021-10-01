@@ -54,9 +54,12 @@ class SiteDashboardDataService
      */
     private $endDate;
 
+    private $currentMonthStringDate = '';
+
     public function __construct(EntityManagerInterface $manager)
     {
         $this->manager  = $manager;
+        $this->currentMonthStringDate = '2021-09%'; //date('Y-m');
     }
 
     public function getCurrentMonthkWhConsumption()
@@ -67,15 +70,16 @@ class SiteDashboardDataService
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
-                'currentMonth'  => date('Y-m') . '%',
-                'siteId'    => $this->site->getId()
+                'currentMonth'  => $this->currentMonthStringDate,
+                'siteId'        => $this->site->getId()
             ))
             ->getResult();
 
+        // dump($currentConsoQuery);
         $lastConsokWh = $this->getLastMonthkWhConsumption();
         //dump($lastConsokWh);
 
-        $currentConsokWh         = count($currentConsoQuery) > 0 ? $currentConsoQuery[0]['EA'] : 0;
+        $currentConsokWh         = count($currentConsoQuery) > 0 ? $currentConsoQuery[0]['EA'] ?? 0 : 0;
         $currentConsokWhProgress = ($lastConsokWh !== 0) ? ($currentConsokWh - $lastConsokWh) / $lastConsokWh : 'INF';
         $currentConsoXAF         = $this->getConsumptionXAF($this->site, $currentConsokWh);
         $currentGasEmission      = $currentConsokWh * $this->CO2PerkWh;
@@ -96,13 +100,13 @@ class SiteDashboardDataService
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
-                'currentMonth'  => date('Y-m') . '%',
-                'siteId'    => $this->site->getId()
+                'currentMonth'  => $this->currentMonthStringDate,
+                'siteId'        => $this->site->getId()
             ))
             ->getResult();
-        dump($currentConsoQuery);
+        //dump($currentConsoQuery);
 
-        $currentConsokW = count($currentConsoQuery) > 0 ? $currentConsoQuery[0]['kW'] : 0;
+        $currentConsokW     = count($currentConsoQuery) > 0 ? $currentConsoQuery[0]['kW'] : 0;
         $currentGasEmission = $currentConsokW * $this->CO2PerkWh;
 
         return array(
@@ -122,12 +126,12 @@ class SiteDashboardDataService
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :lastMonth
-                                            AND d.dateTime <= :nowDate
+                                            AND d.dateTime <= :lastNowDate
                                             ")
             ->setParameters(array(
-                'lastMonth' => $date->format('Y-m') . '%',
-                'nowDate'   => $now->format('Y-m-d H:i:s'),
-                'siteId'    => $this->site->getId()
+                'lastMonth'     => $date->format('Y-m') . '%',
+                'lastNowDate'   => $date->format('Y-m-d H:i:s'),
+                'siteId'        => $this->site->getId()
             ))
             ->getResult();
 
@@ -149,18 +153,18 @@ class SiteDashboardDataService
                                             ORDER BY jour ASC")
             ->setParameters(array(
                 'kgCO2'        => $this->CO2PerkWh,
-                'currentMonth'  => date('Y-m') . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
         //dump($dayByDayConsoData);
         $dateConso = [];
-        $kWh = [];
-        $kgCO2 = [];
+        $kWh       = [];
+        $kgCO2     = [];
         foreach ($dayByDayConsoData as $d) {
             $dateConso[] = $d['jour'];
-            $kWh[] = floatval(number_format((float) $d['EA'], 2, '.', ''));
-            $kgCO2[] = floatval(number_format((float) $d['kgCO2'], 2, '.', ''));
+            $kWh[]       = floatval(number_format((float) $d['EA'], 2, '.', ''));
+            $kgCO2[]     = floatval(number_format((float) $d['kgCO2'], 2, '.', ''));
         }
 
         return array(
@@ -180,7 +184,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY kWh DESC")
             ->setParameters(array(
-                'currentMonth' => date('Y-m') . '%',
+                'currentMonth' => $this->currentMonthStringDate,
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -207,7 +211,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY kW ASC")
             ->setParameters(array(
-                'currentMonth' => date('Y-m') . '%',
+                'currentMonth' => $this->currentMonthStringDate,
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -223,14 +227,27 @@ class SiteDashboardDataService
             $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW'] * 1000), 2, '.', ' ') . ' W | ' . $lowPower['jour']->format('d-m-Y H:i:s') : '-';
             $strPic   = $highPower != null ? number_format((float) ($highPower['kW'] * 1000), 2, '.', ' ') . ' W | ' . $highPower['jour']->format('d-m-Y H:i:s') : '-';
         }
+        $consoMoy      = $this->getAverageConsumptionWithLimit(10, date('Y-m') . '%', date('Y-m-d H:i:s'));
+        // $testDate = new DateTime('2021-10-15 17:10:00');
+        // $consoMoy = $this->getAverageConsumptionWithLimit(10, $testDate->format('Y-m') . '%', $testDate->format('Y-m-d H:i:s'));
+        $now      = new DateTime('now');
+        $date = $now;
+        //$date = $testDate;
+        $date->sub(new DateInterval('P1M'));
+        $lastConsokWh = $this->getAverageConsumptionWithLimit(10, $date->format('Y-m') . '%', $date->format('Y-m-d H:i:s'));
+        //dump($lastConsokWh);
+
+        $consoMoyProgress = ($lastConsokWh !== 0) ? ($consoMoy - $lastConsokWh) / $lastConsokWh : 'INF';
 
         return array(
-            'consoMoy'     => $this->getAverageConsumption(10, date('Y-m') . '%'),
-            'variation'    => $this->getVariation(),
-            '+forteConso'  => $strPlusForteConso,
-            '+faibleConso' => $strPlusFaibleConso,
-            'Talon'        => $strTalon,
-            'Pic'          => $strPic,
+            //'consoMoy'     => $this->getAverageConsumption(10, $this->currentMonthStringDate),
+            'consoMoy'           => $consoMoy,
+            'consoMoyProgress'   => $consoMoyProgress,
+            'variation'          => $this->getVariation(),
+            '+forteConso'        => $strPlusForteConso,
+            '+faibleConso'       => $strPlusFaibleConso,
+            'Talon'              => $strTalon,
+            'Pic'                => $strPic,
         );
     }
 
@@ -248,7 +265,7 @@ class SiteDashboardDataService
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
-        dump($dataMonthsForCurrentYearQuery);
+        //dump($dataMonthsForCurrentYearQuery);
 
         $monthByMonthDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, SUM(d.ea) AS EA, SUM(d.ea)*:kgCO2 AS kgCO2, MAX(d.pmoy) AS Pmax,
                                             MIN(NULLIF(d.pmoy, 0)) AS talon 
@@ -264,7 +281,7 @@ class SiteDashboardDataService
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
-        dump($monthByMonthDataQuery);
+        //dump($monthByMonthDataQuery);
         return $monthByMonthDataQuery;
         foreach ($monthByMonthDataQuery as $monthByMonthDataQuery) {
         }
@@ -280,7 +297,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY jour ASC")
             ->setParameters(array(
-                'currentMonth'  => date('Y-m') . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
@@ -293,11 +310,13 @@ class SiteDashboardDataService
             $dateP[] = $d['jour']->format('Y-m-d H:i:s');
             $kW[] = floatval(number_format((float) $d['kW'], 2, '.', ''));
         }
-
+        //dump($kW);
+        $Pnow = count($kW) > 0 ? end($kW) : 0;
+        //dump($Pnow);
         return array(
             "dateP"  => $dateP,
             "kW"     => $kW,
-            "Pnow"   => end($kW) ?? 0
+            "Pnow"   => $Pnow
         );
     }
 
@@ -374,21 +393,21 @@ class SiteDashboardDataService
         );
     }
 
-    public function getCurrentActivePower()
+    public function getLastDatetimeData()
     {
-        $currentActivePower = $this->manager->createQuery("SELECT d.dateTime AS dt, d.pmoy, d.id
+        $lastDatetimeData = $this->manager->createQuery("SELECT MAX(d.dateTime) AS lastDate
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
-                                            AND d.dateTime = (SELECT MAX(d1.dateTime) FROM App\Entity\LoadEnergyData d1 WHERE d1.dateTime LIKE :currentMonth)
-                                            GROUP BY dt
-                                            ORDER BY dt ASC")
+                                            AND d.dateTime LIKE :currentMonth
+                                            ")
             ->setParameters(array(
-                'currentMonth'  => date('Y-m') . '%',
-                'siteId'    => $this->site->getId()
+                'currentMonth'  => $this->currentMonthStringDate,
+                'siteId'        => $this->site->getId()
             ))
             ->getResult();
-        dump($currentActivePower);
+        dump($lastDatetimeData);
+        return count($lastDatetimeData) > 0 ? ($lastDatetimeData[0]['lastDate'] !== null ? $lastDatetimeData[0]['lastDate'] : '') : '';
     }
 
     public function getAverageConsumption(int $length = 10, $strLike = '')
@@ -398,7 +417,7 @@ class SiteDashboardDataService
         //2021-09-28
 
         //Chaîne utilisée dans le filtre LIKE de la DQL 
-        $strLike_ = $strLike ?? date('Y-m') . '%';
+        $strLike_ = $strLike ?? $this->currentMonthStringDate;
         $averageConsumption = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.ea) AS EA
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
@@ -407,9 +426,63 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ORDER BY dt ASC")
             ->setParameters(array(
-                'str_'  => $strLike_,
+                'str_'      => $strLike_,
                 'length_'   => $length,
                 'siteId'    => $this->site->getId()
+            ))
+            ->getResult();
+
+        /*$averageConsumption = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, SUM(d.ea) AS EA
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                            AND d.dateTime LIKE :currentYear
+                                            GROUP BY dt
+                                            ORDER BY dt ASC")
+                    ->setParameters(array(
+                        'currentYear'  => date('Y') . '%',
+                        'siteId'    => $this->site->getId()
+                    ))
+                    ->getResult();*/
+
+        // dump($averageConsumption);
+        // dump(count($averageConsumption));
+        $consoMoy = 0;
+        if (count($averageConsumption) > 0) {
+            foreach ($averageConsumption as $average) {
+                $consoMoy += floatval($average['EA']);
+            }
+
+            $consoMoy = $consoMoy / (count($averageConsumption) * 1.0);
+            // dump($consoMoy);
+            //$consoMoy = number_format((float) $consoMoy, 2, '.', ' ');
+
+        }
+
+        return $consoMoy;
+    }
+
+    public function getAverageConsumptionWithLimit(int $length = 10, $strLike = '', $strSupDateTime = '')
+    {
+        $averageConsumption = [];
+        //Longueur de la sous-chaîne de date utilisé pour grouper les données dans la DQL
+        //2021-09-28
+
+        //Chaîne utilisée dans le filtre LIKE de la DQL 
+        $strLike_ = $strLike ?? $this->currentMonthStringDate;
+        $averageConsumption = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.ea) AS EA
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                            AND d.dateTime LIKE :strLike_
+                                            AND d.dateTime <= :strSupDateTime
+                                            GROUP BY dt
+                                            ORDER BY dt ASC")
+            ->setParameters(array(
+                'strLike_'        => $strLike_,
+                'strSupDateTime'  => $strSupDateTime,
+                'length_'         => $length,
+                'siteId'          => $this->site->getId()
             ))
             ->getResult();
 
@@ -475,7 +548,7 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ORDER BY dt ASC")
             ->setParameters(array(
-                'currentMonth'  => date('Y-m') . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();

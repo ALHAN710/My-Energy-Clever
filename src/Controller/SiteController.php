@@ -72,7 +72,8 @@ class SiteController extends ApplicationController
         // dump($dash->getDayByDayConsumptionForCurrentMonth());
         $currentConso = $dash->getCurrentMonthkWhConsumption();
         return $this->render('site/home.html.twig', [
-            'site' => $site,
+            'site'                    => $site,
+            'lastDatetimeData'        => $dash->getLastDatetimeData(),
             'currentMonthkWh'         => $currentConso['currentConsokWh'],
             'currentMonthkWhProgress' => $currentConso['currentConsokWhProgress'],
             'currentMonthXAF'         => $currentConso['currentConsoXAF'],
@@ -200,15 +201,62 @@ class SiteController extends ApplicationController
                                                 AND s.id = :siteId
                                                 ")
                 ->setParameters(array(
-                    'nowDate' => $date->format('Y-m-d H:i:s') . '%',
+                    'nowDate' => $date->format('Y-m') . '%',
                     'siteId'  => $site->getId(),
                 ))
                 ->getResult();
-            //dump($currentBudget);
+            dump($currentBudget);
             $budget = count($currentBudget) > 0 ? $currentBudget[0]['XAF'] : 0;
+            $new_budget = new Budget();
+            $new_budget->setSite($site)
+                ->setAmount($budget)
+                ->setDate(new DateTime('now'));
+
+            $manager->persist($new_budget);
+            $manager->flush();
         }
         //$budget = number_format((float) $budget, 0, '.', ' ');
         return $budget;
+    }
+
+    /**
+     * Permet la MAJ des données de l'interface dashboard d'un site
+     * 
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/overview/update", name="site_overview_update_data")
+     *
+     * @param Site $site
+     * @param SiteDashboardDataService $overview
+     * @param EntityManagerInterface $manager
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateOverview(Site $site, SiteDashboardDataService $overview, EntityManagerInterface $manager, Request $request): JsonResponse
+    {
+        //Récupération et vérification des paramètres au format JSON contenu dans la requête
+        //$paramJSON = $this->getJSONRequest($request->getContent());
+        //if (array_key_exists("startDate", $paramJSON) && array_key_exists("endDate", $paramJSON)) {
+        //Initialisation du service
+        $overview->setSite($site);
+
+        $currentConso = $overview->getCurrentMonthkWhConsumption();
+        return $this->json([
+            'code'                    => 200,
+            'lastDatetimeData'        => $overview->getLastDatetimeData(),
+            'currentMonthkWh'         => $currentConso['currentConsokWh'],
+            'currentMonthkWhProgress' => $currentConso['currentConsokWhProgress'],
+            'currentMonthXAF'         => $currentConso['currentConsoXAF'],
+            'currentMonthGasEmission' => $currentConso['currentGasEmission'],
+            'budget'                  => $this->getCurrentBudget($site, $manager),
+            'dayBydayConsoData'       => $overview->getDayByDayConsumptionForCurrentMonth(),
+            'loadChartData'           => $overview->getLoadChartDataForCurrentMonth(),
+            'currentMonthDataTable'   => $overview->getCurrentMonthDataTable(),
+        ], 200);
+        //}
+
+        return $this->json([
+            'code' => 403,
+            'message' => 'Empty Array or Not exists !',
+        ], 403);
     }
 
     /**

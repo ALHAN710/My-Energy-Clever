@@ -138,7 +138,7 @@
                                             </p>
                                         </div>
 
-                                        <div><small>Last update <span id="last_update">26/09/2021 17:35</span></small></div>
+                                        <div><small>Last update <span id="last_update">{{lastDatetimeData}}</span></small></div>
 
                                         {# <div class="w-summary-stats">
                                             <div class="progress">
@@ -283,43 +283,46 @@
                                     </thead>
                                     <tbody class="text-center">
                                         <tr>
-                                            <td class="text-left">Conso Moy (kWh/jr)</td>
+                                            <td class="text-left">Conso Moy</td>
                                             <td class="text-primary">
-                                                <span id="t-consoMoy">{{currentMonthDataTable['consoMoy']|number_format(2, '.', ' ')}}</span> <span class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;">-16.44% <svg style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                <span id="t-consoMoy">{{currentMonthDataTable['consoMoy']|number_format(2, '.', ' ')}}</span> kWh/jr 
+                                                <span id="t-consoMoy-progress-color" class="text-{% if currentMonthDataTable['consoMoyProgress'] < 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoMoy-progress-value">{% if currentMonthDataTable['consoMoyProgress'] > 0 or currentMonthDataTable['consoMoyProgress'] == 'INF'  %}+{% endif %}{{currentMonthDataTable['consoMoyProgress']}}</span>% 
+                                                <svg id="t-consoMoy-progress-up-icon" class="{% if currentMonthDataTable['consoMoyProgress'] <= 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-consoMoy-progress-down-icon" class="{% if currentMonthDataTable['consoMoyProgress'] > 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                 </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">Variation (%)</td>
-                                            <td class="text-primary" id="variation">{{currentMonthDataTable['variation']|number_format(2, '.', ' ')}}</td>
+                                            <td class="text-primary" id="t-variation">{{currentMonthDataTable['variation']|number_format(2, '.', ' ')}}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">+Forte Conso</td>
-                                            <td class="text-primary" id="kWhMax">{{currentMonthDataTable['+forteConso']}}</td>
+                                            <td class="text-primary" id="t-kWhMax">{{currentMonthDataTable['+forteConso']}}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">+Faible Conso</td>
-                                            <td class="text-primary" id="kWhMin">{{currentMonthDataTable['+faibleConso']}}</td>
+                                            <td class="text-primary" id="t-kWhMin">{{currentMonthDataTable['+faibleConso']}}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">Pic de puissance</td>
-                                            <td class="text-primary" id="Pmax">{{currentMonthDataTable['Pic']}}</td>
+                                            <td class="text-primary" id="t-Pmax">{{currentMonthDataTable['Pic']}}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">Talon de puissance</td>
-                                            <td class="text-primary" id="talon">{{currentMonthDataTable['Talon']}}</td>
+                                            <td class="text-primary" id="t-talon">{{currentMonthDataTable['Talon']}}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">Conso 00-06h (kWh)</td>
-                                            <td class="text-primary" id="conso-00-06">-</td>
+                                            <td class="text-primary" id="t-conso-00-06">-</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">Conso 06-18h (kWh)</td>
-                                            <td class="text-primary" id="conso-06-18">-</td>
+                                            <td class="text-primary" id="t-conso-06-18">-</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">Conso 18-00h (kWh)</td>
-                                            <td class="text-primary" id="conso-18-00">-</td>
+                                            <td class="text-primary" id="t-conso-18-00">-</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1281,58 +1284,156 @@
     );
     MixedConsoChart.render()
 
-{# w_consoChart
-w_co2Chart
-conso-progress-color
-conso-progress-value
-conso-progress-up-icon
-conso-progress-down-icon
+    function progress(prefixSelector, progValue, posLogique, isTime) {
+        
+        var id = '#' + prefixSelector;
+        var progressSelectorValue = $(id + 'value');
+        var progressSelectorColor = $(id + 'color');
+        var upSelectorIcon   = $(id+ 'up-icon');
+        var downSelectorIcon = $(id+ 'down-icon');
+        var greenColor = 'text-success';
+        var redColor = 'text-danger';
+        if (!isTime) {
+            var val = progValue !== 'INF' ? String(parseFloat(progValue).toFixed(2)) : progValue;
+            progressSelectorValue.html(progValue === null ? 0 : progValue > 0 || progValue === 'INF' ? '+' + val : val);
+        }
+        else {
+            var diff = new Date(Math.abs(progValue));
+            var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
+            var str = $dat.format('HH:mm:ss').toString()
+            progressSelectorValue.html(progValue === null ? 0 : progValue > 0 ? '+' + str : '-' + str);
+        }
+        if (posLogique) {// Logique positive
+            if (progValue > 0) {//Si la valeur de progression est positive
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
 
-conso_amount
-ratio_budget
-budget-progressbar
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
 
-emission-value
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
 
-t-consoMoy
-variation
-kWhMax
-kWhMin
-Pmax
-talon    
+                /*if (selectorIcon.hasClass(oldClass)) {
+                    // it has class
+                } else {
+                    // it doesn't have specified class
+                }*/
+            }
+            else {//Si la valeur de progression est négative
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+            }
+        }
+        else {// Logique négative
+            if (progValue > 0) {//Si la valeur de progression est positive
+                
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+                
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+            }
+            else {//Si la valeur de progression est négative
+                
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+                
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+                
+            }
+        }
+    }
+
+    
     setInterval(function () {
-        $.getJSON("{{ path('update_overview_data', {'slug': site.slug}) }}", function (result) {//{'selectedDate': $date},
+        $.getJSON("{{ path('site_overview_update_data', {'slug': site.slug}) }}", function (result) {//{'selectedDate': $date},
             
             if( Object.keys(result).length > 0 ){
+                console.log(result)
+                //#### Mise à jour des données de la card Consommation en kWh du mois cours
+                //Valeur de la consommation du mois en cours en kWh
+                $('#currentkWh').text(String(parseFloat(result['currentMonthkWh']).toFixed(2)))
+                //On gère la progression de la consommation d'énergie
+                progress(prefixSelector='conso-progress-', progValue=result['currentMonthkWhProgress'], posLogique=false, isTime=false);
+                //MAJ de la courbe d'évolution de la consommation en kWh jour après jour
+                displayNewData(w_consoChart, Object.values(result['dayBydayConsoData']['dateConso']), Object.values(result['dayBydayConsoData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
                 
-                //Mise à jour des données de la card Consommation du mois cours
-                $('#currentkWh').text(String(result['Vcg'][0] + " V"))
-                $('#l1l3').text(String(result['Vcg'][1] + " V"))
-                $('#l2l3').text(String(result['Vcg'][2] + " V"))
-                
-                $('#update').text(String( moment( new Date(result['Date1']) ).format("DD MMM YYYY HH:mm:ss")) )
-                displayNewData(LoadLevel_overview_Linechart, Object.values(result['date']), Object.values(result['Load_Level']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                //#### Mise à jour des données de la card Consommation en F CFA du mois cours
+                //Valeur de la consommation du mois en F CFA en kWh
+                $('#conso_amount').text(String(parseFloat(result['currentMonthXAF']).toFixed(2)))
+                $('#budget').text(String(parseFloat(result['budget']).toFixed(2)))
+                //Calcul du pourcentage de consommation du budget
+                var ratio = (parseFloat(result['currentMonthXAF']) * 100.0) / parseFloat(result['budget']);
+                if(ratio < 50) $('#budget-progressbar').removeClass('bg-gradient-danger').addClass('bg-gradient-success');
+                else $('#budget-progressbar').addClass('bg-gradient-danger').removeClass('bg-gradient-success');
+                $('#ratio_budget').text(ratio.toFixed(2))
+                {# console.log($('#budget-progressbar').attr('aria-valuenow')); #}
+                $('#budget-progressbar').css('width', ratio.toFixed(1) + '%'); 
+                $('#budget-progressbar').attr('aria-valuenow', '' + ratio.toFixed(1));
+                {# console.log($('#budget-progressbar').attr('aria-valuenow')); #}
+                $('#last_update').text(String( moment( new Date(result['lastDatetimeData']) ).format("DD MMM YYYY HH:mm:ss")) )
+                                                
+                //#### Mise à jour des données de la card d'émission de carbone du mois cours
+                //Valeur d'émission de carbone du mois en F CFA en kWh
+                $('#emission-value').text(String(parseFloat(result['currentMonthGasEmission']).toFixed(2)))
+                //MAJ de la courbe d'évolution de la consommation en kWh jour après jour
+                displayNewData(w_co2Chart, Object.values(result['dayBydayConsoData']['dateConso']), Object.values(result['dayBydayConsoData']['kgCO2']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
                                 
-                
-                //Day 
-                prog = parseFloat(result['prevPOE'][0]) > 0 ? (parseFloat(result['POE'][0]) - parseFloat(result['prevPOE'][0])) * 100.0 / parseFloat(result['prevPOE'][0]) : parseFloat(result['POE'][0]);
-                progressVal($('#poedProgVal'), $('#poedProg'), prog, true, false);
-                //Month
-                prog = parseFloat(result['prevPOE'][1]) > 0 ? (parseFloat(result['POE'][1]) - parseFloat(result['prevPOE'][1])) * 100.0 / parseFloat(result['prevPOE'][1]) : parseFloat(result['POE'][1]);
-                progressVal($('#poemProgVal'), $('#poemProg'), prog, true, false);
-                //Year
-                prog = parseFloat(result['prevPOE'][2]) > 0 ? (parseFloat(result['POE'][2]) - parseFloat(result['prevPOE'][2])) * 100.0 / parseFloat(result['prevPOE'][2]) : parseFloat(result['POE'][2]);
-                progressVal($('#poeyProgVal'), $('#poeyProg'), prog, true, false);                      
-                
-                //Update Nb performed starts-up
-                $('#npsd').text(result['NPS'][0])
-                $('#nmid').text(result['NMI'][0])
+                //#### Mise à jour de la courbe charge du mois cours
+                //Rafraîchissement de la courbe de charge
+                displayNewData(loadChart, Object.values(result['loadChartData']['dateP']), Object.values(result['loadChartData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                //MAJ de la valeur de puissance actuelle
+                loadChart.updateOptions({
+                    title: {
+                        text: String(result['loadChartData']['Pnow']) + ' W',
+                    }
+                });
 
-                $('#npsm').text(result['NPS'][1])
-                $('#nmim').text(result['NMI'][1])
-
-                $('#npsy').text(result['NPS'][2])
-                $('#nmiy').text(result['NMI'][2])
+                //#### Mise à jour du tableau des statistiques d'énergie
+                //Valeur moyenne journalière de la consommation d'énergie
+                $('#t-consoMoy').text(parseFloat(result['currentMonthDataTable']['consoMoy']).toFixed(2));
+                //On gère la progression de la moyenne journalière consommation d'énergie
+                progress(prefixSelector='t-consoMoy-progress-', progValue=result['currentMonthDataTable']['consoMoyProgress'], posLogique=false, isTime=false);
+                
+                //Valeur de la variation autour de la valeur moyenne (écart-type) des consommations d'énergie
+                $('#t-variation').text(parseFloat(result['currentMonthDataTable']['variation']).toFixed(2));
+                
+                //Informations (valeur + date) sur la plus forte consommation d'énergie
+                $('#t-kWhMax').text(result['currentMonthDataTable']['+forteConso']);
+                
+                //Informations (valeur + date) sur la plus faible consommation d'énergie
+                $('#t-kWhMin').text(result['currentMonthDataTable']['+faibleConso']);
+                
+                //Informations (valeur + date) sur le Pic de puissance 
+                $('#t-Pmax').text(result['currentMonthDataTable']['Pic']);
+                
+                //Informations (valeur + date) sur le Talon de puissance 
+                $('#t-talon').text(result['currentMonthDataTable']['Talon']);
+                
+                {# //Consommation d'énergie en kWh sur la tranche horaire 00-06h du mois en cours
+                $('#t-conso-00-06').text(parseFloat(result['currentMonthDataTable']['conso-00-06']).toFixed(2));
+                
+                //Consommation d'énergie en kWh sur la tranche horaire 06-18h du mois en cours
+                $('#t-conso-06-18').text(parseFloat(result['currentMonthDataTable']['conso-06-18']).toFixed(2));
+                
+                //Consommation d'énergie en kWh sur la tranche horaire 18-00h du mois en cours
+                $('#t-conso-18-00').text(parseFloat(result['currentMonthDataTable']['conso-18-00']).toFixed(2)); #}
+                
             }        
             else{
                 //$('.spin').addClass('d-none');
@@ -1343,7 +1444,7 @@ talon
             console.log('FAIL to get overview Data')
             
         });
-    }, 60000); #}
+    }, 120000); 
 </script>
 
 <!-- -->
@@ -1351,10 +1452,6 @@ talon
 <!-- Gestion de la MAJ du budget de consommation -->
 <script>
     $('#edit-bg').click(function(){
-        console.log($('#budget-progress').attr('aria-valuenow'));
-        {# $('#budget-progress').css('width', '50%'); #}
-        $('#budget-progress').attr('aria-valuenow', '50');
-        console.log($('#budget-progress').attr('aria-valuenow'));
         // Fetch form to apply custom Bootstrap validation
         var form = $("#edit-bg-form")
 
@@ -1365,7 +1462,7 @@ talon
             console.log('form[0] = ' + form[0])
         }
         else{
-            console.log($('#amount-bg').val());
+            {# console.log($('#amount-bg').val()); #}
             $data = JSON.stringify({
                 //"selectedDate": $dat, // tabGridId,
                 'amount': parseFloat($('#amount-bg').val()),
@@ -1402,8 +1499,17 @@ talon
                                     // html: 'Submitted email: ' + email
                                 });
 
-                                $('#budget').html($('#amount-bg').val());
+                                //MAJ du montant du budget à la nouvelle valeur
+                                $('#budget').text($('#amount-bg').val());
 
+                                //Calcul du pourcentage de consommation du budget
+                                var ratio = ( parseFloat( String( $('#conso_amount').text() ).replace(' ', '') ) * 100.0 ) / parseFloat($('#amount-bg').val());
+                                if(ratio < 50) $('#budget-progressbar').removeClass('bg-gradient-danger').addClass('bg-gradient-success');
+                                else $('#budget-progressbar').addClass('bg-gradient-danger').removeClass('bg-gradient-success');
+                                $('#ratio_budget').text( ratio.toFixed(2) );
+                                $('#budget-progressbar').css('width', ratio.toFixed(1) + '%'); 
+                                $('#budget-progressbar').attr('aria-valuenow', '' + ratio.toFixed(1));
+                                
                                 setTimeout(function () {
                                     resolve();
                                     //Fermer le modal d'édition
@@ -1752,16 +1858,16 @@ talon
                 categories: []
             },
         });
-        /*chart.updateOptions({
+        chart.updateOptions({
             xaxis: {
                 categories: label
             },
-        });*/
+        });
         //chart.opts.labels = label;
-        chart.updateOptions({
+        {# chart.updateOptions({
             labels: label
             
-        });
+        }); #}
         if(multiple > 1){
             var i = 0;
             chart.opts.series.forEach((dataset) => {
@@ -1876,52 +1982,5 @@ talon
         }]);
     }
 
-    function progressVal(selectorVal, selectorIcon, prog, posLogique, isTime) {
-        var DESC = 'mdi-menu-down';
-        var ASC = 'mdi-menu-up';
-        var greenColor = 'text-success';
-        var redColor = 'text-danger';
-        if (!isTime) {
-            selectorVal.html(prog === null ? 0 : prog > 0 ? '+' + prog.toFixed(1) : prog.toFixed(1));
-        }
-        else {
-            var diff = new Date(Math.abs(prog));
-            var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
-            var str = $dat.format('HH:mm:ss').toString()
-            selectorVal.html(prog === null ? 0 : prog > 0 ? '+' + str : '-' + str);
-        }
-        if (posLogique) {
-            if (prog > 0) {
-                selectorIcon.removeClass(DESC).addClass(ASC);
-                selectorIcon.removeClass(greenColor).addClass(redColor);
-                /*if (selectorIcon.hasClass(oldClass)) {
-                    // it has class
-                } else {
-                    // it doesn't have specified class
-                }*/
-            }
-            else {
-                selectorIcon.removeClass(ASC).addClass(DESC);
-                selectorIcon.removeClass(redColor).addClass(greenColor);
-            }
-        }
-        else {
-            if (prog > 0) {
-                selectorIcon.removeClass(DESC).addClass(ASC);
-                selectorIcon.removeClass(redColor).addClass(greenColor);
-                /*if (selectorIcon.hasClass(oldClass)) {
-                    // it has class
-                } else {
-                    // it doesn't have specified class
-                }*/
-            }
-            else {
-                selectorIcon.removeClass(ASC).addClass(DESC);
-                selectorIcon.removeClass(greenColor).addClass(redColor);
-            }
-        }
-    }
-
-    
 </script>
 {% endblock %}
