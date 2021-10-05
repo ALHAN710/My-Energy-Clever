@@ -70,7 +70,7 @@ class SiteDashboardDataService
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate,
+                'currentMonth'  => $this->currentMonthStringDate . '%',
                 'siteId'        => $this->site->getId()
             ))
             ->getResult();
@@ -100,7 +100,7 @@ class SiteDashboardDataService
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate,
+                'currentMonth'  => $this->currentMonthStringDate . '%',
                 'siteId'        => $this->site->getId()
             ))
             ->getResult();
@@ -153,7 +153,7 @@ class SiteDashboardDataService
                                             ORDER BY jour ASC")
             ->setParameters(array(
                 'kgCO2'        => $this->CO2PerkWh,
-                'currentMonth'  => $this->currentMonthStringDate,
+                'currentMonth'  => $this->currentMonthStringDate . '%',
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
@@ -184,7 +184,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY kWh DESC")
             ->setParameters(array(
-                'currentMonth' => $this->currentMonthStringDate,
+                'currentMonth' => $this->currentMonthStringDate . '%',
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -211,7 +211,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY kW ASC")
             ->setParameters(array(
-                'currentMonth' => $this->currentMonthStringDate,
+                'currentMonth' => $this->currentMonthStringDate . '%',
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -297,7 +297,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY jour ASC")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate,
+                'currentMonth'  => $this->currentMonthStringDate . '%',
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
@@ -402,7 +402,7 @@ class SiteDashboardDataService
                                             AND d.dateTime LIKE :currentMonth
                                             ")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate,
+                'currentMonth'  => $this->currentMonthStringDate . '%',
                 'siteId'        => $this->site->getId()
             ))
             ->getResult();
@@ -548,7 +548,7 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ORDER BY dt ASC")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate,
+                'currentMonth'  => $this->currentMonthStringDate . '%',
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
