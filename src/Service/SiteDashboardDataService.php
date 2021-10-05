@@ -188,7 +188,7 @@ class SiteDashboardDataService
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
-        dump($consoQuery);
+        //dump($consoQuery);
         $strPlusForteConso = "-";
         $strPlusFaibleConso = "-";
         if (!empty($consoQuery)) {
@@ -253,7 +253,7 @@ class SiteDashboardDataService
 
     public function getMonthByMonthDataTableForCurrentYear()
     {
-        $dataMonthsForCurrentYearQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, MIN(d.dateTime) AS min_, MAX(d.dateTime) AS max_
+        /*$dataMonthsForCurrentYearQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, MIN(d.dateTime) AS min_, MAX(d.dateTime) AS max_
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
@@ -264,7 +264,7 @@ class SiteDashboardDataService
                 'currentYear'  => date('Y') . '%',
                 'siteId'       => $this->site->getId()
             ))
-            ->getResult();
+            ->getResult();*/
         //dump($dataMonthsForCurrentYearQuery);
 
         $monthByMonthDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, SUM(d.ea) AS EA, SUM(d.ea)*:kgCO2 AS kgCO2, MAX(d.pmoy) AS Pmax,
