@@ -188,7 +188,7 @@ class SiteDashboardDataService
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
-        //dump($consoQuery);
+        dump($consoQuery);
         $strPlusForteConso = "-";
         $strPlusFaibleConso = "-";
         if (!empty($consoQuery)) {
@@ -224,8 +224,8 @@ class SiteDashboardDataService
             $lowPower = reset($powerQuery);
             $highPower = end($powerQuery);
             //dump($lowPower);
-            $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW'] * 1000), 2, '.', ' ') . ' W | ' . $lowPower['jour']->format('d-m-Y H:i:s') : '-';
-            $strPic   = $highPower != null ? number_format((float) ($highPower['kW'] * 1000), 2, '.', ' ') . ' W | ' . $highPower['jour']->format('d-m-Y H:i:s') : '-';
+            $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W | ' . $lowPower['jour']->format('d-m-Y H:i:s') : '-';
+            $strPic   = $highPower != null ? number_format((float) ($highPower['kW']), 2, '.', ' ') . ' W | ' . $highPower['jour']->format('d-m-Y H:i:s') : '-';
         }
         $consoMoy      = $this->getAverageConsumptionWithLimit(10, date('Y-m') . '%', date('Y-m-d H:i:s'));
         // $testDate = new DateTime('2021-10-15 17:10:00');
