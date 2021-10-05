@@ -59,7 +59,7 @@ class SiteDashboardDataService
     public function __construct(EntityManagerInterface $manager)
     {
         $this->manager  = $manager;
-        $this->currentMonthStringDate = '2021-09%'; //date('Y-m');
+        $this->currentMonthStringDate = date('Y-m');
     }
 
     public function getCurrentMonthkWhConsumption()
@@ -289,7 +289,7 @@ class SiteDashboardDataService
 
     public function getLoadChartDataForCurrentMonth()
     {
-        $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy*1000 AS kW
+        $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy AS kW
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
@@ -330,7 +330,7 @@ class SiteDashboardDataService
 
     public function getLoadChartDataForDateRange()
     {
-        $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS dt, d.pmoy*1000 AS kW
+        $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS dt, d.pmoy AS kW
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
