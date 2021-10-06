@@ -48,9 +48,9 @@
                                 {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> #}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                             </div>
-                            <p class="w-value"><span id="currentkWh">{{currentMonthkWh|number_format(2, '.', ' ')}}</span> kWh <span id="conso-progress-color" class="text-{% if currentMonthkWhProgress < 0 or currentMonthkWhProgress == 'INF' %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-progress-value">{% if currentMonthkWhProgress > 0 or currentMonthkWhProgress == 'INF'  %}+{% endif %}{{currentMonthkWhProgress}}</span>% 
-                            <svg id="conso-progress-up-icon" class="{% if currentMonthkWhProgress <= 0 or currentMonthkWhProgress == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                            <svg id="conso-progress-down-icon" class="{% if currentMonthkWhProgress > 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                            <p class="w-value"><span id="currentkWh">{{currentMonthkWh|number_format(2, '.', ' ')}}</span> kWh <span id="conso-progress-color" class="text-{% if currentMonthkWhProgress < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-progress-value">{% if currentMonthkWhProgress >= 0 or currentMonthkWhProgress == 'INF'  %}+{% endif %}{{currentMonthkWhProgress}}</span>% 
+                            <svg id="conso-progress-up-icon" class="{% if currentMonthkWhProgress <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            <svg id="conso-progress-down-icon" class="{% if currentMonthkWhProgress > 0 or currentMonthkWhProgress == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                             </span>            
                             <h5 class="">Consommation du mois en cours</h5>
                         </div>
@@ -285,15 +285,15 @@
                                             <td class="text-left">Conso Moy</td>
                                             <td class="text-primary">
                                                 <span id="t-consoMoy">{{currentMonthDataTable['consoMoy']|number_format(2, '.', ' ')}}</span> kWh/jr 
-                                                <span id="t-consoMoy-progress-color" class="text-{% if currentMonthDataTable['consoMoyProgress'] < 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoMoy-progress-value">{% if currentMonthDataTable['consoMoyProgress'] > 0 or currentMonthDataTable['consoMoyProgress'] == 'INF'  %}+{% endif %}{{currentMonthDataTable['consoMoyProgress']}}</span>% 
-                                                <svg id="t-consoMoy-progress-up-icon" class="{% if currentMonthDataTable['consoMoyProgress'] <= 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                <svg id="t-consoMoy-progress-down-icon" class="{% if currentMonthDataTable['consoMoyProgress'] > 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                <span id="t-consoMoy-progress-color" class="text-{% if currentMonthDataTable['consoMoyProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoMoy-progress-value">{% if currentMonthDataTable['consoMoyProgress'] >= 0 or currentMonthDataTable['consoMoyProgress'] == 'INF'  %}+{% endif %}{{currentMonthDataTable['consoMoyProgress']}}</span>% 
+                                                <svg id="t-consoMoy-progress-up-icon" class="{% if currentMonthDataTable['consoMoyProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-consoMoy-progress-down-icon" class="{% if currentMonthDataTable['consoMoyProgress'] > 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                 </span>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Variation (%)</td>
-                                            <td class="text-primary" id="t-variation">{{currentMonthDataTable['variation']|number_format(2, '.', ' ')}}</td>
+                                            <td class="text-left">Variation</td>
+                                            <td class="text-primary"><span id="t-variation">{{currentMonthDataTable['variation']|number_format(2, '.', ' ')}}</span> %</td>
                                         </tr>
                                         <tr>
                                             <td class="text-left">+Forte Conso</td>
@@ -312,16 +312,34 @@
                                             <td class="text-primary" id="t-talon">{{currentMonthDataTable['Talon']}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Conso 00-06h (kWh)</td>
-                                            <td class="text-primary" id="t-conso-00-06">-</td>
+                                            <td class="text-left">Conso 00-06h</td>
+                                            <td class="text-primary">
+                                                <span id="t-conso-00-06">{{currentMonthDataTable['conso-00-06']|number_format(2, '.', ' ')}}</span> kWh
+                                                <span id="t-conso-00-06-progress-color" class="text-{% if currentMonthDataTable['conso-00-06Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-00-06-progress-value">{% if currentMonthDataTable['conso-00-06Progress'] >= 0 or currentMonthDataTable['conso-00-06Progress'] == 'INF'  %}+{% endif %}{{currentMonthDataTable['conso-00-06Progress']}}</span>% 
+                                                <svg id="t-conso-00-06-progress-up-icon" class="{% if currentMonthDataTable['conso-00-06Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-conso-00-06-progress-down-icon" class="{% if currentMonthDataTable['conso-00-06Progress'] > 0 or currentMonthDataTable['conso-00-06Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Conso 06-18h (kWh)</td>
-                                            <td class="text-primary" id="t-conso-06-18">-</td>
+                                            <td class="text-left">Conso 06-18h</td>
+                                            <td class="text-primary">
+                                                <span id="t-conso-06-18">{{currentMonthDataTable['conso-06-18']|number_format(2, '.', ' ')}}</span> kWh
+                                                <span id="t-conso-06-18-progress-color" class="text-{% if currentMonthDataTable['conso-06-18Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-06-18-progress-value">{% if currentMonthDataTable['conso-06-18Progress'] >= 0 or currentMonthDataTable['conso-06-18Progress'] == 'INF'  %}+{% endif %}{{currentMonthDataTable['conso-06-18Progress']}}</span>% 
+                                                <svg id="t-conso-06-18-progress-up-icon" class="{% if currentMonthDataTable['conso-06-18Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-conso-06-18-progress-down-icon" class="{% if currentMonthDataTable['conso-06-18Progress'] > 0 or currentMonthDataTable['conso-06-18Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                
+                                            </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Conso 18-00h (kWh)</td>
-                                            <td class="text-primary" id="t-conso-18-00">-</td>
+                                            <td class="text-left">Conso 18-00h</td>
+                                            <td class="text-primary">
+                                                <span id="t-conso-18-00">{{currentMonthDataTable['conso-18-00']|number_format(2, '.', ' ')}}</span> kWh
+                                                <span id="t-conso-18-00-progress-color" class="text-{% if currentMonthDataTable['conso-18-00Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-18-00-progress-value">{% if currentMonthDataTable['conso-18-00Progress'] >= 0 or currentMonthDataTable['conso-18-00Progress'] == 'INF'  %}+{% endif %}{{currentMonthDataTable['conso-18-00Progress']}}</span>% 
+                                                <svg id="t-conso-18-00-progress-up-icon" class="{% if currentMonthDataTable['conso-18-00Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-conso-18-00-progress-down-icon" class="{% if currentMonthDataTable['conso-18-00Progress'] > 0 or currentMonthDataTable['conso-18-00Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1292,18 +1310,20 @@
         var downSelectorIcon = $(id+ 'down-icon');
         var greenColor = 'text-success';
         var redColor = 'text-danger';
-        if (!isTime) {
+        
+        if (!isTime) {//On teste s'il s'agit d'une progression numérique 
             var val = progValue !== 'INF' ? String(parseFloat(progValue).toFixed(2)) : progValue;
-            progressSelectorValue.html(progValue === null ? 0 : progValue > 0 || progValue === 'INF' ? '+' + val : val);
+            progressSelectorValue.html(progValue === null ? 0 : (progValue > 0 || progValue === 'INF') ? ('+' + val) : val);
         }
-        else {
+        else {//s'il s'agit d'une progression de date
             var diff = new Date(Math.abs(progValue));
             var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
             var str = $dat.format('HH:mm:ss').toString()
             progressSelectorValue.html(progValue === null ? 0 : progValue > 0 ? '+' + str : '-' + str);
         }
+
         if (posLogique) {// Logique positive
-            if (progValue > 0) {//Si la valeur de progression est positive
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
                 //On met la valeur et l'îcone en vert
                 progressSelectorColor.removeClass(redColor).addClass(greenColor);
 
@@ -1331,7 +1351,7 @@
             }
         }
         else {// Logique négative
-            if (progValue > 0) {//Si la valeur de progression est positive
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
                 
                 //On met la valeur et l'îcone en rouge
                 progressSelectorColor.removeClass(greenColor).addClass(redColor);
@@ -1424,14 +1444,20 @@
                 //Informations (valeur + date) sur le Talon de puissance 
                 $('#t-talon').text(result['currentMonthDataTable']['Talon']);
                 
-                {# //Consommation d'énergie en kWh sur la tranche horaire 00-06h du mois en cours
+                //Consommation d'énergie en kWh sur la tranche horaire 00-06h du mois en cours
                 $('#t-conso-00-06').text(parseFloat(result['currentMonthDataTable']['conso-00-06']).toFixed(2));
+                //On gère la progression de la consommation d'énergie de la tranche horaire 00h - 06h
+                progress(prefixSelector='t-conso-00-06-progress-', progValue=result['currentMonthDataTable']['conso-00-06Progress'], posLogique=false, isTime=false);
                 
                 //Consommation d'énergie en kWh sur la tranche horaire 06-18h du mois en cours
                 $('#t-conso-06-18').text(parseFloat(result['currentMonthDataTable']['conso-06-18']).toFixed(2));
+                //On gère la progression de la consommation d'énergie de la tranche horaire 06h - 18h
+                progress(prefixSelector='t-conso-06-18-progress-', progValue=result['currentMonthDataTable']['conso-06-18Progress'], posLogique=false, isTime=false);
                 
                 //Consommation d'énergie en kWh sur la tranche horaire 18-00h du mois en cours
-                $('#t-conso-18-00').text(parseFloat(result['currentMonthDataTable']['conso-18-00']).toFixed(2)); #}
+                $('#t-conso-18-00').text(parseFloat(result['currentMonthDataTable']['conso-18-00']).toFixed(2));
+                //On gère la progression de la consommation d'énergie de la tranche horaire 18h - 00h
+                progress(prefixSelector='t-conso-18-00-progress-', progValue=result['currentMonthDataTable']['conso-18-00Progress'], posLogique=false, isTime=false);
                 
             }        
             else{

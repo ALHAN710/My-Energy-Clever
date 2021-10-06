@@ -59,7 +59,7 @@ class SiteDashboardDataService
     public function __construct(EntityManagerInterface $manager)
     {
         $this->manager  = $manager;
-        $this->currentMonthStringDate = date('Y-m');
+        $this->currentMonthStringDate = date('Y-m') . '%';
     }
 
     public function getCurrentMonthkWhConsumption()
@@ -70,7 +70,7 @@ class SiteDashboardDataService
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'        => $this->site->getId()
             ))
             ->getResult();
@@ -100,7 +100,7 @@ class SiteDashboardDataService
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'        => $this->site->getId()
             ))
             ->getResult();
@@ -129,7 +129,7 @@ class SiteDashboardDataService
                                             AND d.dateTime <= :lastNowDate
                                             ")
             ->setParameters(array(
-                'lastMonth'     => $date->format('Y-m') . '%',
+                'lastMonth'     => $date->format('Y-m'),
                 'lastNowDate'   => $date->format('Y-m-d H:i:s'),
                 'siteId'        => $this->site->getId()
             ))
@@ -153,7 +153,7 @@ class SiteDashboardDataService
                                             ORDER BY jour ASC")
             ->setParameters(array(
                 'kgCO2'        => $this->CO2PerkWh,
-                'currentMonth'  => $this->currentMonthStringDate . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
@@ -184,7 +184,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY kWh DESC")
             ->setParameters(array(
-                'currentMonth' => $this->currentMonthStringDate . '%',
+                'currentMonth' => $this->currentMonthStringDate,
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -193,14 +193,15 @@ class SiteDashboardDataService
         $strPlusFaibleConso = "-";
         if (!empty($consoQuery)) {
 
-            $lowConso = end($consoQuery);
-            $highConso = reset($consoQuery);
+            $lowConso      = end($consoQuery);
+            $highConso     = reset($consoQuery);
+            $lowConsoDate  = new DateTime($lowConso['jour']);
+            $highConsoDate = new DateTime($highConso['jour']);
             //dump($lowConso);
             //dump($highConso);
             //number_format((float) $d['kW'], 2, '.', '')
-
-            $strPlusForteConso  = $highConso != null ? number_format((float) $highConso['kWh'], 2, '.', ' ') . ' kWh | ' . $highConso['jour'] : '-';
-            $strPlusFaibleConso = $lowConso != null ? number_format((float) $lowConso['kWh'], 2, '.', ' ') . ' kWh | ' . $lowConso['jour'] : '-';
+            $strPlusForteConso  = $highConso != null ? number_format((float) $highConso['kWh'], 2, '.', ' ') . ' kWh @ ' . $highConsoDate->format('d M Y') : '-';
+            $strPlusFaibleConso = $lowConso != null ? number_format((float) $lowConso['kWh'], 2, '.', ' ') . ' kWh @ ' . $lowConsoDate->format('d M Y') : '-';
         }
 
         $powerQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, NULLIF(d.pmoy, 0) AS kW 
@@ -211,7 +212,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY kW ASC")
             ->setParameters(array(
-                'currentMonth' => $this->currentMonthStringDate . '%',
+                'currentMonth' => $this->currentMonthStringDate,
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -224,30 +225,96 @@ class SiteDashboardDataService
             $lowPower = reset($powerQuery);
             $highPower = end($powerQuery);
             //dump($lowPower);
-            $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W | ' . $lowPower['jour']->format('d-m-Y H:i:s') : '-';
-            $strPic   = $highPower != null ? number_format((float) ($highPower['kW']), 2, '.', ' ') . ' W | ' . $highPower['jour']->format('d-m-Y H:i:s') : '-';
+            $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W @ ' . $lowPower['jour']->format('d M Y H:i:s') : '-';
+            $strPic   = $highPower != null ? number_format((float) ($highPower['kW']), 2, '.', ' ') . ' W @ ' . $highPower['jour']->format('d M Y H:i:s') : '-';
         }
-        $consoMoy      = $this->getAverageConsumptionWithLimit(10, date('Y-m') . '%', date('Y-m-d H:i:s'));
+        $consoMoy      = $this->getAverageConsumptionWithLimit(10, date('Y-m') . '%', date('Y-m-d H:i:s') . '%');
         // $testDate = new DateTime('2021-10-15 17:10:00');
-        // $consoMoy = $this->getAverageConsumptionWithLimit(10, $testDate->format('Y-m') . '%', $testDate->format('Y-m-d H:i:s'));
+        // $consoMoy = $this->getAverageConsumptionWithLimit(10, $testDate->format('Y-m'), $testDate->format('Y-m-d H:i:s'));
         $now      = new DateTime('now');
-        $date = $now;
+        $lastMonthDate = $now;
         //$date = $testDate;
-        $date->sub(new DateInterval('P1M'));
-        $lastConsokWh = $this->getAverageConsumptionWithLimit(10, $date->format('Y-m') . '%', $date->format('Y-m-d H:i:s'));
+        $lastMonthDate->sub(new DateInterval('P1M'));
+        $lastConsokWh = $this->getAverageConsumptionWithLimit(10, $lastMonthDate->format('Y-m') . '%', $lastMonthDate->format('Y-m-d H:i:s') . '%');
         //dump($lastConsokWh);
 
         $consoMoyProgress = ($lastConsokWh !== 0) ? ($consoMoy - $lastConsokWh) / $lastConsokWh : 'INF';
 
+        $currentMonthConsokWhPerHoursRangeQuery = $this->manager->createQuery("SELECT SUM(CASE 
+                                                                           WHEN SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '05:59:59' THEN d.ea
+                                                                           ELSE 0
+                                                                END) AS Tranche00_06,
+                                                                SUM(CASE 
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '06:00:00' AND '17:59:59' THEN d.ea
+                                                                    ELSE 0
+                                                                END) AS Tranche06_18, 
+                                                                SUM(CASE 
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '23:59:59' THEN d.ea
+                                                                    ELSE 0
+                                                                END) AS Tranche18_00 
+                                                                FROM App\Entity\LoadEnergyData d
+                                                                JOIN d.smartMod sm
+                                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                                                AND d.dateTime LIKE :currentMonth
+                                                                ")
+            ->setParameters(array(
+                'currentMonth' => $this->currentMonthStringDate,
+                'siteId'       => $this->site->getId()
+            ))
+            ->getResult();
+
+        $currentConso00_06kWh = $currentMonthConsokWhPerHoursRangeQuery[0]['Tranche00_06'] ?? 0;
+        $currentConso06_18kWh = $currentMonthConsokWhPerHoursRangeQuery[0]['Tranche06_18'] ?? 0;
+        $currentConso18_00kWh = $currentMonthConsokWhPerHoursRangeQuery[0]['Tranche18_00'] ?? 0;
+
+        $lastMonthConsokWhPerHoursRangeQuery = $this->manager->createQuery("SELECT SUM(CASE 
+                                                                           WHEN SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '05:59:59' THEN d.ea
+                                                                           ELSE 0
+                                                                END) AS Tranche00_06,
+                                                                SUM(CASE 
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '06:00:00' AND '17:59:59' THEN d.ea
+                                                                    ELSE 0
+                                                                END) AS Tranche06_18, 
+                                                                SUM(CASE 
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '23:59:59' THEN d.ea
+                                                                    ELSE 0
+                                                                END) AS Tranche18_00 
+                                                                FROM App\Entity\LoadEnergyData d
+                                                                JOIN d.smartMod sm
+                                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                                                AND d.dateTime LIKE :lastMonth
+                                                                AND d.dateTime <= :lastMonthSupDate
+                                                                ")
+            ->setParameters(array(
+                'lastMonth'        => $lastMonthDate->format('Y-m') . '%',
+                'lastMonthSupDate' => $lastMonthDate->format('Y-m-d H:i:s') . '%',
+                'siteId'           => $this->site->getId()
+            ))
+            ->getResult();
+
+        $lastConso00_06kWh = $lastMonthConsokWhPerHoursRangeQuery[0]['Tranche00_06'] ?? 0;
+        $lastConso06_18kWh = $lastMonthConsokWhPerHoursRangeQuery[0]['Tranche06_18'] ?? 0;
+        $lastConso18_00kWh = $lastMonthConsokWhPerHoursRangeQuery[0]['Tranche18_00'] ?? 0;
+
+        $currentConso00_06kWhProgress = floatval($lastConso00_06kWh) > 0 ? (floatval($currentConso00_06kWh) - floatval($lastConso00_06kWh)) / floatval($lastConso00_06kWh) : 'INF';
+        $currentConso06_18kWhProgress = floatval($lastConso06_18kWh) > 0 ? (floatval($currentConso06_18kWh) - floatval($lastConso06_18kWh)) / floatval($lastConso06_18kWh) : 'INF';
+        $currentConso18_00kWhProgress = floatval($lastConso18_00kWh) > 0 ? (floatval($currentConso18_00kWh) - floatval($lastConso18_00kWh)) / floatval($lastConso18_00kWh) : 'INF';
+
         return array(
             //'consoMoy'     => $this->getAverageConsumption(10, $this->currentMonthStringDate),
-            'consoMoy'           => $consoMoy,
-            'consoMoyProgress'   => $consoMoyProgress,
-            'variation'          => $this->getVariation(),
-            '+forteConso'        => $strPlusForteConso,
-            '+faibleConso'       => $strPlusFaibleConso,
-            'Talon'              => $strTalon,
-            'Pic'                => $strPic,
+            'consoMoy'             => $consoMoy,
+            'consoMoyProgress'     => $consoMoyProgress,
+            'variation'            => $this->getVariation(),
+            '+forteConso'          => $strPlusForteConso,
+            '+faibleConso'         => $strPlusFaibleConso,
+            'Talon'                => $strTalon,
+            'Pic'                  => $strPic,
+            'conso-00-06'          => $currentConso00_06kWh,
+            'conso-00-06Progress'  => $currentConso00_06kWhProgress,
+            'conso-06-18'          => $currentConso06_18kWh,
+            'conso-06-18Progress'  => $currentConso06_18kWhProgress,
+            'conso-18-00'          => $currentConso18_00kWh,
+            'conso-18-00Progress'  => $currentConso18_00kWhProgress,
         );
     }
 
@@ -261,7 +328,7 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ")
             ->setParameters(array(
-                'currentYear'  => date('Y') . '%',
+                'currentYear'  => date('Y'),
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();*/
@@ -277,7 +344,7 @@ class SiteDashboardDataService
                                             ORDER BY dt ASC")
             ->setParameters(array(
                 'kgCO2'        => $this->CO2PerkWh,
-                'currentYear'  => date('Y') . '%',
+                'currentYear'  => date('Y'),
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -297,7 +364,7 @@ class SiteDashboardDataService
                                             GROUP BY jour
                                             ORDER BY jour ASC")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
@@ -402,11 +469,11 @@ class SiteDashboardDataService
                                             AND d.dateTime LIKE :currentMonth
                                             ")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'        => $this->site->getId()
             ))
             ->getResult();
-        dump($lastDatetimeData);
+        //dump($lastDatetimeData);
         return count($lastDatetimeData) > 0 ? ($lastDatetimeData[0]['lastDate'] !== null ? $lastDatetimeData[0]['lastDate'] : '') : '';
     }
 
@@ -440,7 +507,7 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ORDER BY dt ASC")
                     ->setParameters(array(
-                        'currentYear'  => date('Y') . '%',
+                        'currentYear'  => date('Y'),
                         'siteId'    => $this->site->getId()
                     ))
                     ->getResult();*/
@@ -494,7 +561,7 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ORDER BY dt ASC")
                     ->setParameters(array(
-                        'currentYear'  => date('Y') . '%',
+                        'currentYear'  => date('Y'),
                         'siteId'    => $this->site->getId()
                     ))
                     ->getResult();*/
@@ -548,51 +615,65 @@ class SiteDashboardDataService
                                             GROUP BY dt
                                             ORDER BY dt ASC")
             ->setParameters(array(
-                'currentMonth'  => $this->currentMonthStringDate . '%',
+                'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'    => $this->site->getId()
             ))
             ->getResult();
-
+        // dump($consumptionQuery);
+        // dump(count($consumptionQuery));
         $variation = 0;
+        $moyenne = 0;
         if (count($consumptionQuery) > 0) {
             $arrayConsoDayByDay = [];
             foreach ($consumptionQuery as $conso) {
                 $arrayConsoDayByDay[] = floatval($conso['EA']);
             }
+            // dump($arrayConsoDayByDay);
+            $moyenne = array_sum($arrayConsoDayByDay) / (count($arrayConsoDayByDay) * 1.0);
             $variation = $this->ecart_type($arrayConsoDayByDay);
         }
 
-        return $variation * 100.0;
+        return $moyenne != 0 ? ($variation / $moyenne) * 100 : 0.0;
     }
 
     private function ecart_type(array $donnees)
     {
         //0 - Nombre d’éléments dans le tableau
         $population = count($donnees);
+        // dump($donnees);
+        // dump('population = ' . $population);
         if ($population != 0) {
             //1 - somme du tableau
             $somme_tableau = array_sum($donnees);
+            // dump('somme_tableau = ' . $somme_tableau);
             //2 - Calcul de la moyenne
             $moyenne = ($somme_tableau * 1.0) / $population;
+            // dump('moyenne = ' . $moyenne);
             //3 - écart pour chaque valeur
             $ecart = [];
             for ($i = 0; $i < $population; $i++) {
                 //écart entre la valeur et la moyenne
                 $ecart_donnee = $donnees[$i] - $moyenne;
+                // dump('ecart_donnee ' . $i . ' = ' . $ecart_donnee);
                 //carré de l'écart
                 $ecart_donnee_carre = pow($ecart_donnee, 2);
+                // dump('ecart_donnee_carre ' . $i . ' = ' . $ecart_donnee_carre);
                 //Insertion dans le tableau
                 array_push($ecart, $ecart_donnee_carre);
             }
+            // dump($ecart);
             //4 - somme des écarts
             $somme_ecart = array_sum($ecart);
+            // dump('somme_ecart = ' . $somme_ecart);
             //5 - division de la somme des écarts par la population
             $division = $somme_ecart / $population;
+            // dump('division = ' . $division);
             //6 - racine carrée de la division
             $ecart_type = sqrt($division);
         } else {
             $ecart_type = 0; //"Le tableau est vide";
         }
+        // dump('ecart_type = ' . $ecart_type);
         //7 - renvoi du résultat
         return $ecart_type;
     }
