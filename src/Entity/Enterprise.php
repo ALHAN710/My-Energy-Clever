@@ -155,7 +155,7 @@ class Enterprise
     public function initializeSlug()
     {
         $slugify = new Slugify();
-        $this->slug = $slugify->slugify($this->socialReason);
+        $this->slug = $slugify->slugify($this->socialReason . $this->id);
     }
     public function getId(): ?int
     {
