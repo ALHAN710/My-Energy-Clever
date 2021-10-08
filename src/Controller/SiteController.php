@@ -279,14 +279,18 @@ class SiteController extends ApplicationController
             $histo->setSite($site)
                 ->setStartDate(new DateTime($paramJSON['startDate']))
                 ->setEndDate(new DateTime($paramJSON['endDate']));
+            $updateHistoGraphs = $histo->updateHistoGraphs();
 
             return $this->json([
                 'code'         => 200,
                 'Mixed_Conso'  => [
-                    'date'  => $histo->updateHistoGraphs()['consoChart_Data']['dateConso'],
-                    'conso' => [$histo->updateHistoGraphs()['consoChart_Data']['kWh'], $histo->updateHistoGraphs()['consoChart_Data']['kgCO2']]
+                    'date'  => $updateHistoGraphs['consoChart_Data']['dateConso'],
+                    'conso' => [
+                        $updateHistoGraphs['consoChart_Data']['kWh'],
+                        $updateHistoGraphs['consoChart_Data']['kgCO2']
+                    ]
                 ],
-                'Load_Chart'   => $histo->updateHistoGraphs()['loadChart_Data'],
+                'Load_Chart'   => $updateHistoGraphs['loadChart_Data'],
             ], 200);
         }
 

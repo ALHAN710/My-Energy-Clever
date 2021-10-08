@@ -907,400 +907,6 @@
     );
     loadChart.render()
 
-    var loadChart_histo_options = {
-        chart: {
-            fontFamily: 'Nunito, sans-serif',
-            height: 415,
-            type: 'area',
-            zoom: {
-                enabled: true
-            },
-            stacked: false,
-            dropShadow: {
-                enabled: true,
-                opacity: 0.3,
-                blur: 5,
-                left: -7,
-                top: 22
-            },
-            toolbar: {
-                show: true
-            },
-            events: {
-                mounted: function(ctx, config) {
-                    const highest1 = ctx.getHighestValueInSeries(0);
-                    
-                    ctx.addPointAnnotation({
-                        x: new Date(ctx.w.globals.seriesX[0][ctx.w.globals.series[0].indexOf(highest1)]).getTime(),
-                        y: highest1,
-                        label: {
-                            style: {
-                                cssClass: 'd-none'
-                            }
-                        },
-                        customSVG: {
-                            SVG: '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#1b55e2" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>',
-                            cssClass: undefined,
-                            offsetX: -8,
-                            offsetY: 5
-                        }
-                    })
-                    
-                },
-            }
-        },
-        colors: ['#1b55e2'],
-        dataLabels: {
-            enabled: false
-        },
-        markers: {
-            discrete: [{
-                seriesIndex: 0,
-                dataPointIndex: 7,
-                fillColor: '#000',
-                strokeColor: '#000',
-                size: 5
-            }]
-        },
-        /*subtitle: {
-            text: 'Puissance Actuelle',
-            align: 'left',
-            margin: 0,
-            offsetX: -10,
-            offsetY: 35,
-            floating: false,
-            style: {
-            fontSize: '14px',
-            color:  '#888ea8'
-            }
-        },*/
-        title: {
-            text: '',
-            align: 'left',
-            margin: 0,
-            offsetX: -10,
-            offsetY: 0,
-            floating: false,
-            style: {
-                fontSize: '25px',
-                color:  '#8dbf42', //'#0e1726'
-            },
-        },
-        plotOptions: {
-            bar: {
-                dataLabels: {
-                    position: 'top', // top, center, bottom
-                },
-            }
-        },
-        stroke: {
-            //show: true,
-            curve: 'smooth',
-            width: 2,
-            //lineCap: 'square'
-        },
-        noData: {
-            text: 'Data not yet available',
-            align: 'center',
-            verticalAlign: 'middle',
-            offsetX: 0,
-            offsetY: 0,
-            style: {
-                color: undefined,
-                fontSize: '14px',
-                fontFamily: 'Nunito, sans-serif'
-            }
-        },
-        series: [{
-            name: 'Puissance',
-            data: []
-            {# data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000] #}
-        }],
-        {# labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
-        xaxis: {
-            type: 'datetime',
-            categories: [],
-            axisBorder: {
-                show: false
-            },
-            axisTicks: {
-                show: false
-            },
-            crosshairs: {
-                show: true
-            },
-            labels: {
-                offsetX: 0,
-                offsetY: 5,
-                style: {
-                    fontSize: '12px',
-                    fontFamily: 'Nunito, sans-serif',
-                    cssClass: 'apexcharts-xaxis-title',
-                },
-                datetimeFormatter: {
-                    year: 'yyyy',
-                    month: 'MMM \'yy',
-                    day: 'dd MMM',
-                    hour: 'HH:mm'
-                }
-            },
-            {# title: {
-                text: moment().format('DD MMMM YYYY').toString(),
-                style: {
-                    fontSize: '12px',
-                    fontFamily: 'Nunito, sans-serif',
-                    cssClass: 'apexcharts-xaxis-title',
-                    //fontWeight: 'bold',
-                    //fontFamily: undefined,
-                    //color: '#444'
-                },
-            } #}
-        },
-        yaxis: {
-            labels: {
-                formatter: function(value, index) {
-                    return (value) + ' W'
-                },
-                offsetX: -22,
-                offsetY: 0,
-                style: {
-                    fontSize: '12px',
-                    fontFamily: 'Nunito, sans-serif',
-                    cssClass: 'apexcharts-yaxis-title',
-                },
-            }
-        },
-        grid: {
-            borderColor: '#e0e6ed',
-            strokeDashArray: 5,
-            xaxis: {
-                lines: {
-                    show: true
-                }
-            },   
-            yaxis: {
-                lines: {
-                    show: false,
-                }
-            },
-            padding: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: -10
-            }, 
-        }, 
-        legend: {
-            position: 'top',
-            horizontalAlign: 'right',
-            offsetY: -50,
-            fontSize: '16px',
-            fontFamily: 'Nunito, sans-serif',
-            markers: {
-                width: 10,
-                height: 10,
-                strokeWidth: 0,
-                strokeColor: '#fff',
-                fillColors: undefined,
-                radius: 12,
-                onClick: undefined,
-                offsetX: 0,
-                offsetY: 0
-            },    
-            itemMargin: {
-                horizontal: 0,
-                vertical: 20
-            }
-        },
-        tooltip: {
-            theme: 'dark',
-            marker: {
-                show: true,
-            },
-            y: {
-                formatter: function (y) {
-                    //console.log(y)
-                    if (typeof y !== "undefined") {
-                        return y.toFixed(2) + " W"
-                    }
-                    return y;
-                }
-            },
-            x: {
-                formatter: function (val, timestamp) {
-                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
-                    
-                }
-            }
-        },
-        fill: {
-            type:"gradient",
-            gradient: {
-                type: "vertical",
-                shadeIntensity: 1,
-                inverseColors: !1,
-                opacityFrom: .28,
-                opacityTo: .05,
-                stops: [45, 100]
-            }
-        },
-        responsive: [{
-            breakpoint: 575,
-            options: {
-                legend: {
-                    offsetY: -30,
-                },
-            },
-        }]
-    }
-    var loadChart_histo = new ApexCharts(
-        document.querySelector("#load-chart-histo"),
-        loadChart_histo_options
-    );
-    loadChart_histo.render()
-
-    var mixed_conso_options = {
-      chart: {
-          height: 350,
-          type: 'bar',
-          toolbar: {
-            show: false,
-          },
-          dropShadow: {
-              enabled: true,
-              top: 1,
-              left: 1,
-              blur: 2,
-              color: '#acb0c3',
-              opacity: 0.7,
-          }
-      },
-      colors: ['#5c1ac3', '#ffbb44'],
-      plotOptions: {
-          bar: {
-              horizontal: false,
-              columnWidth: '55%',
-              //endingShape: 'rounded'  
-          },
-      },
-      dataLabels: {
-          enabled: false
-      },
-      legend: {
-            position: 'bottom',
-            horizontalAlign: 'center',
-            fontSize: '14px',
-            markers: {
-              width: 10,
-              height: 10,
-            },
-            itemMargin: {
-              horizontal: 0,
-              vertical: 8
-            }
-      },
-      stroke: {
-          show: true,
-          width: 2,
-          colors: ['transparent']
-      },
-      series: [{
-          name: 'Énergie Active',
-          data: []
-          {# data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63] #}
-      }, {
-          name: 'Émission de gaz à effet de serre',
-          data: []
-          {# data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70] #}
-      }],
-      xaxis: {
-          type: 'datetime',
-          categories: [],
-          {# categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
-          labels: {
-            datetimeFormatter: {
-                year: 'yyyy',
-                month: 'MMM \'yy',
-                day: 'dd MMM',
-                hour: 'HH:mm'
-            }
-          },
-      },
-      yaxis: [
-        {
-            axisTicks: {
-                show: true,
-            },
-            axisBorder: {
-                show: true,
-                color: '#5c1ac3'
-            },
-            labels: {
-                style: {
-                    color: '#5c1ac3',
-                }
-            },
-            title: {
-                text: "kWh"
-            },
-        },
-        {
-            opposite: true,
-            axisTicks: {
-                show: true,
-            },
-            axisBorder: {
-                show: true,
-                color: '#ffbb44'
-            },
-            labels: {
-                style: {
-                    color: '#ffbb44',
-                }
-            },
-            title: {
-                text: "kgCO2"
-            }
-        },
-      ],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'vertical',
-          shadeIntensity: 0.3,
-          inverseColors: false,
-          opacityFrom: 1,
-          opacityTo: 0.8,
-          stops: [0, 100]
-        }
-      },
-      tooltip: {
-        theme: "dark",
-        //followCursor: true,
-        y: {
-            formatter: function (y) {
-                //console.log(y)
-                if (typeof y !== "undefined") {
-                    return y.toFixed(2) + ""
-                }
-                return y;
-            }
-        },
-        x: {
-            formatter: function (val, timestamp) {
-                return moment(new Date(val)).format("DD MMM YYYY")
-            }
-        }
-      },
-    }
-    
-    var MixedConsoChart = new ApexCharts(
-        document.querySelector("#mixed-conso"),
-        mixed_conso_options
-    );
-    MixedConsoChart.render()
-
     function progress(prefixSelector, progValue, posLogique, isTime) {
         
         var id = '#' + prefixSelector;
@@ -1831,7 +1437,401 @@
 <!-- Script de gestion du sélecteur de date -->
 <script>
     var _url = "{{ path('site_histo_update', {'slug':site.slug}) }}";
-        
+    
+    var loadChart_histo_options = {
+        chart: {
+            fontFamily: 'Nunito, sans-serif',
+            height: 415,
+            type: 'area',
+            zoom: {
+                enabled: true
+            },
+            stacked: false,
+            dropShadow: {
+                enabled: true,
+                opacity: 0.3,
+                blur: 5,
+                left: -7,
+                top: 22
+            },
+            toolbar: {
+                show: true
+            },
+            events: {
+                mounted: function(ctx, config) {
+                    const highest1 = ctx.getHighestValueInSeries(0);
+                    
+                    ctx.addPointAnnotation({
+                        x: new Date(ctx.w.globals.seriesX[0][ctx.w.globals.series[0].indexOf(highest1)]).getTime(),
+                        y: highest1,
+                        label: {
+                            style: {
+                                cssClass: 'd-none'
+                            }
+                        },
+                        customSVG: {
+                            SVG: '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="#1b55e2" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>',
+                            cssClass: undefined,
+                            offsetX: -8,
+                            offsetY: 5
+                        }
+                    })
+                    
+                },
+            }
+        },
+        colors: ['#1b55e2'],
+        dataLabels: {
+            enabled: false
+        },
+        markers: {
+            discrete: [{
+                seriesIndex: 0,
+                dataPointIndex: 7,
+                fillColor: '#000',
+                strokeColor: '#000',
+                size: 5
+            }]
+        },
+        /*subtitle: {
+            text: 'Puissance Actuelle',
+            align: 'left',
+            margin: 0,
+            offsetX: -10,
+            offsetY: 35,
+            floating: false,
+            style: {
+            fontSize: '14px',
+            color:  '#888ea8'
+            }
+        },*/
+        title: {
+            text: '',
+            align: 'left',
+            margin: 0,
+            offsetX: -10,
+            offsetY: 0,
+            floating: false,
+            style: {
+                fontSize: '25px',
+                color:  '#8dbf42', //'#0e1726'
+            },
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    position: 'top', // top, center, bottom
+                },
+            }
+        },
+        stroke: {
+            //show: true,
+            curve: 'smooth',
+            width: 2,
+            //lineCap: 'square'
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Puissance',
+            data: []
+            {# data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000] #}
+        }],
+        {# labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
+        xaxis: {
+            type: 'datetime',
+            categories: [],
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            },
+            crosshairs: {
+                show: true
+            },
+            labels: {
+                offsetX: 0,
+                offsetY: 5,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+            {# title: {
+                text: moment().format('DD MMMM YYYY').toString(),
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                    //fontWeight: 'bold',
+                    //fontFamily: undefined,
+                    //color: '#444'
+                },
+            } #}
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value, index) {
+                    return (value) + ' W'
+                },
+                offsetX: -22,
+                offsetY: 0,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-yaxis-title',
+                },
+            }
+        },
+        grid: {
+            borderColor: '#e0e6ed',
+            strokeDashArray: 5,
+            xaxis: {
+                lines: {
+                    show: true
+                }
+            },   
+            yaxis: {
+                lines: {
+                    show: false,
+                }
+            },
+            padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: -10
+            }, 
+        }, 
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            offsetY: -50,
+            fontSize: '16px',
+            fontFamily: 'Nunito, sans-serif',
+            markers: {
+                width: 10,
+                height: 10,
+                strokeWidth: 0,
+                strokeColor: '#fff',
+                fillColors: undefined,
+                radius: 12,
+                onClick: undefined,
+                offsetX: 0,
+                offsetY: 0
+            },    
+            itemMargin: {
+                horizontal: 0,
+                vertical: 20
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            marker: {
+                show: true,
+            },
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " W"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        },
+        fill: {
+            type:"gradient",
+            gradient: {
+                type: "vertical",
+                shadeIntensity: 1,
+                inverseColors: !1,
+                opacityFrom: .28,
+                opacityTo: .05,
+                stops: [45, 100]
+            }
+        },
+        responsive: [{
+            breakpoint: 575,
+            options: {
+                legend: {
+                    offsetY: -30,
+                },
+            },
+        }]
+    }
+    var loadChart_histo = new ApexCharts(
+        document.querySelector("#load-chart-histo"),
+        loadChart_histo_options
+    );
+    loadChart_histo.render()
+
+    var mixed_conso_options = {
+      chart: {
+          height: 350,
+          type: 'bar',
+          toolbar: {
+            show: false,
+          },
+          dropShadow: {
+              enabled: true,
+              top: 1,
+              left: 1,
+              blur: 2,
+              color: '#acb0c3',
+              opacity: 0.7,
+          }
+      },
+      colors: ['#5c1ac3', '#e7515a'],
+      plotOptions: {
+          bar: {
+              horizontal: false,
+              columnWidth: '50%',
+              //endingShape: 'rounded'  
+          },
+      },
+      dataLabels: {
+          enabled: false
+      },
+      legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '14px',
+            markers: {
+              width: 10,
+              height: 10,
+            },
+            itemMargin: {
+              horizontal: 0,
+              vertical: 8
+            }
+      },
+      stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+      },
+      series: [{
+          name: 'Énergie Active',
+          data: []
+          {# data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63] #}
+      }, {
+          name: 'Émission de gaz à effet de serre',
+          data: []
+          {# data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70] #}
+      }],
+      xaxis: {
+          type: 'datetime',
+          categories: [],
+          {# categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
+          labels: {
+            datetimeFormatter: {
+                year: 'yyyy',
+                month: 'MMM \'yy',
+                day: 'dd MMM',
+                hour: 'HH:mm'
+            }
+          },
+      },
+      yaxis: [
+        {
+            axisTicks: {
+                show: true,
+            },
+            axisBorder: {
+                show: true,
+                color: '#5c1ac3'
+            },
+            labels: {
+                style: {
+                    color: '#5c1ac3',
+                }
+            },
+            title: {
+                text: "kWh"
+            },
+        },
+        {
+            opposite: true,
+            axisTicks: {
+                show: true,
+            },
+            axisBorder: {
+                show: true,
+                color: '#e7515a'
+            },
+            labels: {
+                style: {
+                    color: '#e7515a',
+                }
+            },
+            title: {
+                text: "kgCO2"
+            }
+        },
+      ],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'light',
+          type: 'vertical',
+          shadeIntensity: 0.3,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 0.8,
+          stops: [0, 100]
+        }
+      },
+      tooltip: {
+        theme: "dark",
+        //followCursor: true,
+        y: {
+            formatter: function (y) {
+                //console.log(y)
+                if (typeof y !== "undefined") {
+                    return y.toFixed(2) + ""
+                }
+                return y;
+            }
+        },
+        x: {
+            formatter: function (val, timestamp) {
+                return moment(new Date(val)).format("DD MMM YYYY")
+            }
+        }
+      },
+    }
+    
+    var MixedConsoChart = new ApexCharts(
+        document.querySelector("#mixed-conso"),
+        mixed_conso_options
+    );
+    MixedConsoChart.render()
+
     var start = moment().subtract(1, 'days');
     var end = moment();
 
@@ -1984,7 +1984,7 @@
                                 console.log(Object.values(result['Load_Chart']))
                                 console.log(Object.values(result['Mixed_Conso']))
                                 displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
-                                displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
+                                displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 2, 'day');
                                 //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
                                 
                             }

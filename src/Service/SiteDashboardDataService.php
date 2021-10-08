@@ -344,7 +344,7 @@ class SiteDashboardDataService
                                             ORDER BY dt ASC")
             ->setParameters(array(
                 'kgCO2'        => $this->CO2PerkWh,
-                'currentYear'  => date('Y'),
+                'currentYear'  => date('Y') . '%',
                 'siteId'       => $this->site->getId()
             ))
             ->getResult();
@@ -428,7 +428,7 @@ class SiteDashboardDataService
 
     public function getConsumptionkWhChartDataForDateRange()
     {
-        $daterangeConsoData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS dt, d.ea AS EA, d.ea*:kgCO2 AS kgCO2
+        $daterangeConsoData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,10) AS dt, SUM(d.ea) AS EA, SUM(d.ea)*:kgCO2 AS kgCO2
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
@@ -442,15 +442,15 @@ class SiteDashboardDataService
                 'siteId'     => $this->site->getId()
             ))
             ->getResult();
-        //dump($daterangeConsoData);
+        dump($daterangeConsoData);
 
         $dateConso = [];
         $kWh = [];
         $kgCO2 = [];
         foreach ($daterangeConsoData as $d) {
             $dateConso[] = $d['dt'];
-            $kWh[] = floatval(number_format((float) $d['EA'], 4, '.', ''));
-            $kgCO2[] = floatval(number_format((float) $d['kgCO2'], 6, '.', ''));
+            $kWh[] = floatval(number_format((float) $d['EA'], 2, '.', ''));
+            $kgCO2[] = floatval(number_format((float) $d['kgCO2'], 2, '.', ''));
         }
 
         return array(
