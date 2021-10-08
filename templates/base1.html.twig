@@ -10,7 +10,9 @@
     <script src="/js/loader.js"></script>
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
-    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    {% block bootstrap %}
+    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    {% endblock %}
     <link href="/css/icons.css" rel="stylesheet" type="text/css" />
     <link href="/css/plugins.css" rel="stylesheet" type="text/css" />
     <!-- END GLOBAL MANDATORY STYLES -->
@@ -23,11 +25,13 @@
 
 </head>
 <body class="sidebar-noneoverflow">
+    {% block loader %}
     <!-- BEGIN LOADER -->
     <div id="load_screen"> <div class="loader"> <div class="loader-content">
         <div class="spinner-grow align-self-center"></div>
     </div></div></div>
     <!--  END LOADER -->
+    {% endblock %}
 
     {% include 'partials1/topMenu.html.twig' %}
 
@@ -67,6 +71,8 @@
         });
     </script>
     <script src="/js/custom.js"></script>
+    <script src="/js/scrollspyNav.js"></script>
+    
     <!-- END GLOBAL MANDATORY SCRIPTS -->
     {% block javascripts %}{% endblock %}
 </body>

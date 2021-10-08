@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Zone;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\SmartHomeService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ZoneController extends AbstractController
 {
@@ -25,10 +27,19 @@ class ZoneController extends AbstractController
      * @Route("/zone/{slug<[a-zA-Z0-9-_]+>}/equipment", name="zone_equipement")
      * 
      */
-    public function equipmentControl(Zone $zone)
+    public function equipmentControl(Zone $zone, SmartHomeService $smartHome)
     {
-        return $this->render('zone/equipment_control.html.twig', [
-            'zone' => $zone,
-        ]);
+        dump($zone->getCleverBox()[0]);
+        if (count($zone->getCleverBox()) > 0) {
+            $smartHome->setCleverBox($zone->getCleverBox()[0]);
+
+            return $this->render('zone/equipment_control.html.twig', [
+                'zone' => $zone,
+                'smartHome' => $smartHome,
+            ]);
+        } else {
+            //Erreur zone ne contient pas de CleverBox
+            throw new NotFoundHttpException("Erreur zone ne contient pas de CleverBox");
+        }
     }
 }

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New SmartDevice{% endblock %}
+
+{% block body %}
+    <h1>Create new SmartDevice</h1>
+
+    {{ include('smart_device/_form.html.twig') }}
+
+    <a href="{{ path('smart_device_index') }}">back to list</a>
+{% endblock %}

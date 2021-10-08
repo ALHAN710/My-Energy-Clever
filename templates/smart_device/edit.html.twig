@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit SmartDevice{% endblock %}
+
+{% block body %}
+    <h1>Edit SmartDevice</h1>
+
+    {{ include('smart_device/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('smart_device_index') }}">back to list</a>
+
+    {{ include('smart_device/_delete_form.html.twig') }}
+{% endblock %}

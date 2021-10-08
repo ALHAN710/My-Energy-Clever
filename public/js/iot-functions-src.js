@@ -9,9 +9,9 @@ var iot;
 	'use strict';
 
 	var namespace;
-	var $alarmUrl = $('#alarmUrl').val();
 
 	namespace = {
+
 		// Vertical align center - Modal
 		centerModal: function () {
 			var modal = $(this),
@@ -41,19 +41,8 @@ var iot;
 
 		},
 
-		armingSecuritySystem: function (el, status) {
-			// Show "EXIT NOW" only if Security system is activated
-			if (status) {
-				iot.armingModal(el);
-			}
-			// Change basic appearance
-			$('[data-unit="' + el + '"]').toggleClass("active");
-			$('#' + el).closest("label").toggleClass("checked", status);
-
-		},
-
 		// Switch ON/OFF (checkbox) elemet "on change" functionality
-		/*switchSingle: function (el, status) {
+		switchSingle: function (el, status) {
 
 			// Apply extended functionality to unique units
 			switch (el) {
@@ -96,128 +85,6 @@ var iot;
 				default:
 					iot.toggleUnit(el, status);
 			}
-
-		},*/
-
-		switchSingle: function (el, status) {
-			// console.log(tabId);
-			// console.log($urlUpdateState)
-			// console.log($alarmUrl)
-
-			// Check switch statuses
-			//var switchValues = JSON.parse(localStorage.getItem('switchValues')) || {};
-
-			// Change basic appearance
-
-			// $('[data-unit="' + el + '"]').toggleClass("active");
-			// $('#' + el).closest("label").toggleClass("checked", status);
-
-
-			var str = String(el);
-
-			//console.log('element id as string : ' + str);
-
-			if (str.indexOf('switch-motion-') >= 0) {
-				//iot.armingModalPIN(el, status);
-				iot.armingModalPIN(el, status, str);
-				//$('#switch-flood-1234567890').closest("label").toggleClass("checked", status);
-			}
-			else if (str.indexOf('switch-fire-') >= 0) {
-				//iot.armingSecuritySystem(el, status);
-				// $('[data-unit="' + el + '"]').toggleClass("active");
-				// $('#' + el).closest("label").toggleClass("checked", status);
-				iot.armingModalPIN(el, status, str);
-			}
-			else if (str.indexOf('switch-flood-') >= 0) {
-				//iot.armingSecuritySystem(el, status);
-				// $('[data-unit="' + el + '"]').toggleClass("active");
-				// $('#' + el).closest("label").toggleClass("checked", status);
-				iot.armingModalPIN(el, status, str);
-			}
-			else if (str.indexOf('switch-door-') >= 0) {
-				//iot.armingSecuritySystem(el, status);
-				// $('[data-unit="' + el + '"]').toggleClass("active");
-				// $('#' + el).closest("label").toggleClass("checked", status);
-				iot.armingModalPIN(el, status, str);
-			}
-			else if (str.indexOf('switch-emergency-') >= 0) {
-				//iot.armingSecuritySystem(el, status);
-				$('[data-unit="' + el + '"]').toggleClass("active");
-				$('#' + el).closest("label").toggleClass("checked", status);
-
-				//if (status) {
-				// var $data = JSON.stringify({
-				//   "exp": "central",
-				//   "cmd": "stop"
-				// });
-				str = tabId[el];
-				//console.log('tabId emergency value : ' + str);
-				var $data = JSON.stringify({
-					"moduleId": str,
-					"detect": 1
-				});
-
-				var mess = {
-					From: "user",
-					To: "CleverBox",
-					Object: "Alarm Emergency Button",
-					message: "on"
-				};
-
-				mess.message = $data;
-				doSend(JSON.stringify(mess));
-				//console.log($data);
-
-				$.ajax({
-					type: "POST",//method type
-					contentType: "application/json; charset=utf-8",
-					url: $alarmUrl,///Target function that will be return result
-					data: $data,//parameter pass data is parameter name param is value 
-					dataType: "json",
-					success: function (data) {
-						//alert("Success");
-						//console.log(data);
-						//$('[data-unit="' + el + '"]').toggleClass("active");
-						//$('#' + el).closest("label").toggleClass("checked", !status);
-						//str = "";
-
-					},
-					error: function (result) {
-						console.log("Error");
-						console.log(result);
-					}
-				});
-
-				//}
-				str = "";
-			}
-			else if (str.indexOf('switch-house-lock-pin') >= 0) {
-				iot.armingModalPIN(el, status, str);
-
-			}
-			else if (str.indexOf('switch-camera-') >= 0) {
-				// ON status - connect cam
-				if (status) {
-					iot.connectCam(el);
-					// OFF status - disconnect cam
-				} else {
-					$('[data-unit="' + el + '"] video')[0].pause();
-				}
-				$('[data-unit="' + el + '"]').toggleClass("active");
-				$('#' + el).closest("label").toggleClass("checked", status);
-				str = "";
-			}
-			else {
-				//$('[data-unit="' + el + '"]').toggleClass("active");
-				$('#' + el).closest("label").toggleClass("checked", status);
-
-			}
-
-			// Update localStorage
-			// if (localStorage) {
-			//   switchValues[el] = status;
-			//   localStorage.setItem("switchValues", JSON.stringify(switchValues));
-			// }
 
 		},
 
@@ -278,9 +145,9 @@ var iot;
 		armingModal: function (unit) {
 
 			// Check if "alarm unit" has class "active" - Android native browser bug
-			/*if (!$('[data-unit="' + unit + '"]').hasClass("active")) {
+			if (!$('[data-unit="' + unit + '"]').hasClass("active")) {
 				$('[data-unit="' + unit + '"]').addClass("active");
-			}*/
+			}
 
 			$('#armModal').modal('show');
 
@@ -288,227 +155,71 @@ var iot;
 			$('#armTimer .timer').timer({
 				countdown: true,
 				format: '%s',
-				duration: '60s', // Here you can set custom time to exit
+				duration: '10s', // Here you can set custom time to exit
 				callback: function () {
 					$('#armModal').modal('hide'); // Automaticaly hide modal on countdown end
-
-					// Check if "alarm unit" has class "active" - Android native browser bug
-					if (!$('[data-unit="' + unit + '"]').hasClass("active")) {
-						$('[data-unit="' + unit + '"]').addClass("active");
-					}
 				}
 			});
 
 		},
 
 		// KEYBOARD modal
-		armingModalPIN: function (unit, status, str) {
+		armingModalPIN: function (unit, status) {
 
 			// Show keyboard in modal
 			$('#armModalPIN').modal('show');
-			console.log(status);
+
 			// Check for 4 entered numbers
 			var hits = 0;
 
 			$('[data-action="enter-key"]').click(function () {
-				//console.log(this.dataset.value);
+
 				hits += 1;
 
 				if (hits == 4) {
 					// Add last dot
-					// $('#hidden-key').append(" &#9679;");
-					var code = $('#hidden-key').val() + this.dataset.value;
-					// console.log(code);
-					$('#hidden-key').val(code);
-					if (parseInt(code) === parseInt($('#cd').val())) {
-						$('[data-action="enter-key"]').off();
-						// iot.toggleUnit(unit, status);
-						// Hide keyboard modal
-						$('#armModalPIN').modal('hide');
+					$('#hidden-key').append(" &#9679;");
+					$('[data-action="enter-key"]').off();
+					iot.toggleUnit(unit, status);
 
-						// Reset
-						$('#hidden-key').val("");
+					setTimeout(function () {
+						if (status) {
+							//Arming
+							iot.armingModal(unit);
+							// Change part of SVG
+							$('#house-disarmed').css('opacity', '0');
+							$('#house-armed').css('opacity', '1');
 
-						$('#iot-preloader,.card-preloader').fadeIn();
-
-						var str_ = String(unit);
-						var $urlUpdateState = $('#urlUpdateState').val();
-						var tabId = $.parseJSON($('#tabId').val());
-
-						if (str.indexOf('switch-motion-') >= 0) {
-							//iot.armingModalPIN(el, status);
-							str_ = tabId[unit];
-							//$('#switch-flood-1234567890').closest("label").toggleClass("checked", status);
+						} else {
+							//Disarming
+							// Change part of SVG
+							$('#house-disarmed').css('opacity', '1');
+							$('#house-armed').css('opacity', '0');
 						}
-						else if (str.indexOf('switch-fire-') >= 0) {
-							//iot.armingSecuritySystem(el, status);
-							// $('[data-unit="' + el + '"]').toggleClass("active");
-							// $('#' + el).closest("label").toggleClass("checked", status);
-							str_ = tabId[unit];
-						}
-						else if (str.indexOf('switch-flood-') >= 0) {
-							//iot.armingSecuritySystem(el, status);
-							// $('[data-unit="' + el + '"]').toggleClass("active");
-							// $('#' + el).closest("label").toggleClass("checked", status);
-							str_ = tabId[unit];
-						}
-						else if (str.indexOf('switch-door-') >= 0) {
-							//iot.armingSecuritySystem(el, status);
-							// $('[data-unit="' + el + '"]').toggleClass("active");
-							// $('#' + el).closest("label").toggleClass("checked", status);
-							str_ = tabId[unit];
-						}
-						else if (str.indexOf('switch-house-lock-pin') >= 0) {
-							str_ = "house";
-							//flag = true
-							//console.log(tabAlarmIp);
-							//Send stop to alarm via websocket  
-							if (!status) {
-								// var $data = JSON.stringify({
-								//   "exp": "central",
-								//   "cmd": "stop"
-								// });
-
-								var $data = JSON.stringify({
-									"moduleId": "002",
-									"alarm": "stop"
-								});
-
-								// console.log($data);
-
-								$.ajax({
-									type: "POST",//method type
-									contentType: "application/json; charset=utf-8",
-									url: $alarmUrl,///Target function that will be return result
-									data: $data,//parameter pass data is parameter name param is value 
-									dataType: "json",
-									success: function (data) {
-										//alert("Success");
-										console.log(data);
-
-									},
-									error: function (result) {
-										console.log("Error");
-										console.log(result);
-									}
-								});
-
-								//console.log($data);
-								// $.each($entryAlarmIps, function (index, value) {
-								//   var $url = "http://" + tabAlarmIp[index] + "/ring";
-								//   $.ajax({
-								// 	type: "POST",//method type
-								// 	contentType: "application/json; charset=utf-8",
-								// 	url: $url,///Target function that will be return result
-								// 	data: $data,//parameter pass data is parameter name param is value 
-								// 	dataType: "json",
-								// 	success: function (data) {
-								// 	  //alert("Success");
-								// 	  //console.log(data);
-
-								// 	},
-								// 	error: function (result) {
-								// 	  console.log("Error");
-								// 	  console.log(result);
-								// 	}
-								//   });
-								// });
-
-								//console.log(status);
-							}
-
-						}
-
-						if (str_ !== "") {
-							var $data = JSON.stringify({
-								"moduleId": str_,
-								"state": status,
-								"syst": $('#syst').val(),
-							});
-
-							// console.log($data);
-
-							$.ajax({
-								type: "POST",//method type
-								contentType: "application/json; charset=utf-8",
-								url: $urlUpdateState,///Target function that will be return result
-								data: $data,//parameter pass data is parameter name param is value 
-								dataType: "json",
-								success: function (data) {
-									$('#iot-preloader,.card-preloader').fadeOut();
-									//alert("Success");
-									// Change basic appearance
-									$('[data-unit="' + unit + '"]').toggleClass("active");
-									$('#' + unit).closest("label").toggleClass("checked", status);
-
-									setTimeout(function () {
-										if (status) {
-											//Arming
-											iot.armingModal(unit);
-											// Change part of SVG
-											$('#house-disarmed').css('opacity', '0');
-											$('#house-armed').css('opacity', '1');
-
-										} else {
-											//Disarming
-											// Change part of SVG
-											$('#house-disarmed').css('opacity', '1');
-											$('#house-armed').css('opacity', '0');
-										}
-
-									}, 300);
-
-									// console.log(data);
-									var mess = {
-										From: "user",
-										To: "CleverBox",
-										Object: "Update Security State",
-										message: "on"
-									};
-
-									mess.message = $data;
-									doSend(JSON.stringify(mess));
-
-								},
-								error: function (result) {
-									console.log("Error");
-									console.log(result);
-								}
-							});
-						}
-
-
-					} else {
-						$('[data-action="enter-key"]').off();
 
 						// Hide keyboard modal
 						$('#armModalPIN').modal('hide');
 
 						// Reset
-						$('#hidden-key').val("");
+						$('#hidden-key').html("&nbsp;");
+					}, 300);
 
-						$('#wrongPINModal').modal('show');
-
-					}
 
 				} else {
-					$('#hidden-key').val($('#hidden-key').val() + this.dataset.value);
 					// Add dot
-					// $('#hidden-key').append(" &#9679;");
+					$('#hidden-key').append(" &#9679;");
 				}
 			});
 
 			// PIN clearing
 			$('[data-action="clear-key"]').click(function () {
 				hits = 0;
-				$('#hidden-key').val("");
+				$('#hidden-key').html("&nbsp;");
 			});
-
-			if (hits == 4) return flag;
 		},
 
 		// Open/close garage doors - SVG
-		/*garageDoorsRoll: function (parent, action) {
+		garageDoorsRoll: function (parent, action) {
 
 			var unit = '[data-unit="' + parent + '"]',
 				doors = $('#roll-doors');
@@ -569,10 +280,10 @@ var iot;
 					$(unit + ' [data-action="pause"]').show();
 					break;
 			}
-		},*/
+		},
 
 		// Open/close garage doors - Progress bar
-		/*garageDoors: function (parent, action) {
+		garageDoors: function (parent, action) {
 
 			var el = '[data-unit="' + parent + '"]';
 			switch (action) {
@@ -629,10 +340,10 @@ var iot;
 					$(el + ' [data-action="pause"]').show();
 					break;
 			}
-		},*/
+		},
 
 		// Pause/resume Wash machine Program
-		/*washMachine: function (parent, action) {
+		washMachine: function (parent, action) {
 
 			var el = '[data-unit="' + parent + '"]';
 			switch (action) {
@@ -651,7 +362,7 @@ var iot;
 					$(el + ' [data-action="pause"]').show();
 					break;
 			}
-		},*/
+		},
 
 
 

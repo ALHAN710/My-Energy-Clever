@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SmartDevice index{% endblock %}
+
+{% block body %}
+    <h1>SmartDevice index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Specification</th>
+                <th>ModuleId</th>
+                <th>Slug</th>
+                <th>Programming</th>
+                <th>CreatedAt</th>
+                <th>EditedAt</th>
+                <th>Type</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for smart_device in smart_devices %}
+            <tr>
+                <td>{{ smart_device.id }}</td>
+                <td>{{ smart_device.name }}</td>
+                <td>{{ smart_device.specification }}</td>
+                <td>{{ smart_device.moduleId }}</td>
+                <td>{{ smart_device.slug }}</td>
+                <td>{{ smart_device.programming ? smart_device.programming|json_encode : '' }}</td>
+                <td>{{ smart_device.createdAt ? smart_device.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ smart_device.editedAt ? smart_device.editedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ smart_device.type }}</td>
+                <td>
+                    <a href="{{ path('smart_device_show', {'id': smart_device.id}) }}">show</a>
+                    <a href="{{ path('smart_device_edit', {'id': smart_device.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('smart_device_new') }}">Create new</a>
+{% endblock %}
