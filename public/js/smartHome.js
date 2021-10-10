@@ -8,7 +8,7 @@
 });*/
 
 var isConnected = false;
-var wsbroker = "portal-myenergyclever.com"//"127.0.0.1";//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
+var wsbroker = "127.0.0.1";//"portal-myenergyclever.com"//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
 var wsport = 15675; // port for above 1883
 
 var client = new Paho.MQTT.Client(wsbroker, wsport, "/ws", "user_");
@@ -20,6 +20,8 @@ client.onConnectionLost = function (responseObject) {
     console.log("Disconnected");
     $('#homeWsConnStatus').addClass('text-danger');
     $('#homeWsConnStatus').removeClass('text-success');
+    resetLedConnexionStatus();
+
 };
 
 client.onMessageArrived = function (message) {
@@ -65,14 +67,27 @@ client.onMessageArrived = function (message) {
                             $('[data-unit="' + json.From + '"]').removeClass("active");
                             $("#" + json.From).closest("label").removeClass("checked");
                         }
-                    }
-                    else if (json.Object === "Device Connexion Status") {
-                        var led = json.message;
+
+                        var led = json.From;
 
                         //alert(led);
                         //console.log(led);
                         if (context[led]) {
-                            console.log(context[led]);
+                            //console.log(context[led]);
+                            context[led].strokeStyle = "green";
+                            context[led].stroke();
+                            context[led].fillStyle = "green";
+                            context[led].fill();
+
+                        }
+                    }
+                    else if (json.Object === "Device Connexion Status") {
+                        var led = json.From;
+
+                        //alert(led);
+                        //console.log(led);
+                        if (context[led]) {
+                            //console.log(context[led]);
                             context[led].strokeStyle = "green";
                             context[led].stroke();
                             context[led].fillStyle = "green";
@@ -93,10 +108,12 @@ client.onMessageArrived = function (message) {
                     }
                     else if (json.Object === "Disconnected Client") {
                         var led = json.message;
-                        context[led].strokeStyle = "red";
-                        context[led].stroke();
-                        context[led].fillStyle = "red";
-                        context[led].fill();
+                        if (context[led]) {
+                            context[led].strokeStyle = "red";
+                            context[led].stroke();
+                            context[led].fillStyle = "red";
+                            context[led].fill();
+                        }
 
                         $('[data-unit="' + json.message + '"]').removeClass("active");
                         $("#" + json.message).closest("label").removeClass("checked");
@@ -167,7 +184,46 @@ if (location.protocol == "https:") {
 setTimeout(function () {
     if (isConnected === false) {
         console.log("CONNECT TO " + wsbroker + ":" + wsport);
-        client.connect(options);
+        client.connect({
+            timeout: 3,
+            keepAliveInterval: 30,
+            userName: "mqtt-ESP-device",
+            password: "mqtt-ESP-device",
+            onSuccess: function () {
+                isConnected = true;
+                console.log("CONNECTION SUCCESS");
+                // client.subscribe("/#", {qos: 1}); 
+                client.subscribe("from/CleverBox/" + $('#bx').val(), { qos: 1 });
+                console.log("Connected");
+                mess.To = "Box";
+                mess.Object = "Connection Status";
+                doSend(JSON.stringify(mess));
+
+                mess.To = "Devices";
+                mess.Object = "Device Connexion Status";
+                doSend(JSON.stringify(mess));
+
+                //var d = new Date();
+                //var strDate = d.toString();
+                // console.log(d.getDate());
+                // console.log(d.getDay());
+                // console.log(d.getFullYear());
+                // console.log(strDate.substring(0, strDate.indexOf(' (')));
+                //$('.deviceClock').html(strDate.substring(0, strDate.indexOf(' (')));
+                //mess.From = "user";
+                //mess.To = "Box";
+                //mess.Object = "Device Output Status";
+                //mess.To = "Devices";
+                //doSend(JSON.stringify(mess));
+            },
+            onFailure: function (message) {
+                console.log("CONNECTION FAILURE - " + message.errorMessage);
+                // Log disconnection state
+                console.log("Disconnected");
+                //$('#homeWsConnStatus').addClass('text-danger');
+                //$('#homeWsConnStatus').removeClass('text-success');
+            }
+        });
     }
 }, 500)
 //console.log("CONNECT TO " + wsbroker + ":" + wsport);
@@ -176,7 +232,57 @@ setTimeout(function () {
 setInterval(function () {
     if (isConnected === false) {
         console.log("CONNECT TO " + wsbroker + ":" + wsport);
-        client.connect(options);
+        client.connect({
+            timeout: 3,
+            keepAliveInterval: 30,
+            userName: "mqtt-ESP-device",
+            password: "mqtt-ESP-device",
+            onSuccess: function () {
+                isConnected = true;
+                console.log("CONNECTION SUCCESS");
+                // client.subscribe("/#", {qos: 1}); 
+                client.subscribe("from/CleverBox/" + $('#bx').val(), { qos: 1 });
+                console.log("Connected");
+                mess.To = "Box";
+                mess.Object = "Connection Status";
+                doSend(JSON.stringify(mess));
+
+                mess.To = "Devices";
+                mess.Object = "Device Connexion Status";
+                doSend(JSON.stringify(mess));
+
+                //var d = new Date();
+                //var strDate = d.toString();
+                // console.log(d.getDate());
+                // console.log(d.getDay());
+                // console.log(d.getFullYear());
+                // console.log(strDate.substring(0, strDate.indexOf(' (')));
+                //$('.deviceClock').html(strDate.substring(0, strDate.indexOf(' (')));
+                //mess.From = "user";
+                //mess.To = "Box";
+                //mess.Object = "Device Output Status";
+                //mess.To = "Devices";
+                //doSend(JSON.stringify(mess));
+            },
+            onFailure: function (message) {
+                console.log("CONNECTION FAILURE - " + message.errorMessage);
+                // Log disconnection state
+                console.log("Disconnected");
+                //$('#homeWsConnStatus').addClass('text-danger');
+                //$('#homeWsConnStatus').removeClass('text-success');
+            }
+        });
+    }
+    else {
+        /*resetLedConnexionStatus();
+
+        mess.To = "Box";
+        mess.Object = "Connection Status";
+        doSend(JSON.stringify(mess));
+
+        mess.To = "Devices";
+        mess.Object = "Device Connexion Status";
+        doSend(JSON.stringify(mess));*/
     }
 }, 10000);
 
@@ -197,7 +303,7 @@ function doSend(data) {
     //websocket.send(message);
     message = new Paho.MQTT.Message(data);
     //message.destinationName = "test/all";
-    message.destinationName = "to/CleverBox/" + $('#bx').val();
+    message.destinationName = "remote/to/CleverBox/" + $('#bx').val();
     console.log("SEND ON " + message.destinationName + " PAYLOAD " + data);
     client.send(message);
 }
@@ -244,6 +350,21 @@ function init() {
 
     // Connect to WebSocket server
     //wsConnect(wsUrl_);
+}
+
+function resetLedConnexionStatus() {
+    var led = "";
+    var ledId = "";
+    $.each($entryLeds, function (index, value) {
+        led = "" + value;
+        ledId = "" + $entryLedIds[index];
+        // Assign page elements to variables
+        canvas[led] = document.getElementById(ledId);
+        context[led].strokeStyle = "red";
+        context[led].stroke();
+        context[led].fillStyle = "red";
+        context[led].fill();
+    });
 }
 
 //Init the countdown timer of remaining time
