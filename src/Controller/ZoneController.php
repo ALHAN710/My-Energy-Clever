@@ -24,7 +24,7 @@ class ZoneController extends AbstractController
     /**
      * Permet de gérer la commande des équipements
      *
-     * @Route("/zone/{slug<[a-zA-Z0-9-_]+>}/equipment", name="zone_equipement")
+     * @Route("/zone/{slug<[a-zA-Z0-9-_]+>}/equipment", name="zone_equipement", schemes={"http"})
      * 
      */
     public function equipmentControl(Zone $zone, SmartHomeService $smartHome)
