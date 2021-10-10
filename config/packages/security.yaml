@@ -41,7 +41,7 @@ security:
         # - { path: ^/account/recover/password, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
         # - { path: ^/account/code-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
         - { path: ^/load-energy-data, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
-        - { path: ^/zone, roles: [ROLE_USER, ROLE_ADMIN], requires_channel: http }
+        - { path: ^/zone, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
     
