@@ -29,7 +29,7 @@ class ZoneController extends AbstractController
      */
     public function equipmentControl(Zone $zone, SmartHomeService $smartHome)
     {
-        dump($zone->getCleverBox()[0]);
+        // dump($zone->getCleverBox()[0]);
         if (count($zone->getCleverBox()) > 0) {
             $smartHome->setCleverBox($zone->getCleverBox()[0]);
 
