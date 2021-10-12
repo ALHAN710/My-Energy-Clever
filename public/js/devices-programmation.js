@@ -528,6 +528,8 @@ function editDropdown() {
     $('#device-modal').attr('data-device', device_slug)
     $('#device-modal').attr('data-sc', device_sc)
     $('#device-modal').attr('data-address', device_address)
+    console.log($('#device-modal').attr('data-address'))
+    console.log(device_address)
 
     //Modification du Titre du Modal #addScenarioModal
     $('#addScenarioModalTitle').children('h5').text('Modification du scénario : ' + scenarioJSONObj.name);
@@ -539,6 +541,7 @@ function editDropdown() {
     initInputScenarioModal(scenarioJSONObj, false)
 
     $('.edit-scenario').off('click').on('click', function (event) {
+      console.log($('#device-modal').attr('data-address'))
       var scenarioOBJTemp = tab[device_slug]['sc'][device_sc];
       var apply_day_str = "apply_day_check";
       for (let i = 0; i < 7; i++) {
@@ -636,10 +639,11 @@ function editDropdown() {
           //console.log("Retour prg " + JSON.stringify(data));
 
           //mess.From = "user";
-          mess.To = $('#device-modal').attr('data-address');
+          mess.To = String(device_address);
           mess.Object = "Programming";
           mess.message = jsonProg;
           doSend(JSON.stringify(mess));
+          mess.message = ""
 
           var scenario_name_strHtml = $_scenario_name + ' <small class="badge badge-dark">#' + $_device_name + '</span>';
           var scenario_time_strHtml = 'Début : ' + $_time_startAt + ', Fin : ' + $_time_endAt;
@@ -710,7 +714,10 @@ var $btns = $('.list-actions').click(function () {
   $('select').each(function () {
     if ($(this).attr('id') == _id) {
       //console.log('Show');
+      console.log($(this).val())
       $(this).parents('.bootstrap-select').show()
+      var $el = $('.' + $(this).val()).fadeIn();
+      $("#ct > div").not($el).hide();
     }
     else {
       //console.log('hide');
