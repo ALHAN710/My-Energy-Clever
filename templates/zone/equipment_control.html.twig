@@ -1669,47 +1669,33 @@
             //On affiche le bouton Ajouter un Scénario si celui-ci est masqué
             if($('#addTask').hasClass('d-none')) $('#addTask').removeClass('d-none')
         });
-    
-        $(document).ready(function(){
-            {# Affichage du select correspond à la nav-item active par défaut #}
-            //console.log(tab);
-            
-            console.log();
-            $('.list-actions').each(function(){//On parcours tous les nav-items à la recherche de celui qui possède la classe active
-                if($('#' + this.id).hasClass('active')){
-                    var id = '#' + this.id + '-id';
-                    $(".list-actions#" + this.id).trigger('click');
-                    /* console.log("Document ready");
-                    console.log(this.id)
-                    console.log($(".search > div").not('.' + this.id)) */
-                    //$(".search > div").not('.' + this.id).hide();
-                    var $el = $('.' + $(id).val()).fadeIn();
-                    /* console.log($el); */
-                    $('#ct > div').not($el).hide();
 
-                    var _id = this.id + '-id';
-                    $('select').each(function () {
-                        if ($(this).attr('id') == _id) {
-                            console.log('Show');
-                            $(this).parents('.bootstrap-select').show()
-                        }
-                        else {
-                            console.log('hide');
-                            $(this).parents('.bootstrap-select').hide()
+        var firstTabProgrammation = true;
+        //console.log( parseFloat( String( $('#budget').html() ).replace(' ', '') ) )
+        $('.nav-tabs a').on('shown.bs.tab', function(event){
+            var tab = $(event.target).text();         // active tab
+            var prevTab = $(event.relatedTarget).text();  // previous tab
+            {# console.log(tab)
+            console.log(prevTab) #}
+            if( String(tab).indexOf('Programmation') >= 0){
+                if(firstTabProgrammation){
+                    firstTabProgrammation = false; 
+                    //for(let i = 0; i < 5; i++){
+                        {# Affichage du select correspond à la nav-item active par défaut #}
+                        $('.list-actions').each(function(){//On parcours tous les nav-items à la recherche de celui qui possède la classe active
+                            if($('#' + this.id).hasClass('active')){
+                                var id = '#' + this.id + '-id';
+                                $(".list-actions#" + this.id).trigger('click');
+                                
+                                
+                            }
+                        }) 
 
-                        }
-                    })
-                    /* On récupère les informations du device selectionné dans cette catégorie */
-                    select_device_name = $(id).find(':selected').data('name');
-                    select_device_type = this.id; 
-                    select_device_slug = $(id).val();
-                    select_address = $(id).find(':selected').data('address');
-                    
+                    //}
                 }
-            }) 
-
-        })
-        
+                //alert("Active tab " + x);
+            }
+        });
     </script> 
 
 	{# <script>

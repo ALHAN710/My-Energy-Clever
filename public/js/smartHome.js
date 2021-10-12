@@ -8,7 +8,7 @@
 });*/
 
 var isConnected = false;
-var wsbroker = "127.0.0.1";//"portal-myenergyclever.com"//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
+var wsbroker = "portal-myenergyclever.com"//"127.0.0.1";//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
 var wsport = 15675; // port for above 1883
 
 var client = new Paho.MQTT.Client(wsbroker, wsport, "/ws", "user_");
@@ -106,7 +106,26 @@ client.onMessageArrived = function (message) {
                         // doSend(JSON.stringify(mess));
 
                     }
-                    else if (json.Object === "Disconnected Client") {
+                    else if (json.Object === "Connected Devices") {
+                        arr = json.message;
+                        resetLedConnexionStatus();
+                        $.each(arr, function (key, value) {
+                            //alert(value);
+                            //console.log(value);
+                            if (context[value]) {
+                                //console.log(context[value]);
+                                context[value].strokeStyle = "green";
+                                context[value].stroke();
+                                context[value].fillStyle = "green";
+                                context[value].fill();
+                            }
+                        });
+                        // //Get the device's output status
+                        // mess.Object = "Device Output Status";
+                        // mess.To = "Devices";
+                        // doSend(JSON.stringify(mess));
+                    }
+                    else if (json.Object === "Disconnected Device") {
                         var led = json.message;
                         if (context[led]) {
                             context[led].strokeStyle = "red";
@@ -193,7 +212,7 @@ setTimeout(function () {
                 isConnected = true;
                 console.log("CONNECTION SUCCESS");
                 // client.subscribe("/#", {qos: 1}); 
-                client.subscribe("from/CleverBox/" + $('#bx').val(), { qos: 1 });
+                client.subscribe("from/CleverBox/" + $('#bx').val(), { qos: 2 });
                 console.log("Connected");
                 mess.To = "Box";
                 mess.Object = "Connection Status";
@@ -217,6 +236,7 @@ setTimeout(function () {
                 //doSend(JSON.stringify(mess));
             },
             onFailure: function (message) {
+                resetLedConnexionStatus();
                 console.log("CONNECTION FAILURE - " + message.errorMessage);
                 // Log disconnection state
                 console.log("Disconnected");
@@ -241,7 +261,7 @@ setInterval(function () {
                 isConnected = true;
                 console.log("CONNECTION SUCCESS");
                 // client.subscribe("/#", {qos: 1}); 
-                client.subscribe("from/CleverBox/" + $('#bx').val(), { qos: 1 });
+                client.subscribe("from/CleverBox/" + $('#bx').val(), { qos: 2 });
                 console.log("Connected");
                 mess.To = "Box";
                 mess.Object = "Connection Status";
@@ -265,6 +285,7 @@ setInterval(function () {
                 //doSend(JSON.stringify(mess));
             },
             onFailure: function (message) {
+                resetLedConnexionStatus();
                 console.log("CONNECTION FAILURE - " + message.errorMessage);
                 // Log disconnection state
                 console.log("Disconnected");
@@ -273,8 +294,8 @@ setInterval(function () {
             }
         });
     }
-    else {
-        /*resetLedConnexionStatus();
+    /*else {
+        resetLedConnexionStatus();
 
         mess.To = "Box";
         mess.Object = "Connection Status";
@@ -282,9 +303,15 @@ setInterval(function () {
 
         mess.To = "Devices";
         mess.Object = "Device Connexion Status";
-        doSend(JSON.stringify(mess));*/
-    }
+        doSend(JSON.stringify(mess));
+    }*/
 }, 10000);
+
+setInterval(function () {
+    mess.To = "Box";
+    mess.Object = "Connection Status";
+    doSend(JSON.stringify(mess));
+}, 120000);
 
 var arr;
 var canvas = [];
@@ -301,11 +328,13 @@ var mess = {
 function doSend(data) {
     //console.log("Sending: " + message);
     //websocket.send(message);
-    message = new Paho.MQTT.Message(data);
-    //message.destinationName = "test/all";
-    message.destinationName = "remote/to/CleverBox/" + $('#bx').val();
-    console.log("SEND ON " + message.destinationName + " PAYLOAD " + data);
-    client.send(message);
+    if (isConnected) {
+        message = new Paho.MQTT.Message(data);
+        //message.destinationName = "test/all";
+        message.destinationName = "remote/to/CleverBox/" + $('#bx').val();
+        console.log("SEND ON " + message.destinationName + " PAYLOAD " + data);
+        client.send(message);
+    }
 }
 
 // Select elements by their data attribute
