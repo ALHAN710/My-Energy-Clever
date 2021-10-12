@@ -178,16 +178,19 @@ function deleteDropdown() {
     var device_address = String($(this).attr('data-address'));
     var device_sc = parseInt($(this).attr('data-sc'));
     var scenarioOBJTemp = tab[device_slug]['sc'][device_sc];
-    //console.log(tab[device_slug]['sc']);
+    console.log("== Before ==");
+    var tabTemp = JSON.parse(JSON.stringify(tab[device_slug]));
+    console.log(tabTemp);
     tab[device_slug]['nb']--;
     tab[device_slug]['sc'].splice($.inArray(scenarioOBJTemp, tab[device_slug]['sc']), 1);
-    //console.log(tab[device_slug]['sc']);
+    console.log("== After ==");
+    console.log(tab[device_slug]);
 
     swal.queue([{
       title: 'Confirmation de Suppression',
       confirmButtonText: 'Confirmer',
       cancelButtonText: 'Annuler',
-      text: 'Etes-vous sûr de vouloir supprimer ce scénario ',
+      text: 'Etes-vous sûr de vouloir supprimer ce scénario ?',
       showCancelButton: true,
       showLoaderOnConfirm: true,
       //confirmButtonClass: 'btn btn-primary',
@@ -242,8 +245,9 @@ function deleteDropdown() {
             error: function (result) {
               // console.log("Error");
               // console.log(result);
-              tab[device_slug]['sc'].push(scenarioOBJTemp);
-              tab[device_slug]['nb']++;
+              tab[device_slug] = Object.assign(tabTemp)
+              // tab[device_slug]['sc'].push(scenarioOBJTemp);
+              // tab[device_slug]['nb']++;
               //console.log(tab[device_slug]['sc']);
               swal('Oups...', "Une erreur s'est produite !", 'error'
                 // footer: '<a href>Why do I have this issue?</a>'
@@ -257,7 +261,25 @@ function deleteDropdown() {
         })
       },
       allowOutsideClick: false
-    }]);
+    }]).then((result) => {
+      if (result.isConfirmed) {
+
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        tab[device_slug]['sc'].push(scenarioOBJTemp);
+        tab[device_slug]['nb']++;
+        //console.log(tab[device_slug]['sc']);
+        swal('Annulation', "Suppression annulé !", 'error'
+          // footer: '<a href>Why do I have this issue?</a>'
+        );
+
+        setTimeout(function () {
+          resolve()
+        }, 5000);
+      }
+    });;
 
     /*if (!$(this).parents('.todo-item').hasClass('todo-task-trash')) {
 
@@ -649,7 +671,7 @@ function editDropdown() {
           var scenario_time_strHtml = 'Début : ' + $_time_startAt + ', Fin : ' + $_time_endAt;
           var sceanrio_start_auto_strHtml = 'Démarrage Auto : <span class="badge badge-' + ($_demarrage_auto === 1 ? 'success">Oui' : 'danger">Non' + '</span>');
           var sceanrio_run_autoon_strHtml = 'Réallumage Auto : <span class="mt-1 badge badge-' + ($_reallumage_auto === 1 ? 'success">Oui' : 'danger">Non' + '</span>');
-          var scenario_timeON_OFF_strHtml = 'Durée ON : ' + $_time_on + ', Durée OFF : ' + $_time_off;
+          var scenario_timeON_OFF_strHtml = 'Durée ON : ' + $_time_on + ' mins, Durée OFF : ' + $_time_off + ' mins';
 
           var $_scenarioEditedName = $_outerThis.parents('.todo-item').children().find('.todo-heading').html(scenario_name_strHtml);
           var $_scenarioEditedTime = $_outerThis.parents('.todo-item').children().find('.startAt-endAt').html(scenario_time_strHtml);
@@ -1014,7 +1036,7 @@ $(".addTask").click(function () {
                 '<p class="meta-date startAt-endAt">Début : ' + $_time_startAt + ', Fin : ' + $_time_endAt + '</p>' +
                 '<p class="meta-date demarrage-auto">Démarrage Auto : <span class="badge badge-' + ($_demarrage_auto ? 'success">Oui' : 'danger">Non') + '</span></p>' +
                 '<p class="meta-date reallumage-auto">Réallumage Auto : <span class="mt-1 badge badge-' + ($_reallumage_auto ? 'success">Oui' : 'danger">Non') + '</span></p>' +
-                '<p class="meta-date startAt-endAt">Durée ON : ' + $_time_on + ', Durée OFF : ' + $_time_off + '</p>' +
+                '<p class="meta-date time-on-off">Durée ON : ' + $_time_on + ' mins, Durée OFF : ' + $_time_off + ' mins</p>' +
                 "<p class='todo-text' data-todoHtml='<p>" + scenario_applying_days_strHtml + "</p>' data-todoText='" + '' + "'> " + scenario_applying_days_strHtml + "</p>" +
                 '</div>' +
 
