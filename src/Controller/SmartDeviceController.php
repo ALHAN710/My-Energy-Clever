@@ -105,7 +105,7 @@ class SmartDeviceController extends ApplicationController
      * @param EntityManagerInterface $manager
      * @return JsonResponse
      */
-    public function deviceProg(SmartDevice $device, Request $request, EntityManagerInterface $manager): JsonResponse
+    public function deviceSetProg(SmartDevice $device, Request $request, EntityManagerInterface $manager): JsonResponse
     {
         //Récupération et vérification des paramètres au format JSON contenu dans la requête
         $paramJSON = $this->getJSONRequest($request->getContent());
@@ -119,8 +119,8 @@ class SmartDeviceController extends ApplicationController
         //Recherche du device dans la BDD
 
         $device->setProgramming($arr);
-        //$manager->persist($device);
-        //$manager->flush();
+        $manager->persist($device);
+        $manager->flush();
 
         return $this->json([
             'code'     => 200,
@@ -129,5 +129,37 @@ class SmartDeviceController extends ApplicationController
         ], 200);
 
         // }
+    }
+
+    /**
+     * Permet d'envoyer le programme d'un Device
+     *
+     * @Route("/{moduleId<[a-zA-Z0-9-_]+>?''}/get/prog", name="smart_device_get_prog")
+     * 
+     * @param SmartDevice $device
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return void
+     */
+    public function deviceGetProg(SmartDevice $device, Request $request, EntityManagerInterface $manager)
+    {
+        //Récupération et vérification des paramètres au format JSON contenu dans la requête
+        $paramJSON = $this->getJSONRequest($request->getContent());
+        //dump($paramJSON);
+        $action   = $paramJSON['action'];
+        if ($action == 'get prog') {
+
+            //$arr = $this->getJSONRequest($paramJSON['prog']);
+
+            //dump($device);
+
+            $jsonProg = $device->getProgramming();
+            //dump($jsonProg);
+            return $this->json([
+                'code'     => 200,
+                'prog'     => $jsonProg,
+                'success'  => ($jsonProg == null ? 0 : 1),
+            ], 200);
+        }
     }
 }
