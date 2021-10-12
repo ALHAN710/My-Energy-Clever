@@ -57,15 +57,18 @@ client.onMessageArrived = function (message) {
                     }
                     else if (json.Object === "Device Output Status") {
                         status = (parseInt(json.message) === 1) ? true : false;
+                        console.log("status = " + status)
                         //$('#' + json.To).closest("label").toggleClass("checked", status);
                         $("#" + json.From).prop('checked', status);
                         if (status) {
-                            $('[data-unit="' + json.From + '"]').toggleClass("active");
+                            $('[data-unit="' + json.From + '"]').addClass("active");
                             $("#" + json.From).closest("label").addClass("checked");
+                            console.log("status True ")
                         }
                         else {
                             $('[data-unit="' + json.From + '"]').removeClass("active");
                             $("#" + json.From).closest("label").removeClass("checked");
+                            console.log("status False ")
                         }
 
                         var led = json.From;
