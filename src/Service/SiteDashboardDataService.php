@@ -222,9 +222,19 @@ class SiteDashboardDataService
         $strTalon = '-';
         if (!empty($powerQuery)) {
 
-            $lowPower = reset($powerQuery);
+            //$lowPower = reset($powerQuery);
             $highPower = end($powerQuery);
+            $lowPower = null;
+            $array = $powerQuery;
+            $min = 0;
+
+            foreach ($array as $v) if ($v['kW'] > $min) {
+                $lowPower = $v;
+                break;
+            }
+
             //dump($lowPower);
+            // $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W @ ' . $lowPower['jour']->format('d M Y H:i:s') : '-';
             $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W @ ' . $lowPower['jour']->format('d M Y H:i:s') : '-';
             $strPic   = $highPower != null ? number_format((float) ($highPower['kW']), 2, '.', ' ') . ' W @ ' . $highPower['jour']->format('d M Y H:i:s') : '-';
         }
