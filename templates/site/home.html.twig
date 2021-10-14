@@ -1429,7 +1429,10 @@
                                         console.log(Object.values(result['Mixed_Conso']))
                                         displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
                                         displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
+                                        MixedConsoChart.toggleSeries('Énergie Active')
+                                        MixedConsoChart.toggleSeries('Énergie Active')
                                         //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+
                                         
                                     }
                                 },
