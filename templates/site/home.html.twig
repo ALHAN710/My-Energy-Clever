@@ -1714,25 +1714,30 @@
 
     var mixed_conso_options = {
       chart: {
-          height: 350,
-          type: 'bar',
-          toolbar: {
-            show: false,
-          },
-          dropShadow: {
-              enabled: true,
-              top: 1,
-              left: 1,
-              blur: 2,
-              color: '#acb0c3',
-              opacity: 0.7,
-          }
+        fontFamily: 'Nunito, sans-serif',
+
+        height: 350,
+        type: 'bar',
+        toolbar: {
+        show: true,
+        },
+
+        stacked: false,
+
+        dropShadow: {
+        enabled: true,
+        top: 1,
+        left: 1,
+        blur: 2,
+        color: '#acb0c3',
+        opacity: 0.7,
+        }
       },
       colors: ['#5c1ac3', '#e7515a'],
       plotOptions: {
           bar: {
               horizontal: false,
-              columnWidth: '50%',
+              columnWidth: '55%',
               //endingShape: 'rounded'  
           },
       },
@@ -1758,26 +1763,23 @@
           colors: ['transparent']
       },
       series: [{
-          name: 'Énergie Active',
-          data: []
-          {# data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63] #}
-      }, {
-          name: 'Émission de gaz à effet de serre',
-          data: []
-          {# data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70] #}
+        name: 'Énergie Active',
+        data: []
+      },{
+        name: 'Émission de gaz à effet de serre',
+        data: []
       }],
       xaxis: {
-          type: 'datetime',
-          categories: [],
-          {# categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
-          labels: {
-            datetimeFormatter: {
-                year: 'yyyy',
-                month: 'MMM \'yy',
-                day: 'dd MMM',
-                hour: 'HH:mm'
-            }
-          },
+        type: 'datetime',
+        categories: [],
+        labels: {
+        datetimeFormatter: {
+            year: 'yyyy',
+            month: 'MMM \'yy',
+            day: 'dd MMM',
+            hour: 'HH:mm'
+        }
+        },
       },
       yaxis: [
         {
@@ -1920,8 +1922,12 @@
             chart.opts.series.forEach((dataset) => {
                 if( i < multiple){
                     dataset.data = [];
-                    dataset.data = data[i++];
                     console.log(dataset.name);
+                    console.log(dataset.data);
+                    dataset.data = data[i];
+                    console.log(data[i]);
+                    console.log(dataset.data);
+                    i++;
                 }
             });
         }
@@ -2000,15 +2006,22 @@
 
                             setTimeout(function () {
                                 resolve()
-                            }, 1000);
+                            }, 1500);
 
                             if( Object.keys(result).length > 0 ){
                                 console.log(Object.values(result['Load_Chart']))
                                 console.log(Object.values(result['Mixed_Conso']))
                                 displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
+                                MixedConsoChart.destroy()
+                                MixedConsoChart = new ApexCharts(
+                                    document.querySelector("#mixed-conso"),
+                                    mixed_conso_options
+                                );
+                                MixedConsoChart.render()
                                 displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 2, 'day');
                                 //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
-                                
+                                MixedConsoChart.toggleSeries('Énergie Active')
+                                MixedConsoChart.toggleSeries('Énergie Active')
                             }
                         },
                         error: function (result) {
