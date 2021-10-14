@@ -330,22 +330,52 @@ class SiteDashboardDataService
 
     public function getMonthByMonthDataTableForCurrentYear()
     {
-        /*$dataMonthsForCurrentYearQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, MIN(d.dateTime) AS min_, MAX(d.dateTime) AS max_
+        $consoMonthByMonthForCurrentYearQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, SUM(d.ea) AS EA, d.dateTime AS day_
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentYear
                                             GROUP BY dt
+                                            ORDER BY dt ASC
                                             ")
             ->setParameters(array(
-                'currentYear'  => date('Y'),
+                'currentYear'  => date('Y') . '%',
                 'siteId'       => $this->site->getId()
             ))
-            ->getResult();*/
-        //dump($dataMonthsForCurrentYearQuery);
+            ->getResult();
+        //dump($consoMonthByMonthForCurrentYearQuery);
+        $tab = [];
+        foreach ($consoMonthByMonthForCurrentYearQuery as $monthData) {
+            $tab[$monthData['day_']->format('F')] = [
+                //'EA'       => floatval($monthData['EA']),
+                'Date'     => $monthData['day_'],
+                'nbDay'    => 0,
+                'consoMoy' => 0,
+            ];
+        }
+        //dump($tab);
+
+        $nbDayMonthByMonthForCurrentYearQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) AS dt, d.dateTime AS day_
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                            AND d.dateTime LIKE :currentYear
+                                            GROUP BY dt
+                                            ORDER BY dt ASC
+                                            ")
+            ->setParameters(array(
+                'currentYear'  => date('Y') . '%',
+                'siteId'       => $this->site->getId()
+            ))
+            ->getResult();
+        //dump($nbDayMonthByMonthForCurrentYearQuery);
+        foreach ($nbDayMonthByMonthForCurrentYearQuery as $dayByMonth) {
+            $tab[$dayByMonth['day_']->format('F')]['nbDay']++;
+        }
+        //dump($tab);
 
         $monthByMonthDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) AS dt, SUM(d.ea) AS EA, SUM(d.ea)*:kgCO2 AS kgCO2, MAX(d.pmoy) AS Pmax,
-                                            MIN(NULLIF(d.pmoy, 0)) AS talon 
+                                            MIN(NULLIF(d.pmoy, 0)) AS talon, d.dateTime AS day_ 
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
@@ -359,9 +389,19 @@ class SiteDashboardDataService
             ))
             ->getResult();
         //dump($monthByMonthDataQuery);
-        return $monthByMonthDataQuery;
-        foreach ($monthByMonthDataQuery as $monthByMonthDataQuery) {
+        $monthByMonthData = array_merge($tab);
+        //dump($monthByMonthData);
+        foreach ($monthByMonthDataQuery as $monthData) {
+            $monthByMonthData[$monthData['day_']->format('F')]['EA'] = floatval($monthData['EA']);
+            $monthByMonthData[$monthData['day_']->format('F')]['kgCO2'] = floatval($monthData['kgCO2']);
+            $monthByMonthData[$monthData['day_']->format('F')]['Pmax'] = floatval($monthData['Pmax']);
+            $monthByMonthData[$monthData['day_']->format('F')]['talon'] = floatval($monthData['talon']);
+            $monthByMonthData[$monthData['day_']->format('F')]['consoMoy'] = $monthByMonthData[$monthData['day_']->format('F')]['nbDay'] > 0 ? $monthByMonthData[$monthData['day_']->format('F')]['EA'] / $monthByMonthData[$monthData['day_']->format('F')]['nbDay'] : 0;;
         }
+        //dump($monthByMonthData);
+
+        //dump($monthByMonthData);
+        return $monthByMonthData;
     }
 
     public function getLoadChartDataForCurrentMonth()
@@ -452,7 +492,7 @@ class SiteDashboardDataService
                 'siteId'     => $this->site->getId()
             ))
             ->getResult();
-        dump($daterangeConsoData);
+        //dump($daterangeConsoData);
 
         $dateConso = [];
         $kWh = [];
