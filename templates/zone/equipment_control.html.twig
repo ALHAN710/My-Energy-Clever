@@ -17,6 +17,8 @@
 	<link href="/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css">
 	<link href="/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css">
 	<link href="/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/loaders/custom-loader.css" rel="stylesheet" type="text/css" />
+    
 	<!-- Sweet Alert -->
 	<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
 	<link href="/css/apps/todolist.css" rel="stylesheet" type="text/css" />
@@ -64,7 +66,7 @@
 						<!-- Interior lights  START -->
 						<div class="card" data-unit-group="switch-lights-in">
 							<div class="card-body">
-								<h3 class="card-title">Luminaires - intérieur</h3>
+								<h4 class="card-title">Luminaires - intérieur</h4>
 							</div>
 							<ul class="list-group list-group-flush">
 								{% for lightInt in smartHome.devices.LightInt %}
@@ -75,7 +77,8 @@
 										</svg>
 										<h5>{{lightInt.name}}</h5>
 										<div class=""><canvas id="led-{{lightInt.moduleId}}" data-entry-led="switch-light-{{lightInt.moduleId}}" data-entry-ledid="led-{{lightInt.moduleId}}" width="30" height="30"></canvas></div>
-										<label class="switch ml-auto">
+                                        
+                                        <label class="switch ml-auto">
 											<input type="checkbox" id="switch-light-{{lightInt.moduleId}}">
 										</label>
 										<div class="info-holder info-rb" style="right:40px;">
@@ -88,7 +91,7 @@
 							{% if smartHome.NumberOfEachDevice.NbLightInt > 1 %}
 								<div class="card-body">
 									<div class="lights-controls" data-controls="switch-lights-in">
-										<button data-action="all-on" type="button" class="btn btn-primary btn-rounded mr-2 lights-control">
+										<button data-action="all-on" type="button" class="btn btn-success btn-rounded mr-2 lights-control">
 											<strong>All ON</strong>
 										</button>
 										<button data-action="all-off" type="button" class="btn btn-danger btn-rounded lights-control">
@@ -107,7 +110,7 @@
 						<!-- Interior lights  START -->
 						<div class="card" data-unit-group="switch-lights-ext">
 							<div class="card-body">
-								<h3 class="card-title">Luminaires - extérieur</h3>
+								<h4 class="card-title">Luminaires - extérieur</h4>
 							</div>
 							<ul class="list-group list-group-flush">
 								{% for lightExt in smartHome.devices.LightExt %}
@@ -152,7 +155,7 @@
 						<!-- Appliances  START -->
 						<div class="card" data-unit-group="switch-socket">
 							<div class="card-body">
-								<h3 class="card-title">Prises de courant</h3>
+								<h4 class="card-title">Prises de courant</h4>
 							</div>
 							{# {{dump(smartHome.NumberOfEachDevice.NbClim)}} #}
                             {# <hr class="my-0"> #}
@@ -447,7 +450,7 @@
                                         <script>
                                             var tab = {};
                                         </script> 
-                                        {# Test s'il esxiste au moins un Device de Type 'Light Interior' #}
+                                        {# Test s'il existe au moins un Device de Type 'Light Interior' #}
                                         {% if smartHome.NumberOfEachDevice.NbLightInt > 0 %}
                                             {# Boucle de parcours des Devices de type 'Light Interior' #}
                                             {% for lightInt in smartHome.devices.LightInt %}
@@ -508,7 +511,7 @@
                                             {% endfor %}
                                         {% endif %}
 
-                                        {# Test s'il esxiste au moins un Device de Type 'Light Exterior' #}
+                                        {# Test s'il existe au moins un Device de Type 'Light Exterior' #}
                                         {% if smartHome.NumberOfEachDevice.NbLightExt > 0 %}
                                             {# Boucle de parcours des Devices de type 'Light Exterior' #}
                                             {% for lightExt in smartHome.devices.LightExt %}
@@ -556,7 +559,7 @@
                                             {% endfor %}
                                         {% endif %}
 
-                                        {# Test s'il esxiste au moins un Device de Type 'Clim' #}
+                                        {# Test s'il existe au moins un Device de Type 'Clim' #}
                                         {% if smartHome.NumberOfEachDevice.NbClim > 0 %}
                                             {# Boucle de parcours des Devices de type 'Clim' #}
                                             {% for clim in smartHome.devices.Clim %}
@@ -604,7 +607,7 @@
                                             {% endfor %}
                                         {% endif %}
 
-                                        {# Test s'il esxiste au moins un Device de Type 'WashMachine' #}
+                                        {# Test s'il existe au moins un Device de Type 'WashMachine' #}
                                         {% if smartHome.NumberOfEachDevice.NbWashMachine > 0 %}
                                             {# Boucle de parcours des Devices de type 'WashMachine' #}
                                             {% for washmachine in smartHome.devices.WashMachine %}
@@ -652,7 +655,7 @@
                                             {% endfor %}
                                         {% endif %}
 
-                                        {# Test s'il esxiste au moins un Device de Type 'Fridge' #}
+                                        {# Test s'il existe au moins un Device de Type 'Fridge' #}
                                         {% if smartHome.NumberOfEachDevice.NbFridge > 0 %}
                                             {# Boucle de parcours des Devices de type 'Fridge' #}
                                             {% for fridge in smartHome.devices.Fridge %}
@@ -702,7 +705,7 @@
                                             {% endfor %}
                                         {% endif %}
 
-                                        {# Test s'il esxiste au moins un Device de Type 'Tv' #}
+                                        {# Test s'il existe au moins un Device de Type 'Tv' #}
                                         {% if smartHome.NumberOfEachDevice.NbTv > 0 %}
                                             {# Boucle de parcours des Devices de type 'Tv' #}
                                             {% for tv in smartHome.devices.Tv %}
@@ -752,526 +755,6 @@
                                             {% endfor %}
                                         {% endif %}
 
-
-                                        {# <div class="todo-item all-list">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="Team meet at Starbucks"> Team meet at Starbucks</h5>
-                                                    <p class="meta-date">Aug, 07 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle primary" href="#" role="button" id="dropdownMenuLink-3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-3">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-4">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item all-list todo-task-done">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox" checked>
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="Meet Lisa to discuss project details"> Meet Lisa to discuss project details</h5>
-                                                    <p class="meta-date">Aug, 05 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-5">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-6" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-6">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item all-list">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="Download Complete"> Download Complete</h5>
-                                                    <p class="meta-date">Aug, 03 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle primary" href="#" role="button" id="dropdownMenuLink-24" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-24">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-7">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item all-list todo-task-important">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="Conference call with Marketing Manager"> Conference call with Marketing Manager</h5>
-                                                    <p class="meta-date">Aug, 02 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle danger" href="#" role="button" id="dropdownMenuLink-8" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-8">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-9" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-9">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Back to List</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item all-list todo-task-important">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered"> New User Registered</h5>
-                                                    <p class="meta-date">Aug, 01 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-10">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-11" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-11">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Back to List</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item all-list">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered"> Fix issues in new project</h5>
-                                                    <p class="meta-date">Aug, 01 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-12">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-13" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-13">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="todo-item all-list todo-task-important">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered"> Check All functionality</h5>
-                                                    <p class="meta-date">Aug, 01 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-14" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-14">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-15" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-15">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Back to List</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item all-list todo-task-done">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered"> Check Repository</h5>
-                                                    <p class="meta-date">Aug, 01 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText='{"ops":[{"insert":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.\n"}]}'> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-16" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-16">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-17" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-17">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item todo-task-trash">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered">Trashed Tasks</h5>
-                                                    <p class="meta-date">Sep, 31 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText="This task is for trashed demo. Now, click the dotted dropdown and select the revive option to re-list the task from trash to all list or select the premanent delete option to permantly delete it.">This task is for trashed demo. Now, click the dotted dropdown and select the revive option to re-list the task from trash to all list or select the premanent delete option to permantly delete it. </p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-18" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-18">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-19" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-19">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item todo-task-trash">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered">Trashed Tasks 2</h5>
-                                                    <p class="meta-date">Sep, 31 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText="This task is for trashed demo. Now, click the dotted dropdown and select the revive option to re-list the task from trash to all list or select the premanent delete option to permantly delete it.">This task is for trashed demo. Now, click the dotted dropdown and select the revive option to re-list the task from trash to all list or select the premanent delete option to permantly delete it. </p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-20" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-20">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-21" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-21">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="todo-item todo-task-trash">
-                                            <div class="todo-item-inner">
-                                                <div class="n-chk text-center">
-                                                    <label class="new-control new-checkbox checkbox-primary">
-                                                      <input type="checkbox" class="new-control-input inbox-chkbox">
-                                                      <span class="new-control-indicator"></span>
-                                                    </label>
-                                                </div>
-
-                                                <div class="todo-content">
-                                                    <h5 class="todo-heading" data-todoHeading="New User Registered">Trashed Tasks 3</h5>
-                                                    <p class="meta-date">Sep, 31 2019</p>
-                                                    <p class="todo-text" data-todoHtml="<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>" data-todoText="This task is for trashed demo. Now, click the dotted dropdown and select the revive option to re-list the task from trash to all list or select the premanent delete option to permantly delete it.">This task is for trashed demo. Now, click the dotted dropdown and select the revive option to re-list the task from trash to all list or select the premanent delete option to permantly delete it. </p>
-                                                </div>
-
-                                                <div class="priority-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown p-dropdown">
-                                                        <a class="dropdown-toggle warning" href="#" role="button" id="dropdownMenuLink-22" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-22">
-                                                            <a class="dropdown-item danger" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> High</a>
-                                                            <a class="dropdown-item warning" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Middle</a>
-                                                            <a class="dropdown-item primary" href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg> Low</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="action-dropdown custom-dropdown-icon">
-                                                    <div class="dropdown">
-                                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-23" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                                                        </a>
-
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-23">
-                                                            <a class="edit dropdown-item" href="javascript:void(0);">Edit</a>
-                                                            <a class="important dropdown-item" href="javascript:void(0);">Important</a>
-                                                            <a class="dropdown-item delete" href="javascript:void(0);">Delete</a>
-                                                            <a class="dropdown-item permanent-delete" href="javascript:void(0);">Permanent Delete</a>
-                                                            <a class="dropdown-item revive" href="javascript:void(0);">Revive Task</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> #}
                                     </div>
 
                                     <div class="modal fade" id="todoShowListItem" tabindex="-1" role="dialog" aria-hidden="true">
