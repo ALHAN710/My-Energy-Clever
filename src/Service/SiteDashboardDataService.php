@@ -129,7 +129,7 @@ class SiteDashboardDataService
                                             AND d.dateTime <= :lastNowDate
                                             ")
             ->setParameters(array(
-                'lastMonth'     => $date->format('Y-m'),
+                'lastMonth'     => $date->format('Y-m') . '%',
                 'lastNowDate'   => $date->format('Y-m-d H:i:s'),
                 'siteId'        => $this->site->getId()
             ))
