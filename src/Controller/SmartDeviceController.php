@@ -153,11 +153,17 @@ class SmartDeviceController extends ApplicationController
 
             //dump($device);
 
-            $jsonProg = json_encode($device->getProgramming());
+            $jsonProg = json_decode(json_encode($device->getProgramming(), JSON_UNESCAPED_UNICODE));
             //dump($jsonProg);
-            return $this->json([
+            $response = new JsonResponse([
                 'code'     => 200,
                 'prog'     => $jsonProg,
+                'success'  => ($jsonProg == null ? 0 : 1),
+            ]);
+            return $response;
+            return $this->json([
+                'code'     => 200,
+                'prog'     => '' . $jsonProg . '',
                 'success'  => ($jsonProg == null ? 0 : 1),
             ], 200);
         }
