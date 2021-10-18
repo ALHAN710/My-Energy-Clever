@@ -999,6 +999,12 @@ $(".addTask").click(function () {
         $.each(tabDevices, function (index, value) {
           /* $.ajax returns a promise*/
           //console.log(value)
+          if (jQuery.isEmptyObject(tab[value.slug])) {
+            tab[value.slug] = {
+              'nb': 0,
+              'sc': []
+            }
+          }; // true
           tab[value.slug]['sc'].push(scenarioOBJTemp);
           tab[value.slug]['nb']++;
           var jsonProg_temp = tab[value.slug]
