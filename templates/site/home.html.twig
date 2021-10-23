@@ -254,7 +254,8 @@
                             <div class="tabs tab-content">
                                 <div id="content_1" class="tabcontent"> 
                                     {# <div id="revenueMonthly"></div> #}
-                                    <div id="load_chart"></div>
+                                    {# <div id="load_chart"></div> #}
+                                    <canvas id="load_chart" height="420"></canvas>   
                                     <!-- <div class="loader dual-loader mx-auto" id="load-chart-loader"></div> -->
                                 </div>
                                 <div class="float-right"><small>Dernière mise à jour : <strong><span id="last_update">{{lastDatetimeData|date('d M Y H:i:s')}}</span></strong></small></div>
@@ -475,8 +476,13 @@
 <script src="/js/widgets/modules-widgets.js"></script>
 
 <script src="/plugins/moment/moment.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> #}
 <script src="/plugins/daterangepicker/daterangepicker.js"></script>
 <script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<!-- Chart JS -->
+<script src="/plugins/chartjs/chart.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js" integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> #}
 
 <script src="/plugins/highlight/highlight.pack.js"></script>
 {# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
@@ -503,7 +509,10 @@
                         type: 'bar',
                         height: 160,
                         sparkline: {
-                        enabled: true
+                            enabled: true
+                        },
+                        animations:{
+                            enabled:false
                         },
                     },
                     stroke: {
@@ -589,7 +598,10 @@
                         type: 'bar',
                         height: 160,
                         sparkline: {
-                        enabled: true
+                            enabled: true
+                        },
+                        animations:{
+                            enabled:false
                         },
                     },
                     stroke: {
@@ -667,7 +679,7 @@
                 w_co2Chart.render()
 
                 // load Chart
-                loadChart_options = {
+                {# loadChart_options = {
                     chart: {
                         fontFamily: 'Nunito, sans-serif',
                         height: 415,
@@ -686,7 +698,10 @@
                         toolbar: {
                             show: true
                         },
-                        events: {
+                        animations:{
+                            enabled:false
+                        },
+                        { events: {
                             mounted: function(ctx, config) {
                                 const highest1 = ctx.getHighestValueInSeries(0);
                                 
@@ -707,13 +722,13 @@
                                 })
                                 
                             },
-                        }
+                        } }
                     },
                     colors: ['#1b55e2'],
                     dataLabels: {
                         enabled: false
                     },
-                    markers: {
+                    { markers: {
                         discrete: [{
                             seriesIndex: 0,
                             dataPointIndex: 7,
@@ -721,7 +736,7 @@
                             strokeColor: '#000',
                             size: 5
                         }]
-                    },
+                    }, }
                     subtitle: {
                         text: 'Puissance Actuelle',
                         align: 'left',
@@ -730,8 +745,8 @@
                         offsetY: 35,
                         floating: false,
                         style: {
-                        fontSize: '14px',
-                        color:  '#888ea8'
+                            fontSize: '14px',
+                            color:  '#888ea8'
                         }
                     },
                     title: {
@@ -774,9 +789,9 @@
                     series: [{
                         name: 'Puissance',
                         data: {{ loadChartData['kW'] | json_encode | raw }}
-                        {# data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000] #}
+                        { data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000, 15000, 17000, 14000, 17000] }
                     }],
-                    {# labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], #}
+                    { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], }
                     xaxis: {
                         type: 'datetime',
                         categories: {{ loadChartData['dateP'] | json_encode | raw }},
@@ -804,7 +819,7 @@
                                 hour: 'HH:mm'
                             }
                         },
-                        {# title: {
+                        { title: {
                             text: moment().format('DD MMMM YYYY').toString(),
                             style: {
                                 fontSize: '12px',
@@ -814,7 +829,7 @@
                                 //fontFamily: undefined,
                                 //color: '#444'
                             },
-                        } #}
+                        } }
                     },
                     yaxis: {
                         labels: {
@@ -916,9 +931,163 @@
                 loadChart = new ApexCharts(
                     document.querySelector("#load_chart"),
                     loadChart_options
-                );
-                loadChart.render();
+                ); #}
+                {# loadChart.render(); #}
+               
 
+                var ctx = document.getElementById("load_chart");
+                //ctx.height = 180;
+                //ctx.style.backgroundColor = "rgba(245,244,240,255)";
+                loadChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ loadChartData['dateP'] | json_encode | raw }},
+                        datasets: [{
+                            label: "",
+                            backgroundColor: "#1b55e2",
+                            borderColor: "#1b55e2",
+                            borderWidth: 2,
+                            pointBorderColor: "#1b55e2",
+                            pointBackgroundColor: "#1b55e2",
+                            pointHoverBackgroundColor: "#fff",
+                            pointHoverBorderColor: "#1b55e2",//151,187,205,
+                            pointBorderWidth: 0,
+                            pointRadius: 0.5,
+                            pointStyle: 'circle',
+                            fill: false,
+                            data: {{ loadChartData['kW'] | json_encode | raw }},
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        textAlign:'left',
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                type: 'time',
+                                distribution: 'linear',
+                                time: {
+                                    unit: 'day',//'hour'
+                                    displayFormats: {
+                                        //day: 'D MMM'
+                                        day: 'D MMM'
+                                    },
+                                    unitStepSize: 2
+                                },
+                                gridLines: {
+                                    //display:true,
+                                    drawOnChartArea: false
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    //labelString: moment().format('DD MMMM').toString()//'Mars'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                gridLines: {
+                                    display:true,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'P (Watts)'
+                                }
+                            }]
+                        },
+                        {# scales: {
+                            x: {
+                                display: true,
+                                type: 'time',
+                                //distribution: 'linear',
+                                time: {
+                                    unit: 'hour',//'day'
+                                    displayFormats: {
+                                        //day: 'D MMM'
+                                        day: 'h:mm'
+                                    },
+                                    unitStepSize: 4
+                                },
+                                grid: {
+                                    display:false,
+                                    drawOnChartArea: false
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    //labelString: moment().format('MMMM YYYY').toString()//'Mars'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                beginAtZero: true,
+                                grid: {
+                                    display:false,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Watts'
+                                }
+                            }
+                        }, #}
+                        font: {
+                            //size: 25,
+                            family: 'Nunito, sans-serif',
+                        },
+                        {# plugins: {
+                            title:{
+                                display:true,
+                                align:'start',
+                                text:'{{ loadChartData['Pnow'] }} W',
+                                color:  '#8dbf42',
+                                font: {
+                                    size: 25,
+                                    family: 'Nunito, sans-serif',
+                                }
+                            },
+                            subtitle: {
+                                display: true,
+                                align:'start',
+                                text: 'Puissance Actuelle',
+                                color:  '#888ea8',
+                                font: {
+                                    size: 14,
+                                    family: 'Nunito, sans-serif',
+                                }
+                            },
+                        }, #}
+                        title:{
+                            display:true,
+                            position:'top',
+                            text:['{{ loadChartData['Pnow'] }} W', 'Puissance Actuelle'],
+                            fontColor:  '#8dbf42',
+                            fontSize: 14,
+                            fontFamily: 'Nunito, sans-serif',
+                        },
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                                    label += 'Puissance : ';
+                                    label += tooltipItem.yLabel + ' W';
+                                    return label;
+                                }
+                            }
+                        }
+                        /*animation: {
+                            duration: 2000,
+                            onProgress: function(animation) {
+                                progress.value = animation.animationObject.currentStep / animation.animationObject.numSteps;
+                            }
+                            onAnimationProgress: function() {
+                                console.log('Animation Progress');
+                            }
+                        }*/
+                    }
+
+                });
             }, 500)
             resolve('load chart render')
 
@@ -927,6 +1096,33 @@
         });
             
     //})
+
+    function displayChartJsNewData(chart, label, data, multiple, xscale, title){
+        chart.options.title.text = [String(title) + ' W', 'Puissance Actuelle'];
+        chart.data.labels = [];
+        chart.data.datasets.forEach( (dataset) => {
+            dataset.data = [];
+        });
+        chart.data.labels = label;
+        if(multiple > 1){
+            var i = 0;
+            chart.data.datasets.forEach((dataset) => {
+                if( i < multiple) dataset.data = data[i++];
+            });
+        }
+        else if(multiple == 1){
+            /*chart.data.datasets.forEach((dataset) => {
+                dataset.data = data;
+            });*/
+            //console.log(data)
+            chart.data.datasets[0].data = data;
+        }
+        //if(xscale === 'day') chart.options.scales.xAxes[0].scaleLabel.labelString = moment(dateopt).format('DD MMMM').toString();
+        //else if( xscale === 'month') chart.options.scales.xAxes[0].scaleLabel.labelString = moment(dateopt).format('MMMM').toString();
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        chart.update();
+    }
 
     function progress(prefixSelector, progValue, posLogique, isTime) {
         
@@ -1042,13 +1238,15 @@
                                 
                 //#### Mise à jour de la courbe charge du mois cours
                 //Rafraîchissement de la courbe de charge
-                displayNewData(loadChart, Object.values(result['loadChartData']['dateP']), Object.values(result['loadChartData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                {# displayNewData(loadChart, Object.values(result['loadChartData']['dateP']), Object.values(result['loadChartData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                displayChartJsNewData(loadChart, Object.values(result['loadChartData']['dateP']), Object.values(result['loadChartData']['kW']), 1, 'day', result['loadChartData']['Pnow']);
+                //loadChart.toBase64Image('image/jpeg', 1)
                 //MAJ de la valeur de puissance actuelle
-                loadChart.updateOptions({
+                {# loadChart.updateOptions({
                     title: {
                         text: String(result['loadChartData']['Pnow']) + ' W',
                     }
-                });
+                }); #}
 
                 //#### Mise à jour du tableau des statistiques d'énergie
                 //Valeur moyenne journalière de la consommation d'énergie
@@ -1194,18 +1392,30 @@
 </script>
 
 {# Historical tab panel scripts #}
-<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script> #}
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
 {# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
 <script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+
+<script src="/plugins/datatables/jszip.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> #}
+
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script> #}
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+
+{# <script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script> #}
 <!-- Responsive examples -->
-<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
 <script>
     var now = new Date();
     //var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
