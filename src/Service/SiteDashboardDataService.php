@@ -648,9 +648,9 @@ class SiteDashboardDataService
             //dump($consokWh * $siteTranches['0-110']);
             $consoXAF = $consokWh * $siteTranches['0-110'];
         } else if ($consokWh >= 111 && $consokWh <= 400) $consoXAF = $consokWh * $siteTranches['111-400'];
-        else if ($consokWh >= 401 && $consokWh <= 800 && $site->getSubscriptionUsage() === 'Residantial') $consoXAF = $consokWh * $siteTranches['401-800'];
-        else if ($consokWh >= 401 && $site->getSubscriptionUsage() === 'Non Residantial') $consoXAF = $consokWh * $siteTranches['401+'];
-        else if ($consokWh > 800 && $site->getSubscriptionUsage() === 'Residantial') $consoXAF = $consokWh * $siteTranches['800+'];
+        else if ($consokWh >= 401 && $consokWh <= 800 && $site->getSubscriptionUsage() === 'Residential') $consoXAF = $consokWh * $siteTranches['401-800'];
+        else if ($consokWh >= 401 && $site->getSubscriptionUsage() === 'Non Residential') $consoXAF = $consokWh * $siteTranches['401+'];
+        else if ($consokWh > 800 && $site->getSubscriptionUsage() === 'Residential') $consoXAF = $consokWh * $siteTranches['800+'];
 
         return $consoXAF;
     }
