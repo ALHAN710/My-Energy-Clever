@@ -117,7 +117,7 @@ class SmartDevice
     public function initializeSlug()
     {
         $slugify = new Slugify();
-        $this->slug = $slugify->slugify($this->name . $this->id);
+        $this->slug = $slugify->slugify($this->name . ' ' . $this->id);
     }
 
     public function getId(): ?int
