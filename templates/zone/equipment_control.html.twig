@@ -1,4 +1,4 @@
-{% extends 'base1.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Contrôle à distance des équipements{% endblock %}
 
@@ -1125,7 +1125,7 @@
     <script>
         device_prog_url_prefix = "{{path('smart_device_prog')}}"
         //console.log(device_prog_url_prefix);
-        
+        console.log("UserId = " + $('#usr').val())
         {# Variable qui contient la valeur (Device name) de l'option selecté dans le menu select actuellement visible #}
         select_device_name = "";
 
