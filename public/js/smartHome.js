@@ -8,7 +8,7 @@
 });*/
 
 var isConnected = false;
-var wsbroker = "127.0.0.1";//"portal-myenergyclever.com"//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
+var wsbroker = "portal-myenergyclever.com";//"127.0.0.1";//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
 var wsport = 15675; // port for above 1883
 
 var client = new Paho.MQTT.Client(wsbroker, wsport, "/ws", "user_" + $('#usr').val() + '_' + parseInt(Math.random() * 100, 10));
