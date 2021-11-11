@@ -47,7 +47,7 @@
 			<li class="nav-item">
 				<a class="nav-link active" id="control-tab" data-toggle="tab" href="#control" role="tab" aria-controls="control" aria-selected="true">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>
-				<small>Contrôle</small></a>
+				<small>Contrôle</small> <canvas id="led-home" width="15" height="15"></canvas></a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" id="programming-tab" data-toggle="tab" href="#programming" role="tab" aria-controls="programming" aria-selected="false">
@@ -65,22 +65,22 @@
 					{% if smartHome.NumberOfEachDevice.NbLightInt > 0 %}		 
 					<div class="col-sm-12 col-md-6 col-xl-4">
 						<!-- Interior lights  START -->
-						<div class="card" data-unit-group="switch-lights-in">
+						<div class="card" data-unit-group="sw-lights-in">
 							<div class="card-body">
 								<h4 class="card-title">Luminaires - intérieur</h4>
 							</div>
 							<ul class="list-group list-group-flush">
 								{% for lightInt in smartHome.devices.LightInt %}
-									<li class="list-group-item d-flex" data-unit="switch-light-{{lightInt.moduleId}}">
+									<li class="list-group-item d-flex" data-unit="sw-light-{{lightInt.moduleId}}">
 										<svg class="icon-sprite">
 											<use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/>
 											<use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
 										</svg>
 										<h4><small>{{lightInt.name}}</small></h4>
-										<div class=""><canvas id="led-{{lightInt.moduleId}}" data-entry-led="switch-light-{{lightInt.moduleId}}" data-entry-ledid="led-{{lightInt.moduleId}}" width="30" height="30"></canvas></div>
+										<div class=""><canvas id="led-{{lightInt.moduleId}}" data-entry-led="sw-light-{{lightInt.moduleId}}" data-entry-ledid="led-{{lightInt.moduleId}}" width="30" height="30"></canvas></div>
                                         
                                         <label class="switch ml-auto">
-											<input type="checkbox" id="switch-light-{{lightInt.moduleId}}">
+											<input type="checkbox" id="sw-light-{{lightInt.moduleId}}">
 										</label>
 										<div class="info-holder info-rb" style="right:40px;">
 											<div data-toggle="popover-all" data-content="Checkbox element using localStorage to remember the last status." data-original-title="Switch ON/OFF" data-container="body" data-placement="top" data-offset="0,-6"></div>
@@ -91,7 +91,7 @@
 							</ul>
 							{% if smartHome.NumberOfEachDevice.NbLightInt > 1 %}
 								<div class="card-body">
-									<div class="lights-controls" data-controls="switch-lights-in">
+									<div class="lights-controls" data-controls="sw-lights-in">
 										<button data-action="all-on" type="button" class="btn btn-success btn-rounded mr-2 lights-control">
 											<strong>All ON</strong>
 										</button>
@@ -109,21 +109,21 @@
 					{% if smartHome.NumberOfEachDevice.NbLightExt > 0 %}
 					<div class="col-sm-12 col-md-6 col-xl-4">
 						<!-- Interior lights  START -->
-						<div class="card" data-unit-group="switch-lights-ext">
+						<div class="card" data-unit-group="sw-lights-ext">
 							<div class="card-body">
 								<h4 class="card-title">Luminaires - extérieur</h4>
 							</div>
 							<ul class="list-group list-group-flush">
 								{% for lightExt in smartHome.devices.LightExt %}
-									<li class="list-group-item d-flex" data-unit="switch-light-{{lightExt.moduleId}}">
+									<li class="list-group-item d-flex" data-unit="sw-light-{{lightExt.moduleId}}">
 										<svg class="icon-sprite">
 											<use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/>
 											<use xlink:href="/img/icons-sprite.svg#bulb-eco"/>
 										</svg>
 										<h4><small>{{lightExt.name}}</small></h4>
-										<div class=""><canvas id="led-{{lightExt.moduleId}}" data-entry-led="switch-light-{{lightExt.moduleId}}" data-entry-ledid="led-{{lightExt.moduleId}}" width="30" height="30"></canvas></div>
+										<div class=""><canvas id="led-{{lightExt.moduleId}}" data-entry-led="sw-light-{{lightExt.moduleId}}" data-entry-ledid="led-{{lightExt.moduleId}}" width="30" height="30"></canvas></div>
 										<label class="switch ml-auto">
-											<input type="checkbox" id="switch-light-{{lightExt.moduleId}}">
+											<input type="checkbox" id="sw-light-{{lightExt.moduleId}}">
 										</label>
 										<div class="info-holder info-rb" style="right:40px;">
 											<div data-toggle="popover-all" data-content="Checkbox element using localStorage to remember the last status." data-original-title="Switch ON/OFF" data-container="body" data-placement="top" data-offset="0,-6"></div>
@@ -134,7 +134,7 @@
 							</ul>
 							{% if smartHome.NumberOfEachDevice.NbLightExt > 1 %}
 								<div class="card-body">
-									<div class="lights-controls" data-controls="switch-lights-ext">
+									<div class="lights-controls" data-controls="sw-lights-ext">
 										<button data-action="all-on" type="button" class="btn btn-success btn-rounded mr-2 lights-control">
 											<strong>All ON</strong>
 										</button>
@@ -154,7 +154,7 @@
 					{% if  nbSocketDevice > 0 %}
 					<div class="col-sm-12 col-md-6 col-xl-4">
 						<!-- Appliances  START -->
-						<div class="card" data-unit-group="switch-socket">
+						<div class="card" data-unit-group="sw-socket">
 							<div class="card-body">
 								<h4 class="card-title">Prises de courant</h4>
 							</div>
@@ -164,17 +164,17 @@
                                 {% if smartHome.NumberOfEachDevice.NbClim > 0 %}
                                 {% for clim in smartHome.devices.Clim %}
                                 <!-- Air conditioner START -->
-                                <li class="list-group-item d-flex pb-0" data-unit="switch-socket-{{clim.moduleId}}">
+                                <li class="list-group-item d-flex pb-0" data-unit="sw-socket-{{clim.moduleId}}">
                                     <svg class="icon-sprite icon-1x">
                                         <use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/>
                                         <use xlink:href="/img/icons-sprite.svg#appliances"/>
                                         {# <use xlink:href="/img/icons-sprite.svg#home-fridge"/> #}
                                     </svg>
                                     <h4><small>{{clim.name}}</small></h4>
-                                    <div class=""><canvas id="led-{{clim.moduleId}}" data-entry-led="switch-socket-{{clim.moduleId}}" data-entry-ledid="led-{{clim.moduleId}}" width="30" height="30"></canvas></div>
+                                    <div class=""><canvas id="led-{{clim.moduleId}}" data-entry-led="sw-socket-{{clim.moduleId}}" data-entry-ledid="led-{{clim.moduleId}}" width="30" height="30"></canvas></div>
                                     {# <p class="ml-auto status">ON</p> #}
                                     <label class="switch ml-auto">
-                                        <input type="checkbox" id="switch-socket-{{clim.moduleId}}">
+                                        <input type="checkbox" id="sw-socket-{{clim.moduleId}}">
                                     </label>
                                     <div class="info-holder info-rb" style="right:40px;">
                                         <div data-toggle="popover-all" data-content="Checkbox element using localStorage to remember the last status." data-original-title="Switch ON/OFF" data-container="body" data-placement="top" data-offset="0,-6"></div>
@@ -187,16 +187,16 @@
                                 {% if smartHome.NumberOfEachDevice.NbWashMachine > 0 %}
                                     <!-- Washing machine  START -->
                                     {% for washmachine in smartHome.devices.WashMachine %}
-                                    <li class="list-group-item d-flex pb-0" data-unit="switch-socket-{{washmachine.moduleId}}">
+                                    <li class="list-group-item d-flex pb-0" data-unit="sw-socket-{{washmachine.moduleId}}">
                                         <svg class="icon-sprite icon-1x">
                                             <use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/>
                                             <use xlink:href="/img/icons-sprite.svg#wash-machine"/>
                                         </svg>
                                         <h4><small>{{washmachine.name}}</small></h4>
-                                        <div class=""><canvas id="led-{{washmachine.moduleId}}" data-entry-led="switch-socket-{{washmachine.moduleId}}" data-entry-ledid="led-{{washmachine.moduleId}}" width="30" height="30"></canvas></div>
+                                        <div class=""><canvas id="led-{{washmachine.moduleId}}" data-entry-led="sw-socket-{{washmachine.moduleId}}" data-entry-ledid="led-{{washmachine.moduleId}}" width="30" height="30"></canvas></div>
                                         {# <p class="ml-auto status">ON</p> #}
                                         <label class="switch ml-auto">
-                                            <input type="checkbox" id="switch-socket-{{washmachine.moduleId}}">
+                                            <input type="checkbox" id="sw-socket-{{washmachine.moduleId}}">
                                         </label>
                                     </li>
                                     {% endfor %}
@@ -206,16 +206,16 @@
                                 {% if smartHome.NumberOfEachDevice.NbFridge > 0 %}
                                     <!-- Fridge  START -->
                                     {% for fridge in smartHome.devices.Fridge %}
-                                    <li class="list-group-item d-flex pb-0" data-unit="switch-socket-{{fridge.moduleId}}">
+                                    <li class="list-group-item d-flex pb-0" data-unit="sw-socket-{{fridge.moduleId}}">
                                         <svg class="icon-sprite icon-1x">
                                             <use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/>
                                             <use xlink:href="/img/icons-sprite.svg#home-fridge"/>
                                         </svg>
                                         <h4><small>{{fridge.name}}</small></h4>
-                                        <div class=""><canvas id="led-{{fridge.moduleId}}" data-entry-led="switch-socket-{{fridge.moduleId}}" data-entry-ledid="led-{{fridge.moduleId}}" width="30" height="30"></canvas></div>
+                                        <div class=""><canvas id="led-{{fridge.moduleId}}" data-entry-led="sw-socket-{{fridge.moduleId}}" data-entry-ledid="led-{{fridge.moduleId}}" width="30" height="30"></canvas></div>
                                         {# <p class="ml-auto status">ON</p> #}
                                         <label class="switch ml-auto">
-                                            <input type="checkbox" id="switch-socket-{{fridge.moduleId}}">
+                                            <input type="checkbox" id="sw-socket-{{fridge.moduleId}}">
                                         </label>
                                     </li>
                                     {% endfor %}
@@ -225,15 +225,15 @@
                                 {% if smartHome.NumberOfEachDevice.NbTv > 0 %}
                                     <!-- TV  START -->
                                     {% for tv in smartHome.devices.Tv %}
-                                    <li class="list-group-item d-flex" data-unit="switch-socket-{{tv.moduleId}}">
+                                    <li class="list-group-item d-flex" data-unit="sw-socket-{{tv.moduleId}}">
                                         <svg class="icon-sprite icon-1x">
                                             <use class="glow" fill="url(#radial-glow)" xlink:href="/img/icons-sprite.svg#glow"/>
                                             <use xlink:href="/img/icons-sprite.svg#tv-lcd"/>
                                         </svg>
                                         <h4><small>{{tv.name}}</small></h4>
-                                        <div class=""><canvas id="led-{{tv.moduleId}}" data-entry-led="switch-socket-{{tv.moduleId}}" data-entry-ledid="led-{{tv.moduleId}}" width="30" height="30"></canvas></div>
+                                        <div class=""><canvas id="led-{{tv.moduleId}}" data-entry-led="sw-socket-{{tv.moduleId}}" data-entry-ledid="led-{{tv.moduleId}}" width="30" height="30"></canvas></div>
                                         <label class="switch ml-auto">
-                                            <input type="checkbox" id="switch-socket-{{tv.moduleId}}">
+                                            <input type="checkbox" id="sw-socket-{{tv.moduleId}}">
                                         </label>
                                         {# <h5>TV</h5>
                                         <p class="ml-auto status">OFF</p> #}
@@ -248,7 +248,7 @@
                             </ul>
                             {% if nbSocketDevice > 1 %}
                                 <div class="card-body">
-                                    <div class="lights-controls" data-controls="switch-socket">
+                                    <div class="lights-controls" data-controls="sw-socket">
                                         <button data-action="all-on" type="button" class="btn btn-success btn-rounded mr-2 lights-control">
                                             <strong>All ON</strong>
                                         </button>
@@ -378,7 +378,7 @@
                                     {% if smartHome.NumberOfEachDevice.NbLightInt > 0 %}
                                         <select class="selectpicker form-control input-search light-in" id='light-in-id' data-live-search="true">
                                             {% for lightInt in smartHome.devices.LightInt %}
-                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{lightInt.slug}}" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'switch-light-' ~ lightInt.moduleId}}">{{lightInt.name}}</option>
+                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{lightInt.slug}}" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'sw-light-' ~ lightInt.moduleId}}">{{lightInt.name}}</option>
                                             {% endfor %}
                                         </select>
                                     {% elseif smartHome.NumberOfEachDevice.NbLightInt == 1 %}
@@ -389,7 +389,7 @@
                                     {% if smartHome.NumberOfEachDevice.NbLightExt > 0 %}
                                         <select class="selectpicker form-control input-search light-ext" id='light-ext-id' data-live-search="true" title="Choisir un équipement">
                                             {% for lightExt in smartHome.devices.LightExt %}
-                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{lightExt.slug}}" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'switch-light-' ~ lightExt.moduleId}}">{{lightExt.name}}</option>
+                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{lightExt.slug}}" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'sw-light-' ~ lightExt.moduleId}}">{{lightExt.name}}</option>
                                             {% endfor %}
                                         </select>
                                     {% elseif smartHome.NumberOfEachDevice.NbLightExt == 1 %}
@@ -400,7 +400,7 @@
                                     {% if smartHome.NumberOfEachDevice.NbClim > 0 %}
                                         <select class="selectpicker form-control input-search socket-ac" id='socket-ac-id' data-live-search="true" title="Choisir un équipement">
                                             {% for clim in smartHome.devices.Clim %}
-                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{clim.slug}}" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'switch-socket-' ~ clim.moduleId}}">{{clim.name}}</option>
+                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{clim.slug}}" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'sw-socket-' ~ clim.moduleId}}">{{clim.name}}</option>
                                             {% endfor %}
                                         </select>
                                     {% elseif smartHome.NumberOfEachDevice.NbClim == 1 %}
@@ -411,7 +411,7 @@
                                     {% if smartHome.NumberOfEachDevice.NbWashMachine > 0 %}
                                         <select class="selectpicker form-control input-search socket-washmachine" data-live-search="true" title="Choisir un équipement">
                                             {% for washmachine in smartHome.devices.WashMachine %}
-                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{washmachine.slug}}" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'switch-socket-' ~ washmachine.moduleId}}">{{washmachine.name}}</option>
+                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{washmachine.slug}}" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'sw-socket-' ~ washmachine.moduleId}}">{{washmachine.name}}</option>
                                             {% endfor %}
                                         </select>
                                     {% elseif smartHome.NumberOfEachDevice.NbWashMachine == 1 %}
@@ -422,7 +422,7 @@
                                     {% if smartHome.NumberOfEachDevice.NbFridge > 0 %}
                                         <select class="selectpicker form-control input-search socket-fridge" data-live-search="true" title="Choisir un équipement">
                                             {% for fridge in smartHome.devices.Fridge %}
-                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{fridge.slug}}" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'switch-socket-' ~ fridge.moduleId}}">{{fridge.name}}</option>
+                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{fridge.slug}}" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'sw-socket-' ~ fridge.moduleId}}">{{fridge.name}}</option>
                                             {% endfor %}
                                         </select>
                                     {% elseif smartHome.NumberOfEachDevice.NbFridge == 1 %}
@@ -433,7 +433,7 @@
                                     {% if smartHome.NumberOfEachDevice.NbTv > 0 %}
                                         <select class="selectpicker form-control input-search socket-tv" data-live-search="true" title="Choisir un équipement">
                                             {% for tv in smartHome.devices.Tv %}
-                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{tv.slug}}" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'switch-socket-' ~ tv.moduleId}}">{{tv.name}}</option>
+                                                <option {% if loop.index0 == 0 %}selected{% endif %} value="{{tv.slug}}" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'sw-socket-' ~ tv.moduleId}}">{{tv.name}}</option>
                                             {% endfor %}
                                         </select>
                                     {% elseif smartHome.NumberOfEachDevice.NbTv == 1 %}
@@ -465,7 +465,7 @@
                                                     {# Boucle de parcours des scénari du device #}
                                                     {% for scenario in lightInt.programming['sc'] %}
                                                     {# {{dump(scenario)}} #}
-                                                    <div class="todo-item light-in {{lightInt.slug}}" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'switch-light-' ~ lightInt.moduleId}}">
+                                                    <div class="todo-item light-in {{lightInt.slug}}" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'sw-light-' ~ lightInt.moduleId}}">
                                                         <div class="todo-item-inner">
                                                             {# <div class="n-chk text-center">
                                                                 <label class="new-control new-checkbox checkbox-primary">
@@ -490,12 +490,12 @@
                                                                     </a>
 
                                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{lightInt.slug}}-{{loop.index0}}">
-                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'switch-light-' ~ lightInt.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'sw-light-' ~ lightInt.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3 flaticon-notes"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                                             Modifier
                                                                         </a>
                                                                         {# <a class="important dropdown-item" href="javascript:void(0);">Important</a> #}
-                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'switch-light-' ~ lightInt.moduleId}}"  data-sc={{loop.index0}}>
+                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{lightInt.name}}" data-device="{{lightInt.slug}}" data-address="{{'sw-light-' ~ lightInt.moduleId}}"  data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                             Supprimer
                                                                         </a>
@@ -523,7 +523,7 @@
                                                     </script> 
                                                     {# Boucle de parcours des scénari du device #}
                                                     {% for scenario in lightExt.programming['sc'] %}
-                                                    <div class="todo-item light-ext {{lightExt.slug}}" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'switch-light-' ~ lightExt.moduleId}}">
+                                                    <div class="todo-item light-ext {{lightExt.slug}}" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'sw-light-' ~ lightExt.moduleId}}">
                                                         <div class="todo-item-inner">
                                                             <div class="todo-content">
                                                                 <h5 class="todo-heading" data-todoHeading="{{scenario['name']}}">{{scenario['name']}} <small><span class="badge badge-dark">#{{lightExt.name}}</span></small></h5>
@@ -541,11 +541,11 @@
                                                                     </a>
 
                                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{lightExt.slug}}-{{loop.index0}}">
-                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'switch-light-' ~ lightExt.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'sw-light-' ~ lightExt.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3 flaticon-notes"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                                             Modifier
                                                                         </a>
-                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'switch-light-' ~ lightExt.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{lightExt.name}}" data-device="{{lightExt.slug}}" data-address="{{'sw-light-' ~ lightExt.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                             Supprimer
                                                                         </a>
@@ -571,7 +571,7 @@
                                                     </script> 
                                                     {# Boucle de parcours des scénari du device #}
                                                     {% for scenario in clim.programming['sc'] %}
-                                                    <div class="todo-item socket-ac {{clim.slug}}" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'switch-socket-' ~ clim.moduleId}}">
+                                                    <div class="todo-item socket-ac {{clim.slug}}" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'sw-socket-' ~ clim.moduleId}}">
                                                         <div class="todo-item-inner">
                                                             <div class="todo-content">
                                                                 <h5 class="todo-heading" data-todoHeading="{{scenario['name']}}">{{scenario['name']}} <small><span class="badge badge-dark">#{{clim.name}}</span></small></h5>
@@ -589,11 +589,11 @@
                                                                     </a>
 
                                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{clim.slug}}-{{loop.index0}}">
-                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'switch-socket-' ~ clim.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'sw-socket-' ~ clim.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3 flaticon-notes"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                                             Modifier
                                                                         </a>
-                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'switch-socket-' ~ clim.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{clim.name}}" data-device="{{clim.slug}}" data-address="{{'sw-socket-' ~ clim.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                             Supprimer
                                                                         </a>
@@ -619,7 +619,7 @@
                                                     </script> 
                                                     {# Boucle de parcours des scénari du device #}
                                                     {% for scenario in washmachine.programming['sc'] %}
-                                                    <div class="todo-item socket-washmachine {{washmachine.slug}}" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'switch-socket-' ~ washmachine.moduleId}}">
+                                                    <div class="todo-item socket-washmachine {{washmachine.slug}}" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'sw-socket-' ~ washmachine.moduleId}}">
                                                         <div class="todo-item-inner">
                                                             <div class="todo-content">
                                                                 <h5 class="todo-heading" data-todoHeading="{{scenario['name']}}">{{scenario['name']}} <small><span class="badge badge-dark">#{{washmachine.name}}</span></small></h5>
@@ -637,11 +637,11 @@
                                                                     </a>
 
                                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{washmachine.slug}}-{{loop.index0}}">
-                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'switch-socket-' ~ washmachine.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'sw-socket-' ~ washmachine.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3 flaticon-notes"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                                             Modifier
                                                                         </a>
-                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'switch-socket-' ~ washmachine.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{washmachine.name}}" data-device="{{washmachine.slug}}" data-address="{{'sw-socket-' ~ washmachine.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                             Supprimer
                                                                         </a>
@@ -668,7 +668,7 @@
                                                     </script> 
                                                     {# Boucle de parcours des scénari du device #}
                                                     {% for scenario in fridge.programming['sc'] %}
-                                                    <div class="todo-item socket-fridge {{fridge.slug}}" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'switch-socket-' ~ fridge.moduleId}}">
+                                                    <div class="todo-item socket-fridge {{fridge.slug}}" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'sw-socket-' ~ fridge.moduleId}}">
                                                         <div class="todo-item-inner">
                                                             
                                                             <div class="todo-content">
@@ -687,11 +687,11 @@
                                                                     </a>
 
                                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{fridge.slug}}-{{loop.index0}}">
-                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'switch-socket-' ~ fridge.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'sw-socket-' ~ fridge.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3 flaticon-notes"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                                             Modifier
                                                                         </a>
-                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'switch-socket-' ~ fridge.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{fridge.name}}" data-device="{{fridge.slug}}" data-address="{{'sw-socket-' ~ fridge.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                             Supprimer
                                                                         </a>
@@ -718,7 +718,7 @@
                                                     </script> 
                                                     {# Boucle de parcours des scénari du device #}
                                                     {% for scenario in tv.programming['sc'] %}
-                                                    <div class="todo-item socket-tv {{tv.slug}}" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'switch-socket-' ~ tv.moduleId}}">
+                                                    <div class="todo-item socket-tv {{tv.slug}}" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'sw-socket-' ~ tv.moduleId}}">
                                                         <div class="todo-item-inner">
                                                             
                                                             <div class="todo-content">
@@ -737,11 +737,11 @@
                                                                     </a>
 
                                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{tv.slug}}-{{loop.index0}}">
-                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'switch-socket-' ~ tv.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="edit dropdown-item" href="javascript:void(0);" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'sw-socket-' ~ tv.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3 flaticon-notes"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                                             Modifier
                                                                         </a>
-                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'switch-socket-' ~ tv.moduleId}}" data-sc={{loop.index0}}>
+                                                                        <a class="dropdown-item delete" href="javascript:void(0);" data-name="{{tv.name}}" data-device="{{tv.slug}}" data-address="{{'sw-socket-' ~ tv.moduleId}}" data-sc={{loop.index0}}>
                                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                                             Supprimer
                                                                         </a>
@@ -1180,6 +1180,21 @@
                 //alert("Active tab " + x);
             }
         });
+
+        //var led = "sw-home";
+        var ledHomeId = "led-home";
+        // Assign page elements to variables
+        var canvasLedHome = document.getElementById(ledHomeId);
+
+        // Draw circle in canvas
+        contextLedHome = canvasLedHome.getContext("2d");
+        contextLedHome.arc(7.5, 7.5, 2.5, 0, Math.PI * 2, false);
+        contextLedHome.lineWidth = 3;
+        contextLedHome.strokeStyle = "red";
+        contextLedHome.stroke();
+        contextLedHome.fillStyle = "red";
+        contextLedHome.fill();
+        
     </script> 
 
 	{# <script>

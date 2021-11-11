@@ -8,7 +8,7 @@
 });*/
 
 var isConnected = false;
-var wsbroker = "portal-myenergyclever.com"//"127.0.0.1";//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
+var wsbroker = "127.0.0.1";//"portal-myenergyclever.com"//"192.168.10.40";//location.hostname;  //mqtt websocket enabled broker
 var wsport = 15675; // port for above 1883
 
 var client = new Paho.MQTT.Client(wsbroker, wsport, "/ws", "user_" + $('#usr').val() + '_' + parseInt(Math.random() * 100, 10));
@@ -18,8 +18,10 @@ client.onConnectionLost = function (responseObject) {
     console.log("CONNECTION LOST - " + responseObject.errorMessage);
     // Log disconnection state
     console.log("Disconnected");
-    $('#homeWsConnStatus').addClass('text-danger');
-    $('#homeWsConnStatus').removeClass('text-success');
+    contextLedHome.strokeStyle = "red";
+    contextLedHome.stroke();
+    contextLedHome.fillStyle = "red";
+    contextLedHome.fill();
     resetLedConnexionStatus();
 
 };
@@ -52,8 +54,10 @@ client.onMessageArrived = function (message) {
             switch (json.To) {
                 case "user":
                     if (json.Object === "Connection Status") {
-                        $('#homeWsConnStatus').addClass('text-success');
-                        $('#homeWsConnStatus').removeClass('text-danger');
+                        contextLedHome.strokeStyle = "red";
+                        contextLedHome.stroke();
+                        contextLedHome.fillStyle = "red";
+                        contextLedHome.fill();
                     }
                     else if (json.Object === "Device Output Status") {
                         status = (parseInt(json.message) === 1) ? true : false;
@@ -99,9 +103,9 @@ client.onMessageArrived = function (message) {
                         }
 
                         //Get the device's output status
-                        mess.Object = "Device Output Status";
-                        mess.To = "Devices";
-                        doSend(JSON.stringify(mess));
+                        // mess.Object = "Device Output Status";
+                        // mess.To = "Devices";
+                        // doSend(JSON.stringify(mess));
 
                         //Get the ac-device's remaining time
                         // mess.Object = "Remaining Time";
@@ -215,9 +219,16 @@ setTimeout(function () {
             useSSL: useSSL,
             onSuccess: function () {
                 isConnected = true;
+
+                contextLedHome.strokeStyle = "#5c1ac3";
+                contextLedHome.stroke();
+                contextLedHome.fillStyle = "#5c1ac3";
+                contextLedHome.fill();
+
                 console.log("CONNECTION SUCCESS");
                 // client.subscribe("/#", {qos: 1}); 
-                client.subscribe("from/CleverBox/" + $('#bx').val() + "/#", { qos: 2 });
+                // client.subscribe("from/CleverBox/" + $('#bx').val() + "/#", { qos: 2 });
+                client.subscribe("to/CleverBox/" + $('#bx').val() + "/#", { qos: 2 });
                 console.log("Connected");
                 /*mess.To = "Box";
                 mess.Object = "Connection Status";
@@ -234,13 +245,19 @@ setTimeout(function () {
                 // console.log(d.getFullYear());
                 // console.log(strDate.substring(0, strDate.indexOf(' (')));
                 //$('.deviceClock').html(strDate.substring(0, strDate.indexOf(' (')));
-                //mess.From = "user";
-                //mess.To = "Box";
-                //mess.Object = "Device Output Status";
-                //mess.To = "Devices";
-                //doSend(JSON.stringify(mess));
+
+                setTimeout(function () {
+                    //Get the device's output status
+                    mess.Object = "Device Output Status";
+                    mess.To = "Devices";
+                    doSend(JSON.stringify(mess));
+                }, 800)
             },
             onFailure: function (message) {
+                contextLedHome.strokeStyle = "red";
+                contextLedHome.stroke();
+                contextLedHome.fillStyle = "red";
+                contextLedHome.fill();
                 resetLedConnexionStatus();
                 console.log("CONNECTION FAILURE - " + message.errorMessage);
                 // Log disconnection state
@@ -251,6 +268,7 @@ setTimeout(function () {
         });
     }
 }, 500)
+
 //console.log("CONNECT TO " + wsbroker + ":" + wsport);
 //client.connect(options);
 // Try to reconnect after a few seconds
@@ -265,9 +283,16 @@ setInterval(function () {
             useSSL: useSSL,
             onSuccess: function () {
                 isConnected = true;
+
+                contextLedHome.strokeStyle = "#5c1ac3";
+                contextLedHome.stroke();
+                contextLedHome.fillStyle = "#5c1ac3";
+                contextLedHome.fill();
+
                 console.log("CONNECTION SUCCESS");
                 // client.subscribe("/#", {qos: 1}); 
-                client.subscribe("from/CleverBox/" + $('#bx').val() + "/#", { qos: 2 });
+                // client.subscribe("from/CleverBox/" + $('#bx').val() + "/#", { qos: 2 });
+                client.subscribe("to/CleverBox/" + $('#bx').val() + "/#", { qos: 2 });
                 console.log("Connected");
                 /*mess.To = "Box";
                 mess.Object = "Connection Status";
@@ -284,13 +309,19 @@ setInterval(function () {
                 // console.log(d.getFullYear());
                 // console.log(strDate.substring(0, strDate.indexOf(' (')));
                 //$('.deviceClock').html(strDate.substring(0, strDate.indexOf(' (')));
-                //mess.From = "user";
-                //mess.To = "Box";
-                //mess.Object = "Device Output Status";
-                //mess.To = "Devices";
-                //doSend(JSON.stringify(mess));
+
+                setTimeout(function () {
+                    //Get the device's output status
+                    mess.Object = "Device Output Status";
+                    mess.To = "Devices";
+                    doSend(JSON.stringify(mess));
+                }, 800)
             },
             onFailure: function (message) {
+                contextLedHome.strokeStyle = "red";
+                contextLedHome.stroke();
+                contextLedHome.fillStyle = "red";
+                contextLedHome.fill();
                 resetLedConnexionStatus();
                 console.log("CONNECTION FAILURE - " + message.errorMessage);
                 // Log disconnection state
@@ -318,6 +349,14 @@ setInterval(function () {
     mess.Object = "Device Connexion Status";
     resetLedConnexionStatus();
     doSend(JSON.stringify(mess));
+
+    setTimeout(function () {
+        //Get the device's output status
+        mess.Object = "Device Output Status";
+        mess.To = "Devices";
+        doSend(JSON.stringify(mess));
+    }, 500)
+
 }, 120000);
 
 var arr;
@@ -339,7 +378,7 @@ function doSend(data) {
         message = new Paho.MQTT.Message(data);
         //message.destinationName = "test/all";
         //message.destinationName = "remote/to/CleverBox/" + $('#bx').val();
-        message.destinationName = "from/CleverBox/" + $('#bx').val() + "/#";
+        message.destinationName = "from/CleverBox/" + $('#bx').val() + "/user";
         console.log("SEND ON " + message.destinationName + " PAYLOAD " + data);
         client.send(message);
     }
@@ -371,6 +410,7 @@ function init() {
     var ledId = "";
     $.each($entryLeds, function (index, value) {
         led = "" + value;
+        // console.log(led);
         ledId = "" + $entryLedIds[index];
         // Assign page elements to variables
         canvas[led] = document.getElementById(ledId);
@@ -401,6 +441,7 @@ function resetLedConnexionStatus() {
         context[led].stroke();
         context[led].fillStyle = "red";
         context[led].fill();
+
     });
 }
 
