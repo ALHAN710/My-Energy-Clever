@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enterprise index{% endblock %}
+
+{% block body %}
+    <h1>Enterprise index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>SocialReason</th>
+                <th>Niu</th>
+                <th>Rccm</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>PhoneNumber</th>
+                <th>CreatedAt</th>
+                <th>Logo</th>
+                <th>Country</th>
+                <th>EditedAt</th>
+                <th>IsActive</th>
+                <th>Slug</th>
+                <th>AccountType</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for enterprise in enterprises %}
+            <tr>
+                <td>{{ enterprise.id }}</td>
+                <td>{{ enterprise.socialReason }}</td>
+                <td>{{ enterprise.niu }}</td>
+                <td>{{ enterprise.rccm }}</td>
+                <td>{{ enterprise.address }}</td>
+                <td>{{ enterprise.email }}</td>
+                <td>{{ enterprise.phoneNumber }}</td>
+                <td>{{ enterprise.createdAt ? enterprise.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ enterprise.logo }}</td>
+                <td>{{ enterprise.country }}</td>
+                <td>{{ enterprise.editedAt ? enterprise.editedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ enterprise.isActive ? 'Yes' : 'No' }}</td>
+                <td>{{ enterprise.slug }}</td>
+                <td>{{ enterprise.accountType }}</td>
+                <td>
+                    <a href="{{ path('enterprise_show', {'id': enterprise.id}) }}">show</a>
+                    <a href="{{ path('enterprise_edit', {'id': enterprise.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('enterprise_new') }}">Create new</a>
+{% endblock %}

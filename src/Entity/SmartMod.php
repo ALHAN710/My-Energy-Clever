@@ -119,6 +119,11 @@ class SmartMod
      */
     private $slug;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $consoFuelRate = [];
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
@@ -431,6 +436,18 @@ class SmartMod
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getConsoFuelRate(): ?array
+    {
+        return $this->consoFuelRate;
+    }
+
+    public function setConsoFuelRate(?array $consoFuelRate): self
+    {
+        $this->consoFuelRate = $consoFuelRate;
 
         return $this;
     }

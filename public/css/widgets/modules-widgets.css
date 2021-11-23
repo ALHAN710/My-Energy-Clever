@@ -1427,7 +1427,7 @@
       .widget-table-two .table > thead > tr > th:first-child .th-content {
         margin-left: 10px; }
       .widget-table-two .table > thead > tr > th:last-child .th-content {
-        text-align: right;
+        text-align: center;
         margin-right: 10px; }
       .widget-table-two .table > thead > tr > th:nth-last-child(2) .th-content {
         text-align: center;
@@ -1457,7 +1457,7 @@
     .widget-table-two .table > tbody > tr > td:last-child {
       border-top-right-radius: 6px;
       padding: 15.5px 15px 15.5px 0;
-      text-align: right;
+      text-align: center;
       border-bottom-right-radius: 6px; }
     .widget-table-two .table .td-content.customer-name {
       color: #515365; }

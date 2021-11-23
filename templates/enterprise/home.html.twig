@@ -1,0 +1,1640 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{enterprise.socialReason}} | Accueil{% endblock %}
+
+{% block stylesheets %}
+<!-- BEGIN PAGE LEVEL STYLES -->
+<link rel="stylesheet" type="text/css" href="/css/forms/theme-checkbox-radio.css">
+<link href="/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+<link href="/css/apps/contacts.css" rel="stylesheet" type="text/css" />
+<!-- END PAGE LEVEL STYLES -->    
+<!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+<link href="/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+<link href="/plugins/animate/animate.css" rel="stylesheet" type="text/css">
+<script src="/plugins/sweetalerts/promise-polyfill.js"></script>
+<link href="/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css">
+<link href="/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css">
+<link href="/plugins/apex/apexcharts.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/css/widgets/modules-widgets.css">  
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/datatables.css">
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/dt-global_style.css">
+<link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />
+<link href="/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+{% block body %}
+<div class="border-top-tab">
+    {# <ul class="nav nav-tabs mb-3 mt-3 justify-content-center" id="borderTop" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16C1,17.1 1.9,18 3,18H10V20H8V22H16V20H14V18H21C22.1,18 23,17.1 23,16V4C23,2.89 22.1,2 21,2Z" /></svg>
+             Mon Parc</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="historical-tab" data-toggle="tab" href="#historical" role="tab" aria-controls="historical" aria-selected="false">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M3,22V8H7V22H3M10,22V2H14V22H10M17,22V14H21V22H17Z" /></svg>
+             Historique</a>
+        </li>
+    </ul> #}
+    <div class="tab-content" id="borderTopContent">
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            
+            <div class="row widget-statistic layout-top-spacing">
+                {# <div class="col-xl-2 col-lg-2 col-md-6 col-sm-12 col-12 layout-spacing">
+                </div> #}
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-followers" style="background-color:#fff;">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            <h5 class="text-primary">Répartition des consommations par site</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-apex_pie_active_energy_flow_overview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                
+                {# <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-followers">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            <p class="w-value"><span id="currentkWh">{{currentMonthkWh}}</span> kWh <span id="conso-progress-color" class="text-{% if currentMonthkWhProgress < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-progress-value">{% if currentMonthkWhProgress >= 0 or currentMonthkWhProgress == 'INF'  %}+{% endif %}{% if currentMonthkWhProgress matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthkWhProgress}}{% else %}{{currentMonthkWhProgress}}{% endif %}</span>% 
+                            <svg id="conso-progress-up-icon" class="{% if currentMonthkWhProgress <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            <svg id="conso-progress-down-icon" class="{% if currentMonthkWhProgress > 0 or currentMonthkWhProgress == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                            </span>
+                            <h5 class="">Consommation du mois en cours</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-conso"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                              
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-referral">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                            </div>
+                            <p class="w-value"><span id="emission-value">{{currentMonthGasEmission}}</span> kgCO<sub>2</sub></p>
+                            <h5 class="">Émission de gaz à effet de serre</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-co2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div> #}
+
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-referral" style="background-color:#fff;">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                            </div>
+                                <span><h5 class="text-danger">Répartition des émissions <span id="co2-str">CO<sub>2</sub></span> par site</h5></span>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-apex_pie_emession_flow_overview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-referral" style="background-color:#fff;">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                            </div>
+                            <span><h5 class="text-danger">Bilan Carbonne</h5></span>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-apex_pie_emession_flow_overview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div> #}
+
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="widget widget-one_hybrid widget-engagement" style="background-color:#fff;">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg> #}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            </div>
+                            <h4 class="text-success">Bilan Carbonne Annuel</h4>
+                            <div class="row">
+                                <div class="col">Plus Pollueur</div>
+                                <div class="col h6"><span id="">Datacenter Services Douala</span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">Moins Pollueur</div>
+                                <div class="col h6"><span id="">Head Office Douala</span></div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col">CO<sub>2</sub> émis</div>
+                                <div class="col h6 text-danger"><span id="" class="h5">2.35</span> TCO<sub>2</sub></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">CO<sub>2</sub> absorbé</div>
+                                <div class="col h6 text-success"><span id=""  class="h5">0</span> TCO<sub>2</sub></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">Bilan</div>
+                                <div class="col h6 text-primary"><span id=""  class="h5">2.35</span> TCO<sub>2</sub></div>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-2"></div>
+                            <div class="col-8 text-center">
+                                <button type="button" class="btn btn-outline-primary btn-rounded" data-toggle="modal" data-target="#editBudgetModal">
+                                Compenser mes CO<sub>2</sub>
+                                </button>
+                            </div> 
+                            <div class="col-2"></div>
+                        </div>
+                        <div class="widget-content">   
+                            <div class="order-summary">
+
+                                <div class="summary-list">
+                                    <div class="w-icon">
+                                        {# <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M3,6H21V18H3V6M12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15C10.34,15 9,13.66 9,12C9,10.34 10.34,9 12,9M7,8C7,9.1 6.1,10 5,10V14C6.1,14 7,14.9 7,16H17C17,14.9 17.9,14 19,14V10C17.9,10 17,9.1 17,8H7Z" /></svg> #}
+                                    </div>
+                                    <div class="w-summary-details">
+                                        
+                                        <div class="w-summary-info">
+                                            
+                                        </div>
+
+                                        <div class="w-summary-stats">
+                                            {# <div class="progress">
+                                                <div class="progress-bar bg-gradient-{% if ratio <= 50 %}success{% else %}danger{% endif %}" id="budget-progressbar" role="progressbar" style="width: {{ratio}}%" aria-valuenow="{{ratio}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div> #}
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="summary-list">
+                                    {# <div class="w-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+                                    </div> #}
+                                    <div class="w-summary-details">
+                                        
+                                        <div class="w-summary-info">
+                                            <h6></h6>
+                                            <p class="summary-count">
+                                                <!-- Button trigger modal -->
+                                                
+                                                {# <a href="#" id="edit-budget" class="btn btn-outline-primary btn-rounded float-right">Budget</a> #}
+                                            </p>
+                                        </div>
+
+                                        {# Modal d'dition de budget #}
+                                        {# <div class="modal fade register-modal" id="editBudgetModal" tabindex="-1" role="dialog" aria-labelledby="editBudgetModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+
+                                                    <div class="modal-header" id="editBudgetModalLabel">
+                                                        <h4 class="modal-title">Définissez votre Budget pour le mois en cours</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form class="mt-0" id="edit-bg-form">
+                                                            <div class="form-group">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                                                <input type="number" min="0" step="1" class="form-control mb-2" id="amount-bg" value={{budget}} placeholder="Montant" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                                <input type="text" class="form-control mb-2" id="date-bg" value="{{'now'|date('F Y') }}" placeholder="Mois" readonly="readonly">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M19,3V21H13V17.5H11V21H5V3H19M15,7H17V5H15V7M11,7H13V5H11V7M7,7H9V5H7V7M15,11H17V9H15V11M11,11H13V9H11V11M7,11H9V9H7V11M15,15H17V13H15V15M11,15H13V13H11V15M7,15H9V13H7V15M15,19H17V17H15V19M7,19H9V17H7V19M21,1H3V23H21V1Z" /></svg>
+                                                                <input type="text" class="form-control mb-4" id="site-bg" value="{{site.name}}" placeholder="Installation" readonly="readonly">
+                                                            </div>
+                                                            <button type="button" id="edit-bg" class="btn btn-primary mt-2 mb-2 btn-block">Enregistrer</button>
+                                                        </form>
+
+                                                        
+
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div> #}
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12 layout-spacing">
+                </div> #}
+            </div> 
+
+            <div class="row sales layout-spacing">
+
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-table-two">
+
+                        <div class="widget-heading">
+                            <h5 class=""></h5>
+                        </div>
+
+                        <div class="widget-content">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th><div class="th-content">Sites</div></th>
+                                            <th><div class="th-content">P (kW)</div></th>
+                                            <th><div class="th-content">E (kWh)</div></th>
+                                            <th><div class="th-content th-heading">FP</div></th>
+                                            <th><div class="th-content">Emission (kgCO<sub>2</sub>)</div></th>
+                                            <th><div class="th-content">Source disponible</div></th>
+                                            <th><div class="th-content">Last update</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        {% for site in enterprise.sites %}
+                                        <tr>
+                                            <td><div class="td-content customer-name"><a href="{{path('site_pro_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>
+                                            <td><div class="td-content product-brand" id="power-{{site.slug}}">{{sitesParams[site.slug]['Power']}}</div></td>
+                                            <td>
+                                                <div class="td-content">
+                                                    <span id="currentkWh-{{site.slug}}">{{sitesParams[site.slug]['currentConsokWh']}}</span> <span id="conso-progress-{{site.slug}}-color" class="text-{% if sitesParams[site.slug]['currentConsokWhProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:11px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-progress-{{site.slug}}-value">{% if sitesParams[site.slug]['currentConsokWhProgress'] >= 0 or sitesParams[site.slug]['currentConsokWhProgress'] == 'INF'  %}+{% endif %}{% if sitesParams[site.slug]['currentConsokWhProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{sitesParams[site.slug]['currentConsokWhProgress']}}{% else %}{{sitesParams[site.slug]['currentConsokWhProgress']}}{% endif %}</span>% 
+                                                    <svg id="conso-progress-{{site.slug}}-up-icon" class="{% if sitesParams[site.slug]['currentConsokWhProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                    <svg id="conso-progress-{{site.slug}}-down-icon" class="{% if sitesParams[site.slug]['currentConsokWhProgress'] > 0 or sitesParams[site.slug]['currentConsokWhProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                    </span>          
+                                                </div>
+                                            </td>
+                                            <td><div class="td-content" id="fp-{{site.slug}}">{{sitesParams[site.slug]['currentPF']}}</div></td>
+                                            <td><div class="td-content pricing"><span class="" id="emission-value-{{site.slug}}">{{sitesParams[site.slug]['currentGasEmission']}}</span></div></td>
+                                            <td>
+                                                <div class="td-content">
+                                                    {% set isGenset = sitesParams[site.slug]['isGenset'] %}
+                                                    <span class="badge outline-badge-{% if isGenset == 0 %}success{% else %}danger{% endif %} mt-1" id="st-grid-{{site.slug}}">Grid</span>
+                                                    <span class="badge outline-badge-{% if isGenset == 1 %}success{% else %}danger{% endif %} mt-1" id="st-genset-{{site.slug}}">Genset</span>
+                                                </div>
+                                            </td>
+                                            {# <td><div class="td-content" id="last_update-{{site.slug}}">{{sitesParams[site.slug]['lastDatetimeData']|date('d M Y H:i:s')}}</div></td> #}
+                                            <td><div class="td-content" id="last_update-{{site.slug}}"><small>{{sitesParams[site.slug]['lastDatetimeData']|date('d M Y H:i:s')}}</small></div></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>   
+
+            
+        </div>
+
+        <div class="tab-pane fade " id="historical" role="tabpanel" aria-labelledby="historical-tab">
+            
+            <div class="statbox widget box layout-spacing layout-top-spacing">
+                <div class="widget-header">                                 
+                    <div class="row">
+                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                            <h4>Selecteur de date</h4> 
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-content widget-content-area">
+                    {# <p>Date time picker is powered by <span class="text-primary">flatpickr.js</span> that gives the ability to user to select date or time.</p> #}
+                    <div class="form-group mb-0">
+                        <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="widget widget-chart-three layout-spacing layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Diagramme Énergie, Émission CO<sub>2</sub></h5>
+                    </div>
+
+                </div>
+
+                <div class="widget-content">
+                    <div id="mixed-conso"></div>
+                </div>
+            </div>
+                
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+<script src="/js/scrollspyNav.js"></script>
+<script src="/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script src="/plugins/apex/apexcharts.min.js"></script>
+<script src="/js/widgets/modules-widgets.js"></script>
+
+<script src="/plugins/moment/moment.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> #}
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<!-- Chart JS -->
+<script src="/plugins/chartjs/chart.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js" integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> #}
+
+<script src="/plugins/highlight/highlight.pack.js"></script>
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script> #}
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+
+<script src="/plugins/datatables/jszip.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> #}
+
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script> #}
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+
+{# <script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script> #}
+<!-- Responsive examples -->
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+
+<script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="/js/apps/contact.js"></script>
+
+{# Overview tab panel scripts #}
+<script>
+    var now = new Date();
+    //var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
+    var FileName = 'Historique Consommation | ' + now.getFullYear();
+    var historicTable = $('#historic-dataTable').DataTable({
+        //lengthChange: false,
+        //buttons: ['copy', 'excel', 'pdf', 'colvis']
+        //buttons: ['excel', 'pdf'],
+        searching: false, 
+        paging: false, 
+        info: false,
+        order: [],
+        //ordering: false,
+        lengthChange: false,
+        //buttons: ['copy', 'excel', 'pdf', 'colvis']
+        buttons: [
+            {
+                //text: 'Exporter Disponibilité',
+                extend: 'pdfHtml5',
+                filename: 'Historique Consommation - ' + now.getFullYear(),//function () { return getExportFileName();},//
+                exportOptions: {
+                    //columns: [ 0, 1, 4 ],
+                    //columns: ':visible'
+                    search: 'applied',
+                    order: 'applied'
+                },
+                title: function( thead, data, start, end, display ) {
+                    return "{{enterprise.socialReason}}\r\n" + FileName;
+                },
+                customize: function (doc) {
+                    //Remove the title created by datatTables
+                    
+                    //Create a date string that we use in the footer. Format is dd-mm-yyyy
+                    var now = new Date();
+                    var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
+                    // Logo converted to base64
+                    // var logo = getBase64FromImageUrl('https://datatables.net/media/images/logo.png');
+                    // The above call should work, but not when called from codepen.io
+                    // So we use a online converter and paste the string in.
+                    // Done on http://codebeautify.org/image-to-base64-converter
+                    // It's a LONG string scroll down to see the rest of the code !!!
+                    //var logo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAICAgICAQICAgIDAgIDAwYEAwMDAwcFBQQGCAcJCAgHCAgJCg0LCQoMCggICw8LDA0ODg8OCQsQERAOEQ0ODg7/2wBDAQIDAwMDAwcEBAcOCQgJDg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg7/wAARCAAwADADASIAAhEBAxEB/8QAGgAAAwEAAwAAAAAAAAAAAAAABwgJBgIFCv/EADUQAAEDAgQDBgUDBAMAAAAAAAECAwQFBgAHESEIEjEJEyJBUXEUI0JhgRVSYhYXMpEzcrH/xAAYAQADAQEAAAAAAAAAAAAAAAAEBQYHAv/EAC4RAAEDAgMGBQQDAAAAAAAAAAECAxEABAUGEhMhMUFRcSIyYaHBFkKB0ZGx8P/aAAwDAQACEQMRAD8Avy44hlhTrqw22kEqUo6BIG5JPkMSxz67RlFPzFquWnDParOaN4QVlmqXDKcKKLS19CCsf8qh6A6e+OfaK573LDTanDJllVV0q8r3ZVIuGqR1fMpdJSdHCCOinN0j7e+FjymydjRKdSbGsikpbSlG5O3/AHfeX5nU6knck6DFdg+DovkquLlWllHE8yeg+f4FBPvluEpEqNC657/4yr4ecm3ZxH1OghzxfptpQERI7X8QrqdPXGNpucXGLltU0SbZ4jazW0tHX4C6IiJcd37HUEj8YoHNtTKOzwuHVPj79rTfhkfCudxEbUOqQQd9Pc4HlaoGRt2JVAcptRsOe54WZZkd6yFHpzakgD3098ahYWuVVDQ/YrKD9wJnvGqfb8UAHH584npWw4eu0+iVO+6Vl3xO2zHy1uKa4GafdcBwqos5w7AOE6lgk+epT68uK8MvNPxmnmHEvMuJCm3EKCkqSRqCCNiCPPHmbzdyWcozkq1rpitVSkzGyqHNbT4HU+S0H6Vp22/9Bw8XZkcQ1wuzLg4V8yqq5U69a0X42zalJXq5NpeuhZJO5LWo0/idPpxI5ryszgyG77D3Nrau+U8weh/cDgQRI3sGXi54VCCKXK6Ku5fnbOcTt2znO/8A0SfFtymcx17llpGqgPTUjDj5WOIOUmYFPpLgjXQ5ES627r43I6R40I9D16fuGEfzPZeyq7afiRtec0W03O/GuSj82wdbdb8ZB89FEjb0xvrIzGk2pmnSrgcdUttl3lkoB2UyrZadPbf8DFFhGHuX+W0bASUyY6kKJg96XPK0XJmt9MrkFuIQw2XNup8IwFbruVaWXkttMgadCCcEfNuPTbbzPkiK87+jVRsTqctlIKVNubkD2J/0RgBVFDVQUpTTEksjdTjpG4xc4TYOvBu5AhB3yf8AcfmgTIUUmiMxcs27+CG42Koy3JqFqym3YLytebuVfRr9gVD2AwvOWt5u2f2qXDle0FK4UhVwijzgFbPMSUlBSftqdcMAqN/TfCVV0yGBDl3O+huMwvZXw6Oqzr67n8jC85VWw/fnakZD2tAaL/wtwGsSuTfu2YyCeY+6ikY5x1yzVlDECB4C8Nn3lEx6SFe9MWtW3R1jfVTu0l4a7lv6wbaz8yqp6p2Z2X6FmXT2U6uVelq8TrQA3UtG6gPMFQG+mJe2Xf8ASL5s1qp0p35qfDLhuHR2M4P8kLT5aH/ePUSpIUnQjUemJh8SXZs2fmVf8/MvJevKyfzNkEuTPhGeamVNZ3JeZGnKonqpPXqQTjE8tZmdwF4hSdbSjvHMHqP1zo24tw8J4EUn9MvWz7iymo9tX27PgTqQ4tMCfGY735SuiFdenTTTyGOIrGV1DSJLCqndb7Z1aamIDEZJHQqGg5vyDga3Fw28bVhS1wqrlHAzAjtkhFSt2sIQHR5HkXoQftjrqJw5cYt81BESDkuxaCVnRU24K0Fpb+/I3qT7Y1b6kygptSi88lKiSWxIEkyRygE8tUUDsbieA71mM2M0mZxlVytTQ0w0jkQlIIQ2PpabR1JJ6Abk4oP2bHDhW6O9WuITMKlLplxV9hMeg06Sn5lPgjdIUPJayedX4HljvOHvs16VbF7Uy/c86/8A3DuyIoOwoAaDdPgL66ts7gqH7lan2xVaJEjQaezFiMIjx2khLbaBoEgYyzMmZTjWi2t0bK3b8qfk+v8AW/jNMGWdn4lGVGv/2SAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA=';
+                    // A documentation reference can be found at
+                    // https://github.com/bpampuch/pdfmake#getting-started
+                    // Set page margins [left,top,right,bottom] or [horizontal,vertical]
+                    // or one number for equal spread
+                    // It's important to create enough space at the top for a header !!!
+                    doc.pageMargins = [60,60,60,30];
+                    // Set the font size fot the entire document
+                    doc.defaultStyle.fontSize = 12;
+                    // Set the fontsize for the table header
+                    doc.styles.tableHeader.fontSize = 13;
+                    //doc.styles.tableBodyOdd.fillColor = "yellow";
+                    doc.styles.tableBodyOdd.alignment = function (rowIndex, node, columnIndex) {
+                                                    return (rowIndex >= 0) ? 'center' : null;
+                                                };
+                    doc.styles.tableHeader.fillColor = "#6c757d";
+                    console.log(doc);
+                    var objTable = {};
+                    //objTable['heights'] = (function(i) { return 100; });
+                    //objTable['widths'] = ['*', 'auto', '*', 'auto', 'auto', 'auto'];
+                    //objTable['widths']   = (function(i) { return ['*', 'auto', '*', 'auto', 'auto', 'auto']; });
+                    //doc.content[1].table = objTable; 
+                    doc.content[1].table.widths = ['auto', '*', 'auto', '*', 'auto', '*']; 
+                    //doc.content[1].table.heights = (function(i) { return 100; }); 
+                    doc.content[1].layout = {
+                                                fillColor: function (rowIndex, node, columnIndex) {
+                                                    return (rowIndex % 2 === 0) ? '#CCCCCC' : null;
+                                                }
+                                            }; 
+                        
+                    // Create a header object with 3 columns
+                    // Left side: Logo
+                    // Middle: brandname
+                    // Right side: A document title
+                    /*doc['header']=(function() {
+                        return {
+                            columns: [
+                                {
+                                    //image: logo,
+                                    "width": 24
+                                },
+                                {
+                                    alignment: 'left',
+                                    italics: true,
+                                    text: 'dataTables',
+                                    fontSize: 18,
+                                    margin: [10,0]
+                                },
+                                {
+                                    alignment: 'right',
+                                    fontSize: 14,
+                                    text: 'Custom PDF export with dataTables'
+                                }
+                            ],
+                            margin: 20
+                        }
+                    });*/
+                    // Create a footer object with 2 columns
+                    // Left side: report creation date
+                    // Right side: current page and total pages
+                    doc['footer']=(function(page, pages) {
+                        return {
+                            columns: [
+                                {
+                                    alignment: 'left',
+                                    text: ['Crée le : ', { text: jsDate.toString() }]
+                                },
+                                {
+                                    alignment: 'center',
+                                    text: ['{{app.user.enterprise.socialReason}} {% if app.user.enterprise.niu is not empty %}- NIU : {{app.user.enterprise.niu}} {% endif %} {% if app.user.enterprise.rccm is not empty %}- RCCM : {{app.user.enterprise.rccm}}{% endif %}']
+                                },
+                                {
+                                    alignment: 'right',
+                                    text: ['page ', { text: page.toString() },	' de ',	{ text: pages.toString() }]
+                                }
+                            ],
+                            margin: 20
+                        }
+                    });
+                    // Change dataTable layout (Table styling)
+                    // To use predefined layouts uncomment the line below and comment the custom lines below
+                    // doc.content[0].layout = 'lightHorizontalLines'; // noBorders , headerLineOnly
+                    var objLayout = {};
+                    objLayout['hLineWidth']   = (function(i) { return .5; });
+                    objLayout['vLineWidth']   = (function(i) { return .5; });
+                    objLayout['hLineColor']   = (function(i) { return '#ccc'; });
+                    objLayout['vLineColor']   = (function(i) { return '#ccc'; });
+                    objLayout['paddingLeft']  = (function(i) { return 4; });
+                    objLayout['paddingRight'] = (function(i) { return 4; });
+                    doc.content[0].layout = objLayout;
+                } 
+            },
+            {
+                //text: 'Exporter Disponibilité',
+                extend: 'excel',
+                filename: FileName,
+                exportOptions: {
+                    //columns: [ 0, 1, 4 ],
+                    //columns: ':visible'
+                    search: 'applied',
+                    order: 'applied'
+                },
+            }
+        ] 
+    });
+
+    historicTable.buttons().container().appendTo('#historic-dataTable_wrapper .col-md-6:eq(0)');
+
+    $('.buttons-pdf').children('span').prepend('<i class="mdi mdi-download mr-2"></i>');
+    $('.buttons-pdf').removeClass('btn-secondary').addClass('btn-outline-danger')
+    $('.buttons-excel').removeClass('btn-secondary').addClass('btn-outline-success')
+</script>
+
+<script>
+
+    // w-conso Chart variable
+    var w_repartition_consoPieChart;
+
+    // w-conso Chart variable
+    var w_consoChart;
+
+    // w-co2 Chart variable
+    var w_co2Chart;
+
+    // w-co2 Chart variable
+    var w_repartition_co2PieChart;
+    
+    //const promise = function(){
+        new Promise(function(resolve, reject){
+            //$('#load-chart-loader').removeClass('d-none')
+            setTimeout(function(){
+                var options = {
+                    chart: {
+                        height: 250,//190,
+                        //id: 'r_kWh',
+                        //group: 'repartition',
+                        type: 'donut',
+                        stacked: false,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '60%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        showAlways: false,
+                                        label: 'Total (MWh)',
+                                        fontSize: '22px',
+                                        fontFamily: 'Nunito, Arial, sans-serif',
+                                        fontWeight: 600,
+                                        color: '#373d3f',
+                                        formatter: function (w) {
+                                            return parseFloat(w.globals.seriesTotals.reduce((a, b) => {
+                                                return a + b
+                                            }, 0)).toFixed(2)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function (val, opt) {
+                            //return opt.w.config.series[opt.seriesIndex] + " " + val + "%"
+                            return parseFloat(val).toFixed(1) + "%"
+                        },
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    /*series: [125, 125],
+                    labels: ['Site 1', 'Site 2'],*/
+                    series: [{% for site in enterprise.sites %}{{ sitesParams[site.slug]['currentConsokWh'] / 1000.0 }}{% if loop.last == false %},{% endif %}{% endfor %}],
+                    labels: [{% for site in enterprise.sites %}"{{site.name}}"{% if loop.last == false %},{% endif %}{% endfor %}],
+                    //colors: ["#a3cae0", "#232f5b","#f06a6c", "#f1e299", "#08aeb0"],
+                    legend: {
+                        show: false,
+                        position: 'bottom',
+                        horizontalAlign: 'center',
+                        verticalAlign: 'middle',
+                        floating: false,
+                        fontSize: '14px',
+                        offsetX: 0,
+                        offsetY: -10
+                    },
+                    tooltip: {
+                        theme: "dark",
+                        style: {
+                            color: '#fff',
+                        },
+                        y:{
+                            formatter: function (val) {
+                                //console.log(val)
+                                if (typeof val !== "undefined") {
+                                    return val.toFixed(2) + " kWh"
+                                }
+                                return val;
+                            }
+                        },
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                height: 240,
+                                width: 200
+                            },
+                            legend: {
+                                show: false
+                            },
+                        }
+                    }]
+                }
+                w_repartition_consoPieChart = new ApexCharts(
+                    document.querySelector("#w-apex_pie_active_energy_flow_overview"),
+                    options
+                );
+                w_repartition_consoPieChart.render();
+
+                var options1 = {
+                    chart: {
+                        height: 250,//190,
+                        //id: 'r_kgCO2',
+                        //group: 'repartition',
+                        type: 'donut',
+                        stacked: false,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '60%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        showAlways: false,
+                                        label: 'Total (TCO2)',
+                                        fontSize: '22px',
+                                        fontFamily: 'Nunito, Helvetica, Arial, sans-serif',
+                                        fontWeight: 600,
+                                        color: '#373d3f',
+                                        formatter: function (w) {
+                                            return parseFloat(w.globals.seriesTotals.reduce((a, b) => {
+                                                return a + b
+                                            }, 0)).toFixed(2)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        textAnchor: 'start',
+                        distributed: true,
+                        offsetX: -60,
+                        offsetY: 0,
+                        style: {
+                            //fontSize: '14px',
+                            fontFamily: 'Nunito, Helvetica, Arial, sans-serif',
+                            //fontWeight: 'bold',
+                            //colors: undefined
+                        },
+                        formatter: function (val, opt) {
+                            //return opt.w.config.series[opt.seriesIndex] + " " + val + "%"
+                            return parseFloat(val).toFixed(1) + "%"
+                        },
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    {# series: [3, 3],
+                    labels: ['Site 1', 'Site 2'], #}
+                    series: [{% for site in enterprise.sites %}{{ sitesParams[site.slug]['currentGasEmission'] / 1000.0 }}{% if loop.last == false %},{% endif %}{% endfor %}],
+                    labels: [{% for site in enterprise.sites %}"{{site.name}}"{% if loop.last == false %},{% endif %}{% endfor %}],
+                    //colors: ["#a3cae0", "#232f5b","#f06a6c", "#f1e299", "#08aeb0"],
+                    legend: {
+                        show: false,
+                        position: 'bottom',
+                        horizontalAlign: 'center',
+                        verticalAlign: 'middle',
+                        floating: false,
+                        fontSize: '14px',
+                        offsetX: 0,
+                        offsetY: -10
+                    },
+                    tooltip: {
+                        theme: "dark",
+                        style: {
+                            color: '#fff',
+                        },
+                        y:{
+                            formatter: function (val) {
+                                //console.log(val)
+                                if (typeof val !== "undefined") {
+                                    return val.toFixed(2) + " kgCO2"
+                                }
+                                return val;
+                            }
+                        },
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                height: 240,
+                                width: 200
+                            },
+                            legend: {
+                                show: false
+                            },
+                        }
+                    }]
+                }
+                w_repartition_co2PieChart = new ApexCharts(
+                    document.querySelector("#w-apex_pie_emession_flow_overview"),
+                    options1
+                );
+                w_repartition_co2PieChart.render();
+
+                var conso_options = {
+                    chart: {
+                        id: 'kWh',
+                        group: 'Conso',
+                        type: 'bar',
+                        height: 160,
+                        sparkline: {
+                            enabled: true
+                        },
+                        animations:{
+                            enabled:false
+                        },
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2,
+                    },
+                    series: [{
+                        name: 'Énergie',
+                        data: {{ dayBydayConsoData['kWh'] | json_encode | raw }}
+                        {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
+                    }],
+                    labels: {{ dayBydayConsoData['dateConso'] | json_encode | raw }},
+                    {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
+                    xaxis: {
+                        //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+                        categories: [],
+                        labels: {
+                            datetimeFormatter: {
+                                year: 'yyyy',
+                                month: 'MMM \'yy',
+                                day: 'dd MMM',
+                                hour: 'HH:mm'
+                            }
+                        },
+                        title: {
+                            text: moment().format('DD MMMM').toString(),
+                            style: {
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                fontFamily: undefined,
+                                color: '#444'
+                            },
+                        }
+                    },
+                    yaxis: {
+                        min: 0
+                    },
+                    colors: ['#1b55e2'],
+                    tooltip: {
+                        theme: "dark",
+                        //followCursor: true,
+                        y: {
+                            formatter: function (y) {
+                                //console.log(y)
+                                if (typeof y !== "undefined") {
+                                    return y.toFixed(2) + " kWh"
+                                }
+                                return y;
+                            }
+                        },
+                        x: {
+                            formatter: function (val, timestamp) {
+                                return moment(new Date(val)).format("DD MMM YYYY")
+                            }
+                        }
+                    },
+                    /*tooltip: {
+                        x: {
+                        show: false,
+                        }
+                    },*/
+                    fill: {
+                        type:"gradient",
+                        gradient: {
+                            type: "vertical",
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: .40,
+                            opacityTo: .05,
+                            stops: [45, 100]
+                        }
+                    },
+                    }
+                // w-conso Chart variable
+                w_consoChart = new ApexCharts(document.querySelector("#w-conso"), conso_options);
+                w_consoChart.render()
+
+                // w-co2 Chart
+                var w_co2Chart_options = {
+                    chart: {
+                        id: 'kgCO2',
+                        group: 'Conso',
+                        type: 'bar',
+                        height: 160,
+                        sparkline: {
+                            enabled: true
+                        },
+                        animations:{
+                            enabled:false
+                        },
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2,
+                    },
+                    series: [{
+                        name: 'Émission CO2',
+                        data: {{ dayBydayConsoData['kgCO2'] | json_encode | raw }}
+                        {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
+                    }],
+                    labels: {{ dayBydayConsoData['dateConso'] | json_encode | raw }},
+                    {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
+                    xaxis: {
+                        //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+                        categories: [],
+                        labels: {
+                            datetimeFormatter: {
+                                year: 'yyyy',
+                                month: 'MMM \'yy',
+                                day: 'dd MMM',
+                                hour: 'HH:mm'
+                            }
+                        },
+                        title: {
+                            text: moment().format('DD MMMM').toString(),
+                            style: {
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                fontFamily: undefined,
+                                color: '#444'
+                            },
+                        }
+                    },
+                    yaxis: {
+                        min: 0
+                    },
+                    colors: ['#e7515a'],
+                    tooltip: {
+                        theme: "dark",
+                        //followCursor: true,
+                        y: {
+                            formatter: function (y) {
+                                //console.log(y)
+                                if (typeof y !== "undefined") {
+                                    return y.toFixed(2) + " kgCO2"
+                                }
+                                return y;
+                            }
+                        },
+                        x: {
+                            formatter: function (val, timestamp) {
+                                return moment(new Date(val)).format("DD MMM YYYY")
+                            }
+                        }
+                    },
+                    /*tooltip: {
+                        x: {
+                        show: false,
+                        }
+                    },*/
+                    fill: {
+                        type:"gradient",
+                        gradient: {
+                            type: "vertical",
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: .40,
+                            opacityTo: .05,
+                            stops: [45, 100]
+                        }
+                    },
+                    }
+                w_co2Chart = new ApexCharts(document.querySelector("#w-co2"), w_co2Chart_options);
+                w_co2Chart.render()
+            }, 500)
+            resolve('load chart render')
+
+        }).then(function(elem){
+            //$('#load-chart-loader').addClass('d-none')
+        });
+            
+    //})
+    
+    function progress(prefixSelector, progValue, posLogique, isTime) {
+        
+        var id = '#' + prefixSelector;
+        var progressSelectorValue = $(id + 'value');
+        var progressSelectorColor = $(id + 'color');
+        var upSelectorIcon   = $(id+ 'up-icon');
+        var downSelectorIcon = $(id+ 'down-icon');
+        var greenColor = 'text-success';
+        var redColor = 'text-danger';
+        
+        if (!isTime) {//On teste s'il s'agit d'une progression numérique 
+            var val = progValue !== 'INF' ? String(parseFloat(progValue).toFixed(2)) : progValue;
+            progressSelectorValue.html(progValue === null ? 0 : (progValue > 0 || progValue === 'INF') ? ('+' + val) : val);
+        }
+        else {//s'il s'agit d'une progression de date
+            var diff = new Date(Math.abs(progValue));
+            var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
+            var str = $dat.format('HH:mm:ss').toString()
+            progressSelectorValue.html(progValue === null ? 0 : progValue > 0 ? '+' + str : '-' + str);
+        }
+
+        if (posLogique) {// Logique positive
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+                /*if (selectorIcon.hasClass(oldClass)) {
+                    // it has class
+                } else {
+                    // it doesn't have specified class
+                }*/
+            }
+            else {//Si la valeur de progression est négative
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+            }
+        }
+        else {// Logique négative
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
+                
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+                
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+            }
+            else {//Si la valeur de progression est négative
+                
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+                
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+                
+            }
+        }
+    }
+
+    
+    setInterval(function () {
+        $.getJSON("{{ path('enterprise_overview_update_data', {'slug': enterprise.slug}) }}", function (result) {//{'selectedDate': $date},
+            
+            if( Object.keys(result).length > 0 ){
+                console.log(result)
+                //++++ Mise à jour des données de la card Consommation en kWh du mois cours
+                //Valeur de la consommation du mois en cours en kWh
+                {# $('#currentkWh').text(result['currentMonthkWh']) #}
+                //On gère la progression de la consommation d'énergie
+                {# progress(prefixSelector='conso-progress-', progValue=result['currentMonthkWhProgress'], posLogique=false, isTime=false); #}
+                //MAJ de la courbe d'évolution de la consommation en kWh jour après jour
+                {# displayNewData(w_consoChart, Object.values(result['dayBydayConsoData']['dateConso']), Object.values(result['dayBydayConsoData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                
+                {# 
+                //++++ Mise à jour des données de la card Consommation en F CFA du mois cours
+                //Valeur de la consommation du mois en F CFA en kWh
+                $('#conso_amount').text(String(parseFloat(result['currentMonthXAF']).toFixed(2)))
+                $('#budget').text(String(parseFloat(result['budget']).toFixed(2)))
+                //Calcul du pourcentage de consommation du budget
+                var ratio = (parseFloat(result['currentMonthXAF']) * 100.0) / parseFloat(result['budget']);
+                if(ratio < 50) $('#budget-progressbar').removeClass('bg-gradient-danger').addClass('bg-gradient-success');
+                else $('#budget-progressbar').addClass('bg-gradient-danger').removeClass('bg-gradient-success');
+                $('#ratio_budget').text(ratio.toFixed(2))
+                // console.log($('#budget-progressbar').attr('aria-valuenow')); 
+                $('#budget-progressbar').css('width', ratio.toFixed(1) + '%'); 
+                $('#budget-progressbar').attr('aria-valuenow', '' + ratio.toFixed(1));
+                // console.log($('#budget-progressbar').attr('aria-valuenow'));  
+                $('#last_update').text(String( moment( new Date(result['lastDatetimeData']) ).format("DD MMM YYYY HH:mm:ss")) )
+                #}
+
+                                                
+                //++++ Mise à jour des données de la card d'émission de carbone du mois cours
+                //Valeur d'émission de carbone du mois en F CFA en kWh
+                {# $('#emission-value').text(result['currentMonthGasEmission']) #}
+                //MAJ de la courbe d'évolution de la consommation en kWh jour après jour
+                {# displayNewData(w_co2Chart, Object.values(result['dayBydayConsoData']['dateConso']), Object.values(result['dayBydayConsoData']['kgCO2']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                                
+                                
+                //++++ Mise à jour du tableau d'aperçu des données des Sites
+                {% for site in enterprise.sites %}
+                    $("#power-{{site.slug}}").text(result['sitesParams']['{{site.slug}}']['Power'])
+                    $("#currentkWh-{{site.slug}}").text(result['sitesParams']['{{site.slug}}']['currentConsokWh'])
+                    progress(prefixSelector='conso-progress-{{site.slug}}', progValue=result['sitesParams']['{{site.slug}}']['currentConsokWhProgress'], posLogique=false, isTime=false);
+                    //progress icon
+                    $("#fp-{{site.slug}}").text(result['sitesParams']['{{site.slug}}']['currentPF'])
+                    $("#emission-value-{{site.slug}}").text(result['sitesParams']['{{site.slug}}']['currentGasEmission'])
+                    
+                    if( parseInt(result['sitesParams']['{{site.slug}}']['isGenset']) === 1){
+                        if($("#st-grid-{{site.slug}}").hasClass("outline-badge-success")) $("#st-grid-{{site.slug}}").toggleClass("outline-badge-success").toggleClass("outline-badge-danger")
+                        if($("#st-genset-{{site.slug}}").hasClass("outline-badge-danger")) $("#st-genset-{{site.slug}}").toggleClass("outline-badge-danger").toggleClass("outline-badge-success")
+                    }
+                    else if( parseInt(result['sitesParams']['{{site.slug}}']['isGenset']) === 0){
+                        if($("#st-grid-{{site.slug}}").hasClass("outline-badge-danger")) $("#st-grid-{{site.slug}}").toggleClass("outline-badge-danger").toggleClass("outline-badge-success")
+                        if($("#st-genset-{{site.slug}}").hasClass("outline-badge-success")) $("#st-genset-{{site.slug}}").toggleClass("outline-badge-success").toggleClass("outline-badge-danger")
+                    }
+                    
+                    $("#last_update-{{site.slug}}").text(String( moment( new Date(result['sitesParams']['{{site.slug}}']['lastDatetimeData']) ).format("DD MMM YYYY HH:mm:ss")))//
+                {% endfor %}
+                
+            }        
+            else{
+                //$('.spin').addClass('d-none');
+                
+            }
+        }).fail(function() { 
+            
+            console.log('FAIL to get overview Data')
+            
+        });
+    }, 120000); 
+</script>
+
+<!-- -->
+
+<!-- Gestion de la MAJ du budget de consommation -->
+{# <script>
+    $('#edit-bg').click(function(){
+        // Fetch form to apply custom Bootstrap validation
+        var form = $("#edit-bg-form")
+
+        if (form[0].checkValidity() === false)
+        {
+            event.preventDefault()
+            event.stopPropagation()
+            console.log('form[0] = ' + form[0])
+        }
+        else{
+            // console.log($('#amount-bg').val()); 
+            $data = JSON.stringify({
+                //"selectedDate": $dat, // tabGridId,
+                'amount': parseFloat($('#amount-bg').val()),
+            });
+
+            // Danger
+
+            swal.queue([{
+                title: 'Budget pour le mois en cours',
+                confirmButtonText: 'Confirmer',
+                cancelButtonText: 'Annuler',
+                text: 'Montant : ' + $('#amount-bg').val() + ' F CFA',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                //confirmButtonClass: 'btn btn-primary',
+                //cancelButtonClass: 'btn btn-danger ml-2',
+                preConfirm: function () {
+                    return new Promise(function (resolve) { 
+                        
+                        $.ajax({
+                            type: "POST", // method type
+                            contentType: "application/json; charset=utf-8",
+                            url:"{{path('site_budget', {'slug':enterprise.slug})}}", // /Target function that will be return result
+                            data: $data, // parameter pass data is parameter name param is value
+                            dataType: "json",
+                            timeout: 120000, // 64241
+                            success: function (result) {
+                                // $('.fa-sync').removeClass('fa-spin');
+                                console.log(result);
+                                
+                                swal({
+                                    type: 'success', 
+                                    title: 'Le budget a été défini avec succès !',
+                                    // html: 'Submitted email: ' + email
+                                });
+
+                                //MAJ du montant du budget à la nouvelle valeur
+                                $('#budget').text($('#amount-bg').val());
+
+                                //Calcul du pourcentage de consommation du budget
+                                var ratio = ( parseFloat( String( $('#conso_amount').text() ).replace(' ', '') ) * 100.0 ) / parseFloat($('#amount-bg').val());
+                                if(ratio < 50) $('#budget-progressbar').removeClass('bg-gradient-danger').addClass('bg-gradient-success');
+                                else $('#budget-progressbar').addClass('bg-gradient-danger').removeClass('bg-gradient-success');
+                                $('#ratio_budget').text( ratio.toFixed(2) );
+                                $('#budget-progressbar').css('width', ratio.toFixed(1) + '%'); 
+                                $('#budget-progressbar').attr('aria-valuenow', '' + ratio.toFixed(1));
+                                
+                                setTimeout(function () {
+                                    resolve();
+                                    //Fermer le modal d'édition
+                                    $('#editBudgetModal').modal('toggle');
+                                }, 1000);
+                                
+                                    
+                            },
+                            error: function (result) {
+                                // console.log("Error");
+                                console.log(result);
+                                swal('Oups...', "Une erreur s'est produite !", 'error'
+                                // footer: '<a href>Why do I have this issue?</a>'
+                                );
+
+                                setTimeout(function () {
+                                    resolve()
+                                }, 5000);
+                            }
+                        });
+                    })
+                },
+                allowOutsideClick: false
+            }]);
+
+        }
+        
+        form.addClass('was-validated');
+    })
+</script> #}
+
+{# Historical tab panel scripts #}
+
+<script>
+    var firstTabHistorical = true;
+    //console.log( parseFloat( String( $('#budget').html() ).replace(' ', '') ) )
+    $('.nav-tabs a').on('shown.bs.tab', function(event){
+        var tab = $(event.target).text();         // active tab
+        var prevTab = $(event.relatedTarget).text();  // previous tab
+        console.log(tab)
+        console.log(prevTab)
+        if( String(tab).indexOf('Historique') >= 0){
+            if(firstTabHistorical){
+                firstTabHistorical = false; 
+                var drp_ = $('#gendaterange').data('daterangepicker');
+                console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+                var startDate_ = drp.startDate.format('YYYY-MM-DD');
+                var endDate_ = drp.endDate.format('YYYY-MM-DD');
+
+                $data = JSON.stringify({
+                //"selectedDate": $dat, // tabGridId,
+                "startDate": startDate_ + ' 00:00:00', // tabGridId,
+                "endDate": endDate_ + '23:59:59', // tabFuelId,
+                });
+
+                // Danger
+
+                swal.queue([{
+                    title: 'Chargement...',
+                    confirmButtonText: 'Confirmez',
+                    text: 'Veuillez patienter svp !',
+                    //showCancelButton: true,
+                    showLoaderOnConfirm: true,
+                    //confirmButtonClass: 'btn btn-primary',
+                    //cancelButtonClass: 'btn btn-danger ml-2',
+                
+                    //title: 'The graphs will be updated for the date range :',
+                    //confirmButtonText: 'Confirm',
+                    //text: 'From ' + startDate_ + ' To ' + endDate_,
+                    //showCancelButton: true,
+                    //showLoaderOnConfirm: true,
+                    //confirmButtonClass: 'btn btn-primary',
+                    //cancelButtonClass: 'btn btn-danger ml-2',
+                    preConfirm: function () {
+                        return new Promise(function (resolve) { 
+                            
+                            $.ajax({
+                                type: "POST", // method type
+                                contentType: "application/json; charset=utf-8",
+                                url: _url, // /Target function that will be return result
+                                data: $data, // parameter pass data is parameter name param is value
+                                dataType: "json",
+                                timeout: 120000, // 64241
+                                success: function (result) {
+                                    // $('.fa-sync').removeClass('fa-spin');
+                                    console.log(result);
+                                    
+                                    swal({
+                                        type: 'success', 
+                                        title: 'Les graphes ont été actualisé !',
+                                        // html: 'Submitted email: ' + email
+                                    });
+
+                                    setTimeout(function () {
+                                        resolve()
+                                    }, 1000);
+
+                                    if( Object.keys(result).length > 0 ){
+                                        console.log(Object.values(result['Load_Chart']))
+                                        console.log(Object.values(result['Mixed_Conso']))
+                                        displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
+                                        displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
+                                        MixedConsoChart.toggleSeries('Énergie Active')
+                                        MixedConsoChart.toggleSeries('Énergie Active')
+                                        //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+
+                                        
+                                    }
+                                },
+                                error: function (result) {
+                                    // console.log("Error");
+                                    // console.log(result);
+                                    swal('Oups...', "Une erreur s'est produite !", 'error'
+                                    // footer: '<a href>Why do I have this issue?</a>'
+                                    );
+
+                                    setTimeout(function () {
+                                        resolve()
+                                    }, 5000);
+                                }
+                            });
+                        })
+                    },
+                    allowOutsideClick: false
+                }]); 
+
+                $(".swal2-confirm").click();
+            }
+            //alert("Active tab " + x);
+        }
+    });
+</script>
+<!-- Script de gestion du sélecteur de date -->
+<script>
+    var _url = "{{ path('site_histo_update', {'slug':enterprise.slug}) }}";
+    
+    var mixed_conso_options = {
+      chart: {
+        fontFamily: 'Nunito, sans-serif',
+
+        height: 350,
+        type: 'bar',
+        toolbar: {
+        show: true,
+        },
+
+        stacked: false,
+
+        dropShadow: {
+        enabled: true,
+        top: 1,
+        left: 1,
+        blur: 2,
+        color: '#acb0c3',
+        opacity: 0.7,
+        }
+      },
+      colors: ['#5c1ac3', '#e7515a'],
+      plotOptions: {
+          bar: {
+              horizontal: false,
+              columnWidth: '55%',
+              //endingShape: 'rounded'  
+          },
+      },
+      dataLabels: {
+          enabled: false
+      },
+      legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+            fontSize: '14px',
+            markers: {
+              width: 10,
+              height: 10,
+            },
+            itemMargin: {
+              horizontal: 0,
+              vertical: 8
+            }
+      },
+      stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+      },
+      series: [{
+        name: 'Énergie Active',
+        data: []
+      },{
+        name: 'Émission de gaz à effet de serre',
+        data: []
+      }],
+      xaxis: {
+        type: 'datetime',
+        categories: [],
+        labels: {
+        datetimeFormatter: {
+            year: 'yyyy',
+            month: 'MMM \'yy',
+            day: 'dd MMM',
+            hour: 'HH:mm'
+        }
+        },
+      },
+      yaxis: [
+        {
+            axisTicks: {
+                show: true,
+            },
+            axisBorder: {
+                show: true,
+                color: '#5c1ac3'
+            },
+            labels: {
+                style: {
+                    color: '#5c1ac3',
+                }
+            },
+            title: {
+                text: "kWh"
+            },
+        },
+        {
+            opposite: true,
+            axisTicks: {
+                show: true,
+            },
+            axisBorder: {
+                show: true,
+                color: '#e7515a'
+            },
+            labels: {
+                style: {
+                    color: '#e7515a',
+                }
+            },
+            title: {
+                text: "kgCO2"
+            }
+        },
+      ],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'light',
+          type: 'vertical',
+          shadeIntensity: 0.3,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 0.8,
+          stops: [0, 100]
+        }
+      },
+      tooltip: {
+        theme: "dark",
+        //followCursor: true,
+        y: {
+            formatter: function (y) {
+                //console.log(y)
+                if (typeof y !== "undefined") {
+                    return y.toFixed(2) + ""
+                }
+                return y;
+            }
+        },
+        x: {
+            formatter: function (val, timestamp) {
+                return moment(new Date(val)).format("DD MMM YYYY")
+            }
+        }
+      },
+    }
+    
+    var MixedConsoChart = new ApexCharts(
+        document.querySelector("#mixed-conso"),
+        mixed_conso_options
+    );
+    MixedConsoChart.render()
+
+    var start = moment().subtract(1, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('#daterange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        maxSpan: {
+            "days": 31
+        },
+        maxDate: moment().endOf('month'),
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    var drp = $('#daterange').data('daterangepicker');
+    console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+    var startDate = drp.startDate.format('YYYY-MM-DD');
+    var endDate = drp.endDate.format('YYYY-MM-DD');
+    
+
+    $('#daterange').on('apply.daterangepicker', function (ev, picker) {
+        //console.log(picker.startDate.format('YYYY-MM-DD'));
+        //console.log(picker.endDate.format('YYYY-MM-DD'));
+    
+        startDate = picker.startDate.format('YYYY-MM-DD');
+        endDate = picker.endDate.format('YYYY-MM-DD');
+        
+        console.log('startDate = ' + startDate);
+        console.log('endDate = ' + endDate);
+        updateHistoGraphs();
+        // block of code that runs when the click event triggers
+
+    });
+
+    function displayNewData(chart, label, data, dateopt, multiple, xscale){
+        //chart.data.labels = [];
+        chart.updateOptions({
+            xaxis: {
+                categories: []
+            },
+        });
+        chart.updateOptions({
+            xaxis: {
+                categories: label
+            },
+        });
+        //chart.opts.labels = label;
+        {# chart.updateOptions({
+            labels: label
+            
+        }); #}
+        if(multiple > 1){
+            var i = 0;
+            chart.opts.series.forEach((dataset) => {
+                if( i < multiple){
+                    dataset.data = [];
+                    console.log(dataset.name);
+                    console.log(dataset.data);
+                    dataset.data = data[i];
+                    console.log(data[i]);
+                    console.log(dataset.data);
+                    i++;
+                }
+            });
+        }
+        else if(multiple == 1){
+            chart.updateSeries([{
+                data: []
+            }]);
+        
+            chart.updateSeries([{
+                data: data
+            }]);
+        }
+
+        /*if(xscale === 'day'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        //text: moment(dateopt).format('DD MMMM').toString(),
+                        text: moment(dateopt[0]).format('DD MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('DD MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }
+        else if( xscale === 'month'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        text: moment(dateopt[0]).format('MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }*/
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        //chart.render();
+    }            
+
+    function updateHistoGraphs(){
+        
+        $data = JSON.stringify({
+            //"selectedDate": $dat, // tabGridId,
+            "startDate": startDate + ' 00:00:00', // tabGridId,
+            "endDate": endDate + '23:59:59', // tabFuelId,
+        });
+
+        // Danger
+
+        swal.queue([{
+            title: 'Les graphes seront actualisés pour la période :',
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: 'Annuler',
+            text: 'Du ' + startDate + ' Au ' + endDate,
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            //confirmButtonClass: 'btn btn-primary',
+            //cancelButtonClass: 'btn btn-danger ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) { 
+                    
+                    $.ajax({
+                        type: "POST", // method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url, // /Target function that will be return result
+                        data: $data, // parameter pass data is parameter name param is value
+                        dataType: "json",
+                        timeout: 120000, // 64241
+                        success: function (result) {
+                            // $('.fa-sync').removeClass('fa-spin');
+                            console.log(result);
+                            
+                            swal({
+                                type: 'success', 
+                                title: 'Les graphes ont été mis !',
+                                // html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 1500);
+
+                            if( Object.keys(result).length > 0 ){
+                                console.log(Object.values(result['Mixed_Conso']))
+                                
+                                MixedConsoChart.destroy()
+                                MixedConsoChart = new ApexCharts(
+                                    document.querySelector("#mixed-conso"),
+                                    mixed_conso_options
+                                );
+                                MixedConsoChart.render()
+                                displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 2, 'day');
+                                //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                MixedConsoChart.toggleSeries('Énergie Active')
+                                MixedConsoChart.toggleSeries('Énergie Active')
+                            }
+                        },
+                        error: function (result) {
+                            // console.log("Error");
+                            // console.log(result);
+                            swal('Oups...', "Une erreur s'est produite !", 'error'
+                            // footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]);
+    }
+
+</script>
+{% endblock %}

@@ -284,12 +284,12 @@
                                     </thead>
                                     <tbody class="text-center">
                                         <tr>
-                                            <td class="text-left">Conso Moy</td>
+                                            <td class="text-left">Conso Moy (kWh/jr)</td>
                                             <td class="text-primary">
-                                                <span id="t-consoMoy">{{currentMonthDataTable['consoMoy']|number_format(2, '.', ' ')}}</span> kWh/jr 
-                                                <span id="t-consoMoy-progress-color" class="text-{% if currentMonthDataTable['consoMoyProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoMoy-progress-value">{% if currentMonthDataTable['consoMoyProgress'] >= 0 or currentMonthDataTable['consoMoyProgress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['consoMoyProgress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['consoMoyProgress']}}{% endif %}</span>% 
-                                                <svg id="t-consoMoy-progress-up-icon" class="{% if currentMonthDataTable['consoMoyProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                <svg id="t-consoMoy-progress-down-icon" class="{% if currentMonthDataTable['consoMoyProgress'] > 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                <span id="t-consoMoy">{{currentMonthDataTable['consoMoy']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-consoMoy-progress-color" class="text-{% if currentMonthDataTable['consoMoyProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:11px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoMoy-progress-value">{% if currentMonthDataTable['consoMoyProgress'] >= 0 or currentMonthDataTable['consoMoyProgress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['consoMoyProgress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['consoMoyProgress']}}{% endif %}</span>% 
+                                                <svg id="t-consoMoy-progress-up-icon" class="{% if currentMonthDataTable['consoMoyProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-consoMoy-progress-down-icon" class="{% if currentMonthDataTable['consoMoyProgress'] > 0 or currentMonthDataTable['consoMoyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                 </span>
                                             </td>
                                         </tr>
@@ -314,32 +314,32 @@
                                             <td class="text-primary" id="t-talon">{{currentMonthDataTable['Talon']}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Conso 00-06h</td>
+                                            <td class="text-left">Conso 00-06h (kWh)</td>
                                             <td class="text-primary">
-                                                <span id="t-conso-00-06">{{currentMonthDataTable['conso-00-06']|number_format(2, '.', ' ')}}</span> kWh
-                                                <span id="t-conso-00-06-progress-color" class="text-{% if currentMonthDataTable['conso-00-06Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-00-06-progress-value">{% if currentMonthDataTable['conso-00-06Progress'] >= 0 or currentMonthDataTable['conso-00-06Progress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['conso-00-06Progress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['conso-00-06Progress']}}{% endif %}</span>% 
-                                                <svg id="t-conso-00-06-progress-up-icon" class="{% if currentMonthDataTable['conso-00-06Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                <svg id="t-conso-00-06-progress-down-icon" class="{% if currentMonthDataTable['conso-00-06Progress'] > 0 or currentMonthDataTable['conso-00-06Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                <span id="t-conso-00-06">{{currentMonthDataTable['conso-00-06']|number_format(2, '.', ' ')}}</span> 
+                                                <span id="t-conso-00-06-progress-color" class="text-{% if currentMonthDataTable['conso-00-06Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:11px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-00-06-progress-value">{% if currentMonthDataTable['conso-00-06Progress'] >= 0 or currentMonthDataTable['conso-00-06Progress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['conso-00-06Progress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['conso-00-06Progress']}}{% endif %}</span>% 
+                                                <svg id="t-conso-00-06-progress-up-icon" class="{% if currentMonthDataTable['conso-00-06Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-conso-00-06-progress-down-icon" class="{% if currentMonthDataTable['conso-00-06Progress'] > 0 or currentMonthDataTable['conso-00-06Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Conso 06-18h</td>
+                                            <td class="text-left">Conso 06-18h (kWh)</td>
                                             <td class="text-primary">
-                                                <span id="t-conso-06-18">{{currentMonthDataTable['conso-06-18']|number_format(2, '.', ' ')}}</span> kWh
-                                                <span id="t-conso-06-18-progress-color" class="text-{% if currentMonthDataTable['conso-06-18Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-06-18-progress-value">{% if currentMonthDataTable['conso-06-18Progress'] >= 0 or currentMonthDataTable['conso-06-18Progress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['conso-06-18Progress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['conso-06-18Progress']}}{% endif %}</span>% 
-                                                <svg id="t-conso-06-18-progress-up-icon" class="{% if currentMonthDataTable['conso-06-18Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                <svg id="t-conso-06-18-progress-down-icon" class="{% if currentMonthDataTable['conso-06-18Progress'] > 0 or currentMonthDataTable['conso-06-18Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                <span id="t-conso-06-18">{{currentMonthDataTable['conso-06-18']|number_format(2, '.', ' ')}}</span> 
+                                                <span id="t-conso-06-18-progress-color" class="text-{% if currentMonthDataTable['conso-06-18Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:11px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-06-18-progress-value">{% if currentMonthDataTable['conso-06-18Progress'] >= 0 or currentMonthDataTable['conso-06-18Progress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['conso-06-18Progress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['conso-06-18Progress']}}{% endif %}</span>% 
+                                                <svg id="t-conso-06-18-progress-up-icon" class="{% if currentMonthDataTable['conso-06-18Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-conso-06-18-progress-down-icon" class="{% if currentMonthDataTable['conso-06-18Progress'] > 0 or currentMonthDataTable['conso-06-18Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                 
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-left">Conso 18-00h</td>
+                                            <td class="text-left">Conso 18-00h (kWh)</td>
                                             <td class="text-primary">
-                                                <span id="t-conso-18-00">{{currentMonthDataTable['conso-18-00']|number_format(2, '.', ' ')}}</span> kWh
-                                                <span id="t-conso-18-00-progress-color" class="text-{% if currentMonthDataTable['conso-18-00Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-18-00-progress-value">{% if currentMonthDataTable['conso-18-00Progress'] >= 0 or currentMonthDataTable['conso-18-00Progress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['conso-18-00Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['conso-18-00Progress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['conso-18-00Progress']}}{% endif %}</span>% 
-                                                <svg id="t-conso-18-00-progress-up-icon" class="{% if currentMonthDataTable['conso-18-00Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                <svg id="t-conso-18-00-progress-down-icon" class="{% if currentMonthDataTable['conso-18-00Progress'] > 0 or currentMonthDataTable['conso-18-00Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                <span id="t-conso-18-00">{{currentMonthDataTable['conso-18-00']|number_format(2, '.', ' ')}}</span> 
+                                                <span id="t-conso-18-00-progress-color" class="text-{% if currentMonthDataTable['conso-18-00Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:11px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-18-00-progress-value">{% if currentMonthDataTable['conso-18-00Progress'] >= 0 or currentMonthDataTable['conso-18-00Progress'] == 'INF'  %}+{% endif %}{% if currentMonthDataTable['conso-18-00Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{currentMonthDataTable['conso-18-00Progress']|number_format(2, '.', ' ')}}{% else %}{{currentMonthDataTable['conso-18-00Progress']}}{% endif %}</span>% 
+                                                <svg id="t-conso-18-00-progress-up-icon" class="{% if currentMonthDataTable['conso-18-00Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-conso-18-00-progress-down-icon" class="{% if currentMonthDataTable['conso-18-00Progress'] > 0 or currentMonthDataTable['conso-18-00Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                 
                                             </td>
                                         </tr>
@@ -436,13 +436,13 @@
                 </div>
             </div>
 
-            <div class="widget widget-chart-three layout-spacing layout-top-spacing">
+            {# <div class="widget widget-chart-three layout-spacing layout-top-spacing">
                 <div class="widget-heading">
                     <div class="">
                         <h5 class="">Diagramme Énergie, Émission CO<sub>2</sub></h5>
                     </div>
 
-                    {# <div class="dropdown  custom-dropdown">
+                    <!-- <div class="dropdown  custom-dropdown">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
                         </a>
@@ -452,13 +452,13 @@
                             <a class="dropdown-item" href="javascript:void(0);">Update</a>
                             <a class="dropdown-item" href="javascript:void(0);">Download</a>
                         </div>
-                    </div> #}
+                    </div> -->
                 </div>
 
                 <div class="widget-content">
                     <div id="mixed-conso"></div>
                 </div>
-            </div>
+            </div> #}
                 
         </div>
     </div>
@@ -1248,7 +1248,7 @@
                     }
                 }); #}
 
-                //#### Mise à jour du tableau des statistiques d'énergie
+                //++++ Mise à jour du tableau des statistiques d'énergie
                 //Valeur moyenne journalière de la consommation d'énergie
                 $('#t-consoMoy').text(parseFloat(result['currentMonthDataTable']['consoMoy']).toFixed(2));
                 //On gère la progression de la moyenne journalière consommation d'énergie
@@ -1284,6 +1284,7 @@
                 //On gère la progression de la consommation d'énergie de la tranche horaire 18h - 00h
                 progress(prefixSelector='t-conso-18-00-progress-', progValue=result['currentMonthDataTable']['conso-18-00Progress'], posLogique=false, isTime=false);
                 
+
             }        
             else{
                 //$('.spin').addClass('d-none');
@@ -1295,11 +1296,12 @@
             
         });
     }, 120000); 
+
 </script>
 
 <!-- -->
 
-<!-- Gestion de la MAJ du budget de consommation -->
+{# <!-- Gestion de la MAJ du budget de consommation --> #}
 <script>
     $('#edit-bg').click(function(){
         // Fetch form to apply custom Bootstrap validation
@@ -1389,7 +1391,7 @@
         
         form.addClass('was-validated');
     })
-</script>
+</script> #}
 
 {# Historical tab panel scripts #}
 {# <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
@@ -1635,12 +1637,12 @@
                                     }, 1000);
 
                                     if( Object.keys(result).length > 0 ){
-                                        console.log(Object.values(result['Load_Chart']))
+                                        {# console.log(Object.values(result['Load_Chart']))
                                         console.log(Object.values(result['Mixed_Conso']))
                                         displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
                                         displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
                                         MixedConsoChart.toggleSeries('Énergie Active')
-                                        MixedConsoChart.toggleSeries('Énergie Active')
+                                        MixedConsoChart.toggleSeries('Énergie Active') #}
                                         //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
 
                                         
@@ -1919,11 +1921,11 @@
             },
         }]
     }
-    var loadChart_histo = new ApexCharts(
+    {# var loadChart_histo = new ApexCharts(
         document.querySelector("#load-chart-histo"),
         loadChart_histo_options
     );
-    loadChart_histo.render()
+    loadChart_histo.render() #}
 
     var mixed_conso_options = {
       chart: {
@@ -2063,11 +2065,11 @@
       },
     }
     
-    var MixedConsoChart = new ApexCharts(
+    {# var MixedConsoChart = new ApexCharts(
         document.querySelector("#mixed-conso"),
         mixed_conso_options
     );
-    MixedConsoChart.render()
+    MixedConsoChart.render() #}
 
     var start = moment().subtract(1, 'days');
     var end = moment();
@@ -2108,7 +2110,7 @@
         
         console.log('startDate = ' + startDate);
         console.log('endDate = ' + endDate);
-        updateHistoGraphs();
+        //updateHistoGraphs();
         // block of code that runs when the click event triggers
 
     });

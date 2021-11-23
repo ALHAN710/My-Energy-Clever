@@ -1568,9 +1568,10 @@ input[disabled], select[disabled], textarea[disabled], input[readonly], select[r
 .table > thead > tr > th {
   color: #1b55e2;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 10px;
   letter-spacing: 1px;
-  text-transform: uppercase; }
+  text-transform: uppercase; 
+}
 
 .table > tbody > tr > td .usr-img-frame {
   background-color: #ebedf2;

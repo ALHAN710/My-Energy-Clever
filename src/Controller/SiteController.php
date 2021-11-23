@@ -87,6 +87,40 @@ class SiteController extends ApplicationController
     }
 
     /**
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro", name="site_pro_show", methods={"GET"})
+     */
+    public function show_site_pro(Site $site, SiteDashboardDataService $siteDash): Response
+    {
+        $siteDash->setSite($site)
+            ->setPower_unit(1000);
+
+        // $siteDash->getCurrentMonthConsumption();
+        // $siteDash->getLastMonthConsumption();
+        // $siteDash->getDayByDayConsumptionForCurrentMonth();
+        // $siteDash->getLoadChartDataForCurrentMonth();
+        // $siteDash->getCurrentActivePower();
+        // $siteDash->getAverageConsumptionForCurrentMonth();
+        // $siteDash->getAverageConsumptionMonthByMonthForCurrentYear();
+        // dump($siteDash->getDayByDayConsumptionForCurrentMonth());
+        $currentConso = $siteDash->getCurrentMonthkWhConsumption();
+        return $this->render('site/home_pro.html.twig', [
+            'site'                    => $site,
+            'lastDatetimeData'        => $siteDash->getLastDatetimeData(),
+            'currentMonthkWh'         => $currentConso['currentConsokWh'],
+            'currentMonthkWhProgress' => $currentConso['currentConsokWhProgress'],
+            'currentMonthXAF'         => $currentConso['currentConsoXAF'],
+            'currentMonthGasEmission' => $currentConso['currentGasEmission'],
+            //'budget'                  => $this->getCurrentBudget($site, $manager),
+            'dayBydayConsoData'       => $siteDash->getDayByDayConsumptionForCurrentMonth(),
+            'loadChartData'           => $siteDash->getLoadChartDataForCurrentMonth(),
+            'currentMonthDataTable'   => $siteDash->getCurrentMonthDataTable(),
+            //'MonthByMonthDataTable'   => $siteDash->getMonthByMonthDataTableForCurrentYear(),
+            'gridBillData'            => $siteDash->getGridBillData(),
+            'fuelBillData'            => $siteDash->getFuelBillData(),
+        ]);
+    }
+
+    /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/edit", name="site_edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Site $site): Response
@@ -230,7 +264,7 @@ class SiteController extends ApplicationController
      * @param Request $request
      * @return JsonResponse
      */
-    public function updateOverview(Site $site, SiteDashboardDataService $overview, EntityManagerInterface $manager, Request $request): JsonResponse
+    public function updateSiteOverview(Site $site, SiteDashboardDataService $overview, EntityManagerInterface $manager, Request $request): JsonResponse
     {
         //Récupération et vérification des paramètres au format JSON contenu dans la requête
         //$paramJSON = $this->getJSONRequest($request->getContent());
@@ -257,6 +291,49 @@ class SiteController extends ApplicationController
             'code' => 403,
             'message' => 'Empty Array or Not exists !',
         ], 403);
+    }
+
+    /**
+     * Permet la MAJ des données de l'interface dashboard d'un site pro
+     * 
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/overview/update", name="site_pro_overview_update_data")
+     *
+     * @param Site $site
+     * @param SiteDashboardDataService $overview
+     * @param EntityManagerInterface $manager
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateSiteProOverview(Site $site, SiteDashboardDataService $overview, EntityManagerInterface $manager): JsonResponse
+    {
+        $overview->setSite($site)
+            ->setPower_unit(1000);
+
+        // $overview->getCurrentMonthConsumption();
+        // $overview->getLastMonthConsumption();
+        // $overview->getDayByDayConsumptionForCurrentMonth();
+        // $overview->getLoadChartDataForCurrentMonth();
+        // $overview->getCurrentActivePower();
+        // $overview->getAverageConsumptionForCurrentMonth();
+        // $overview->getAverageConsumptionMonthByMonthForCurrentYear();
+        // dump($overview->getDayByDayConsumptionForCurrentMonth());
+        $currentConso = $overview->getCurrentMonthkWhConsumption();
+        return $this->json([
+            'code'                    => 200,
+            //'site'                    => $site,
+            'lastDatetimeData'        => $overview->getLastDatetimeData(),
+            'currentMonthkWh'         => $currentConso['currentConsokWh'],
+            'currentMonthkWhProgress' => $currentConso['currentConsokWhProgress'],
+            'currentMonthXAF'         => $currentConso['currentConsoXAF'],
+            'currentMonthGasEmission' => $currentConso['currentGasEmission'],
+            //'budget'                  => $this->getCurrentBudget($site, $manager),
+            'dayBydayConsoData'       => $overview->getDayByDayConsumptionForCurrentMonth(),
+            'loadChartData'           => $overview->getLoadChartDataForCurrentMonth(),
+            'currentMonthDataTable'   => $overview->getCurrentMonthDataTable(),
+            //'MonthByMonthDataTable'   => $overview->getMonthByMonthDataTableForCurrentYear(),
+            'gridBillData'            => $overview->getGridBillData(),
+            'fuelBillData'            => $overview->getFuelBillData(),
+        ], 200);
     }
 
     /**
@@ -291,6 +368,47 @@ class SiteController extends ApplicationController
                     ]
                 ],
                 'Load_Chart'   => $updateHistoGraphs['loadChart_Data'],
+            ], 200);
+        }
+
+        return $this->json([
+            'code' => 403,
+            'message' => 'Empty Array or Not exists !',
+        ], 403);
+    }
+
+    /**
+     * Permet la MAJ des historiques des sites pro
+     * 
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/histo-graphs/update", name="site_pro_histo_update")
+     *
+     * @param Site $site
+     * @param SiteDashboardDataService $histo
+     * @param EntityManagerInterface $manager
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateSiteProHisto(Site $site, SiteDashboardDataService $histo, Request $request): JsonResponse
+    {
+        //Récupération et vérification des paramètres au format JSON contenu dans la requête
+        $paramJSON = $this->getJSONRequest($request->getContent());
+        if (array_key_exists("startDate", $paramJSON) && array_key_exists("endDate", $paramJSON)) {
+            //Initialisation du service
+            $histo->setSite($site)
+                ->setStartDate(new DateTime($paramJSON['startDate']))
+                ->setEndDate(new DateTime($paramJSON['endDate']));
+            $updateHistoPro = $histo->updateHistoGraphs();
+
+            return $this->json([
+                'code'         => 200,
+                'Mixed_Conso'  => [
+                    'date'  => $updateHistoPro['consoChart_Data']['dateConso'],
+                    'conso' => [
+                        $updateHistoPro['consoChart_Data']['kWh'],
+                        $updateHistoPro['consoChart_Data']['kgCO2']
+                    ]
+                ],
+                'Load_Chart'   => $updateHistoPro['loadChart_Data'],
             ], 200);
         }
 

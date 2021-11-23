@@ -17,198 +17,210 @@
             </li>
             {% set nbZone = 0 %}
             {% if app.user.enterprise.accountType == 'PERSONNAL' %}
-            {% for site in app.user.enterprise.sites %}
-                {% set active = false %}
-                {% set url = '' %} {# path('sites_show',{'slug':site.slug}) #}
-                <li class="menu {% if loop.index0 == 0 %}active{% endif %}">
-                    <a href="#site{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                            <span>{{site.name}}</span>
-                        </div>
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </div>
-                    </a>
-                    <ul class="collapse submenu mini-recent-submenu list-unstyled {% if loop.index0 == 0 %}show{% endif %}" id="site{{loop.index0}}" data-parent="#accordionExample">
-                        {# {% set categorie = ['GRID', 'FUEL', 'DC'] %}
-                        {% for cat in categorie %}
-                            {% for type in site.smartMods %} 
-                                {% if type.modType == cat %} #}
-                                    <li {% if loop.index0 == 0 %}class="active"{% endif %}>
-                                        <a href="{{ path('site_show', {'slug': site.slug}) }}">
-                                            {# {% if cat == 'GRID' %}
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M8.28,5.45L6.5,4.55L7.76,2H16.23L17.5,4.55L15.72,5.44L15,4H9L8.28,5.45M18.62,8H14.09L13.3,5H10.7L9.91,8H5.38L4.1,10.55L5.89,11.44L6.62,10H17.38L18.1,11.45L19.89,10.56L18.62,8M17.77,22H15.7L15.46,21.1L12,15.9L8.53,21.1L8.3,22H6.23L9.12,11H11.19L10.83,12.35L12,14.1L13.16,12.35L12.81,11H14.88L17.77,22M11.4,15L10.5,13.65L9.32,18.13L11.4,15M14.68,18.12L13.5,13.64L12.6,15L14.68,18.12Z" /></svg>
-                                            {% elseif cat == 'FUEL' %}
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18H8L10,20H18V16H20V19H23V9H20V12H18V8H12V6H15V4H7Z" /></svg>
-                                            {% elseif cat == 'DC' %}
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M23,11H20V4L15,14H18V22M12.67,4H11V2H5V4H3.33C2.6,4 2,4.6 2,5.33V20.67C2,21.4 2.6,22 3.33,22H12.67C13.4,22 14,21.4 14,20.67V5.33C14,4.6 13.4,4 12.67,4Z" /></svg>
-                                            {% endif %} #}
-                                            <span>{{site.smartMods[0].name}}</span>
-                                        </a>
-                                    </li>
-                                {# {% endif %}
-                            {% endfor %}
-                        {% endfor %} #}
-
-                        {% if site.zones|length > 0 %}
-                            {% set zone_parent = "site" ~ loop.index0 %}
-                            {% set nbZone = nbZone + site.zones|length %}                              
-                            {% for zone in site.zones %}
-                                <li class="">
-                                    <a href="#zone{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                                        <div class="">
-                                            {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg> #}
-                                            <span>{{zone.name}}</span>
-                                        </div>
-                                        <div>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                        </div>
-                                    </a>
-                                    <ul class="collapse submenu list-unstyled" id="zone{{loop.index0}}" data-parent="#{{zone_parent}}">
-                                        {% if zone.smartMods|length > 0 %}
-                                        <li class="">
-                                            <a href="#meter" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                                                <div class="">
-                                                    {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> #}
-                                                    <span>Compteurs</span>
-                                                </div>
-                                                <div>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                                </div>
+                {% for site in app.user.enterprise.sites %}
+                    {% set active = false %}
+                    {% set url = '' %} {# path('sites_show',{'slug':site.slug}) #}
+                    <li class="menu {% if loop.index0 == 0 %}active{% endif %}">
+                        <a href="#site{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                                <span>{{site.name}}</span>
+                            </div>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
+                        </a>
+                        <ul class="collapse submenu mini-recent-submenu list-unstyled {% if loop.index0 == 0 %}show{% endif %}" id="site{{loop.index0}}" data-parent="#accordionExample">
+                            {# {% set categorie = ['GRID', 'FUEL', 'DC'] %}
+                            {% for cat in categorie %}
+                                {% for type in site.smartMods %} 
+                                    {% if type.modType == cat %} #}
+                                        <li {% if loop.index0 == 0 %}class="active"{% endif %}>
+                                            <a href="{{ path('site_show', {'slug': site.slug}) }}">
+                                                {# {% if cat == 'GRID' %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M8.28,5.45L6.5,4.55L7.76,2H16.23L17.5,4.55L15.72,5.44L15,4H9L8.28,5.45M18.62,8H14.09L13.3,5H10.7L9.91,8H5.38L4.1,10.55L5.89,11.44L6.62,10H17.38L18.1,11.45L19.89,10.56L18.62,8M17.77,22H15.7L15.46,21.1L12,15.9L8.53,21.1L8.3,22H6.23L9.12,11H11.19L10.83,12.35L12,14.1L13.16,12.35L12.81,11H14.88L17.77,22M11.4,15L10.5,13.65L9.32,18.13L11.4,15M14.68,18.12L13.5,13.64L12.6,15L14.68,18.12Z" /></svg>
+                                                {% elseif cat == 'FUEL' %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18H8L10,20H18V16H20V19H23V9H20V12H18V8H12V6H15V4H7Z" /></svg>
+                                                {% elseif cat == 'DC' %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M23,11H20V4L15,14H18V22M12.67,4H11V2H5V4H3.33C2.6,4 2,4.6 2,5.33V20.67C2,21.4 2.6,22 3.33,22H12.67C13.4,22 14,21.4 14,20.67V5.33C14,4.6 13.4,4 12.67,4Z" /></svg>
+                                                {% endif %} #}
+                                                <span>{{site.smartMods[0].name}}</span>
                                             </a>
-                                            <ul class="collapse submenu list-unstyled" id="meter" data-parent="#zone{{loop.index0}}">
-                                                <li>
-                                                    <a href="#">
-                                                        <span>Dashboard</span>
-                                                        {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg><span>Dashboard</span> #}
-                                                        {# <i class="mdi mdi-monitor"></i><span>Dashboard</span> #}
-                                                    </a>
-                                                </li>
-                                                {% for modZone in zone.smartMods %}
-                                                    {% if modZone.levelZone == 2 %}
-                                                        <li>
-                                                            <a href="#">
-                                                                {# <i class="mdi mdi-monitor"></i> #}
-                                                                <span>{{modZone.name}}</span>
-                                                            </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endfor %} 
-                                            </ul>
                                         </li>
-                                        {% endif %}
-                                        
-                                        {% if zone.cleverBox|length > 0 %} 
-                                        <li>
-                                            <a href="{{path('zone_equipement', {'slug': zone.slug})}}">Equipements</a>
-                                        </li>
-                                        {% endif %}
-                                    </ul>
-                                </li>
-                            {% endfor %}
-                        {% endif %}                        
-                    </ul>
-                </li>
+                                    {# {% endif %}
+                                {% endfor %}
+                            {% endfor %} #}
 
-            {% endfor %}
+                            {% if site.zones|length > 0 %}
+                                {% set zone_parent = "site" ~ loop.index0 %}
+                                {% set nbZone = nbZone + site.zones|length %}                              
+                                {% for zone in site.zones %}
+                                    <li class="">
+                                        <a href="#zone{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                            <div class="">
+                                                {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg> #}
+                                                <span>{{zone.name}}</span>
+                                            </div>
+                                            <div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                            </div>
+                                        </a>
+                                        <ul class="collapse submenu list-unstyled" id="zone{{loop.index0}}" data-parent="#{{zone_parent}}">
+                                            {% if zone.smartMods|length > 0 %}
+                                            <li class="">
+                                                <a href="#meter" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                                    <div class="">
+                                                        {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> #}
+                                                        <span>Compteurs</span>
+                                                    </div>
+                                                    <div>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                                    </div>
+                                                </a>
+                                                <ul class="collapse submenu list-unstyled" id="meter" data-parent="#zone{{loop.index0}}">
+                                                    <li>
+                                                        <a href="#">
+                                                            <span>Dashboard</span>
+                                                            {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg><span>Dashboard</span> #}
+                                                            {# <i class="mdi mdi-monitor"></i><span>Dashboard</span> #}
+                                                        </a>
+                                                    </li>
+                                                    {% for modZone in zone.smartMods %}
+                                                        {% if modZone.levelZone == 2 %}
+                                                            <li>
+                                                                <a href="#">
+                                                                    {# <i class="mdi mdi-monitor"></i> #}
+                                                                    <span>{{modZone.name}}</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %} 
+                                                </ul>
+                                            </li>
+                                            {% endif %}
+                                            
+                                            {% if zone.cleverBox|length > 0 %} 
+                                            <li>
+                                                <a href="{{path('zone_equipement', {'slug': zone.slug})}}">Equipements</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}                        
+                        </ul>
+                    </li>
+
+                {% endfor %}
             {% elseif app.user.enterprise.accountType == 'PLUS' %}
-            {% for site in app.user.enterprise.sites %}
-                {% set active = false %}
-                {% set url = '' %} {# path('sites_show',{'slug':site.slug}) #}
-                <li class="menu {% if loop.index0 == 0 %}active{% endif %}">
-                    <a href="#site{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                {# <li class="menu active">
+                    <a href="{{ path('enterprise_show', {'slug': app.user.enterprise.slug}) }}">Dashboard</a>
+                </li> #}
+                <li class="menu active">
+                    <a href="{{ path('enterprise_show', {'slug': app.user.enterprise.slug}) }}" aria-expanded="true" class="dropdown-toggle">
                         <div class="">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                            <span>{{site.name}}</span>
-                        </div>
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            <span>Dashboard</span>
                         </div>
                     </a>
-                    <ul class="collapse submenu list-unstyled" id="site{{loop.index0}}" data-parent="#accordionExample">
-                        {% set categorie = ['GRID', 'FUEL', 'DC'] %}
-                        {% for cat in categorie %}
-                            {% for type in site.smartMods %}
-                                {#{{dump(type)}}#}
-                                {% if type.modType == cat %}
-                                    <li {% if loop.index0 == 0 %}class="active"{% endif %}>
-                                        <a href="{{ path('site_show', {'slug': site.slug}) }}">
-                                            {# {% if cat == 'GRID' %}
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M8.28,5.45L6.5,4.55L7.76,2H16.23L17.5,4.55L15.72,5.44L15,4H9L8.28,5.45M18.62,8H14.09L13.3,5H10.7L9.91,8H5.38L4.1,10.55L5.89,11.44L6.62,10H17.38L18.1,11.45L19.89,10.56L18.62,8M17.77,22H15.7L15.46,21.1L12,15.9L8.53,21.1L8.3,22H6.23L9.12,11H11.19L10.83,12.35L12,14.1L13.16,12.35L12.81,11H14.88L17.77,22M11.4,15L10.5,13.65L9.32,18.13L11.4,15M14.68,18.12L13.5,13.64L12.6,15L14.68,18.12Z" /></svg>
-                                            {% elseif cat == 'FUEL' %}
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18H8L10,20H18V16H20V19H23V9H20V12H18V8H12V6H15V4H7Z" /></svg>
-                                            {% elseif cat == 'DC' %}
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M23,11H20V4L15,14H18V22M12.67,4H11V2H5V4H3.33C2.6,4 2,4.6 2,5.33V20.67C2,21.4 2.6,22 3.33,22H12.67C13.4,22 14,21.4 14,20.67V5.33C14,4.6 13.4,4 12.67,4Z" /></svg>
-                                            {% endif %} #}
-                                            <span>{{type.name}}</span>
-                                        </a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-
-                        {% if site.zones|length > 0 %}
-                            {% set zone_parent = "site" ~ loop.index0 %}
-                            {% set nbZone = nbZone + site.zones|length %}                              
-                            {% for zone in site.zones %}
-                                <li class="">
-                                    <a href="#zone{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                                        <div class="">
-                                            {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg> #}
-                                            <span>{{zone.name}}</span>
-                                        </div>
-                                        <div>
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                        </div>
-                                    </a>
-                                    <ul class="collapse submenu list-unstyled" id="zone{{loop.index0}}" data-parent="#{{zone_parent}}">
-                                        {% if zone.smartMods|length > 0 %}
-                                        <li class="menu">
-                                            <a href="#meter" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                                                <div class="">
-                                                    {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> #}
-                                                    <span>Compteurs</span>
-                                                </div>
-                                                <div>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                                </div>
-                                            </a>
-                                            <ul class="collapse submenu list-unstyled" id="meter" data-parent="#zone{{loop.index0}}">
-                                                <li>
-                                                    <a href="#">
-                                                        <span>Dashboard</span>
-                                                        {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg><span>Dashboard</span> #}
-                                                        {# <i class="mdi mdi-monitor"></i><span>Dashboard</span> #}
-                                                    </a>
-                                                </li>
-                                                {% for modZone in zone.smartMods %}
-                                                    {% if modZone.levelZone == 2 %}
-                                                        <li>
-                                                            <a href="#">
-                                                                {# <i class="mdi mdi-monitor"></i> #}
-                                                                <span>{{modZone.name}}</span>
-                                                            </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endfor %} 
-                                            </ul>
-                                        </li>
-                                        {% endif %}
-                                        
-                                        {% if zone.cleverBox|length > 0 %} 
-                                        <li>
-                                            <a href="{{path('zone_equipement', {'slug': zone.slug})}}">Equipements</a>
-                                        </li>
-                                        {% endif %}
-                                    </ul>
-                                </li>
-                            {% endfor %}
-                        {% endif %}                        
-                    </ul>
                 </li>
+                
+                {% for site in app.user.enterprise.sites %}
+                    {% set active = false %}
+                    {% set url = '' %} {# path('sites_show',{'slug':site.slug}) #}
+                    <li class="menu">
+                        <a href="#site{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                                <span>{{site.name}}</span>
+                            </div>
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </div>
+                        </a>
+                        <ul class="collapse submenu list-unstyled" id="site{{loop.index0}}" data-parent="#accordionExample">
+                            {% set categorie = ['GRID', 'FUEL', 'DC'] %}
+                            {% for cat in categorie %}
+                                {% for type in site.smartMods %}
+                                    {#{{dump(type)}}#}
+                                    {% if type.modType == cat %}
+                                        <li class="">
+                                            <a href="{{ path('site_pro_show', {'slug': site.slug}) }}">
+                                                {# {% if cat == 'GRID' %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M8.28,5.45L6.5,4.55L7.76,2H16.23L17.5,4.55L15.72,5.44L15,4H9L8.28,5.45M18.62,8H14.09L13.3,5H10.7L9.91,8H5.38L4.1,10.55L5.89,11.44L6.62,10H17.38L18.1,11.45L19.89,10.56L18.62,8M17.77,22H15.7L15.46,21.1L12,15.9L8.53,21.1L8.3,22H6.23L9.12,11H11.19L10.83,12.35L12,14.1L13.16,12.35L12.81,11H14.88L17.77,22M11.4,15L10.5,13.65L9.32,18.13L11.4,15M14.68,18.12L13.5,13.64L12.6,15L14.68,18.12Z" /></svg>
+                                                {% elseif cat == 'FUEL' %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18H8L10,20H18V16H20V19H23V9H20V12H18V8H12V6H15V4H7Z" /></svg>
+                                                {% elseif cat == 'DC' %}
+                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M23,11H20V4L15,14H18V22M12.67,4H11V2H5V4H3.33C2.6,4 2,4.6 2,5.33V20.67C2,21.4 2.6,22 3.33,22H12.67C13.4,22 14,21.4 14,20.67V5.33C14,4.6 13.4,4 12.67,4Z" /></svg>
+                                                {% endif %} #}
+                                                <span>{{type.name}}</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
 
-            {% endfor %}
+                            {% if site.zones|length > 0 %}
+                                {% set zone_parent = "site" ~ loop.index0 %}
+                                {% set nbZone = nbZone + site.zones|length %}                              
+                                {% for zone in site.zones %}
+                                    <li class="">
+                                        <a href="#zone{{loop.index0}}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                            <div class="">
+                                                {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg> #}
+                                                <span>{{zone.name}}</span>
+                                            </div>
+                                            <div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                            </div>
+                                        </a>
+                                        <ul class="collapse submenu list-unstyled" id="zone{{loop.index0}}" data-parent="#{{zone_parent}}">
+                                            {% if zone.smartMods|length > 0 %}
+                                            <li class="menu">
+                                                <a href="#meter" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                                                    <div class="">
+                                                        {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> #}
+                                                        <span>Compteurs</span>
+                                                    </div>
+                                                    <div>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                                    </div>
+                                                </a>
+                                                <ul class="collapse submenu list-unstyled" id="meter" data-parent="#zone{{loop.index0}}">
+                                                    <li>
+                                                        <a href="#">
+                                                            <span>Dashboard</span>
+                                                            {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg><span>Dashboard</span> #}
+                                                            {# <i class="mdi mdi-monitor"></i><span>Dashboard</span> #}
+                                                        </a>
+                                                    </li>
+                                                    {% for modZone in zone.smartMods %}
+                                                        {% if modZone.levelZone == 2 %}
+                                                            <li>
+                                                                <a href="#">
+                                                                    {# <i class="mdi mdi-monitor"></i> #}
+                                                                    <span>{{modZone.name}}</span>
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %} 
+                                                </ul>
+                                            </li>
+                                            {% endif %}
+                                            
+                                            {% if zone.cleverBox|length > 0 %} 
+                                            <li>
+                                                <a href="{{path('zone_equipement', {'slug': zone.slug})}}">Equipements</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}                        
+                        </ul>
+                    </li>
+
+                {% endfor %}
             {% endif %}
 
             {% if is_granted('ROLE_ADMIN') %}

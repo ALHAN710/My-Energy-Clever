@@ -163,6 +163,16 @@ class LoadEnergyData
      */
     private $smartMod;
 
+    /**
+     * @ORM\Column(type="smallint", nullable=true)
+     */
+    private $workingGenset;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $depassement;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -512,6 +522,30 @@ class LoadEnergyData
     public function setSmartMod(?SmartMod $smartMod): self
     {
         $this->smartMod = $smartMod;
+
+        return $this;
+    }
+
+    public function getWorkingGenset(): ?int
+    {
+        return $this->workingGenset;
+    }
+
+    public function setWorkingGenset(?int $workingGenset): self
+    {
+        $this->workingGenset = $workingGenset;
+
+        return $this;
+    }
+
+    public function getDepassement(): ?int
+    {
+        return $this->depassement;
+    }
+
+    public function setDepassement(?int $depassement): self
+    {
+        $this->depassement = $depassement;
 
         return $this;
     }

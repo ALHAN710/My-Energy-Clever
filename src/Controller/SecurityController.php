@@ -24,9 +24,16 @@ class SecurityController extends AbstractController
         //dump($error);
         //dump($username);
         if ($user !== NULL) {
-            //Si le nombre de site de l'entreprise de l'utilisateur connecté est > 1
-            if (count($user->getEnterprise()->getSites()) > 0) {
-                return $this->redirectToRoute('site_show', ['slug' => $user->getEnterprise()->getSites()[0]->getSlug()]);
+            if ($user->getEnterprise()) {
+                $enterprise = $user->getEnterprise();
+                if ($enterprise->getAccountType() === 'PLUS') {
+                    return $this->redirectToRoute('enterprise_show', ['slug' => $enterprise->getSlug()]);
+                } else if ($enterprise->getAccountType() === 'PERSONNAL') {
+                    //Si le nombre de site de l'entreprise de l'utilisateur connecté est > 1
+                    if (count($enterprise->getSites()) > 0) {
+                        return $this->redirectToRoute('site_show', ['slug' => $enterprise->getSites()[0]->getSlug()]);
+                    }
+                }
             }
         } else {
             return $this->redirectToRoute('app_login');

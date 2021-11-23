@@ -60,7 +60,7 @@ class Site
     /**
      * @ORM\Column(type="float")
      */
-    private $powerSubscribed;
+    private $powerSubscribed; // en kW
 
     /**
      * @ORM\Column(type="string", length=10)
@@ -126,7 +126,12 @@ class Site
     /**
      * @ORM\Column(type="string", length=100)
      */
-    private $subscriptionUsage; // [Residentiel, Non Residentiel ]
+    private $subscriptionUsage;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $hasOneSmartMod; // [Residentiel, Non Residentiel ]
 
     public function __construct()
     {
@@ -476,6 +481,18 @@ class Site
     public function setSubscriptionUsage(string $subscriptionUsage): self
     {
         $this->subscriptionUsage = $subscriptionUsage;
+
+        return $this;
+    }
+
+    public function getHasOneSmartMod(): ?bool
+    {
+        return $this->hasOneSmartMod;
+    }
+
+    public function setHasOneSmartMod(?bool $hasOneSmartMod): self
+    {
+        $this->hasOneSmartMod = $hasOneSmartMod;
 
         return $this;
     }
