@@ -142,6 +142,21 @@ class GensetRealTimeData
      */
     private $dateTime;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $p;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $q;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $s;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -443,6 +458,42 @@ class GensetRealTimeData
     public function setDateTime(?\DateTimeInterface $dateTime): self
     {
         $this->dateTime = $dateTime;
+
+        return $this;
+    }
+
+    public function getP(): ?float
+    {
+        return $this->p;
+    }
+
+    public function setP(?float $p): self
+    {
+        $this->p = $p;
+
+        return $this;
+    }
+
+    public function getQ(): ?float
+    {
+        return $this->q;
+    }
+
+    public function setQ(?float $q): self
+    {
+        $this->q = $q;
+
+        return $this;
+    }
+
+    public function getS(): ?float
+    {
+        return $this->s;
+    }
+
+    public function setS(?float $s): self
+    {
+        $this->s = $s;
 
         return $this;
     }

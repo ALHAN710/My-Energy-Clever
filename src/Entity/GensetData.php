@@ -83,12 +83,12 @@ class GensetData
     private $cosfi;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
     private $totalRunningHours;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
     private $totalEnergy;
 
@@ -106,6 +106,16 @@ class GensetData
      * @ORM\Column(type="integer", nullable=true)
      */
     private $fuelLevel;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $nbPerformedStartUps;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $nbStop;
 
     public function getId(): ?int
     {
@@ -324,6 +334,30 @@ class GensetData
     public function setFuelLevel(?int $fuelLevel): self
     {
         $this->fuelLevel = $fuelLevel;
+
+        return $this;
+    }
+
+    public function getNbPerformedStartUps(): ?int
+    {
+        return $this->nbPerformedStartUps;
+    }
+
+    public function setNbPerformedStartUps(?int $nbPerformedStartUps): self
+    {
+        $this->nbPerformedStartUps = $nbPerformedStartUps;
+
+        return $this;
+    }
+
+    public function getNbStop(): ?int
+    {
+        return $this->nbStop;
+    }
+
+    public function setNbStop(?int $nbStop): self
+    {
+        $this->nbStop = $nbStop;
 
         return $this;
     }

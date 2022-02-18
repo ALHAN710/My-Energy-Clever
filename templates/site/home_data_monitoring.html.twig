@@ -1,0 +1,2379 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{site.name}} | {{genset.name}} | Accueil{% endblock %}
+
+{% block stylesheets %}
+<!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+<link href="/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+<link href="/plugins/animate/animate.css" rel="stylesheet" type="text/css">
+<script src="/plugins/sweetalerts/promise-polyfill.js"></script>
+<link href="/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css">
+<link href="/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css">
+<link href="/plugins/apex/apexcharts.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/css/widgets/modules-widgets.css">  
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/datatables.css">
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/dt-global_style.css">
+<link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />
+<link href="/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+<link href="/css/apps/invoice.css" rel="stylesheet" type="text/css" />
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+
+<style>
+    .gauge {
+        width: 100%;
+        height: 100%;
+    }
+    .size-2 {
+        width: 100px;
+        height: 150px;
+        /*width: 90px;
+        height: 120px;*/
+        margin: 30px auto 0 auto;
+        text-align: center;
+        /*border: 1px solid #e9ecef;*/
+        padding: 5px;
+    }
+</style> 
+{% endblock %}
+
+
+{% block body %}
+<div class="border-top-tab">
+    <ul class="nav nav-tabs mb-3 mt-3 justify-content-center" id="borderTop" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16C1,17.1 1.9,18 3,18H10V20H8V22H16V20H14V18H21C22.1,18 23,17.1 23,16V4C23,2.89 22.1,2 21,2Z" /></svg>
+            Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="historical-tab" data-toggle="tab" href="#historical" role="tab" aria-controls="historical" aria-selected="false">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M3,22V8H7V22H3M10,22V2H14V22H10M17,22V14H21V22H17Z" /></svg>
+            Historique</a>
+        </li>
+        {# <li class="nav-item">
+            <a class="nav-link" id="reporting-tab" data-toggle="tab" href="#reporting" role="tab" aria-controls="reporting" aria-selected="true">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16C1,17.1 1.9,18 3,18H10V20H8V22H16V20H14V18H21C22.1,18 23,17.1 23,16V4C23,2.89 22.1,2 21,2Z" /></svg>
+            Reporting</a>
+        </li> #}
+        
+    </ul>
+
+    <div class="tab-content" id="borderTopContent">
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            
+            <div class="row widget-statistic layout-top-spacing">
+
+                {# <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing"></div>   #}
+                
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing layout-spacing">
+                    <div class="widget widget-generator" style="background-color:#fff;">
+                        <div class="widget-content">
+                            <div class="account-box">
+                                <div class="info mb-0">
+                                    <h5 class="">HTM : <span id="htm">{{overviewData['HTM']}}</span>h</h5>
+                                    <p class="inv-balance"><span id="genset-status" class="badge badge-{% if overviewData['CGCR']['CG'] %}success{% else %}danger{% endif %}">{% if overviewData['CGCR']['CG'] %}ON{% else %}OFF{% endif %}</span></p>
+                                </div>
+                                <div id="fuel_level" class="gauge mt-5 mb-4"></div>
+                                {# <div class="table-responsive">
+                                    <table class="table my-3">
+                                        <thead >
+                                            <tr class="text-center">
+                                                <th>L12 (V)</th>
+                                                <th>L13 (V)</th>
+                                                <th>L23 (V)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <td><span id="l12G">0</span> </td>
+                                            <td><span id="l13G">0</span></td>
+                                            <td><span id="l23G">0</span></td> 
+                                        </tbody>
+                                    </table>
+                                </div> #}
+                                {# <div class="acc-action">
+                                    <div class="">
+                                        <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></a>
+                                        <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></a>
+                                    </div>
+                                    <a href="javascript:void(0);">Upgrade</a>
+                                </div> #}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="float-right"><small>Dernière mise à jour : <strong><span id="last_update">{{overviewData['Date']|date('d M Y H:i:s')}}</span></strong></small></div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-followers">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> #}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            {# <p class="w-value"><span id="conso-fuel-value">20</span> L  | <span id="conso-fuel-xaf-value">10000</span> XAF 
+                            <span id="conso-fuel-value-progress-color" class="text-success" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-fuel-value-progress-value">0</span>% 
+                            <svg id="conso-fuel-value-progress-up-icon" class="" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            </span>             #}
+                            <p class="w-value"><span id="conso-fuel-value">{{overviewData['currentConsoFuel']|number_format(2, '.', ' ')}}</span> L  | <span id="conso-fuel-xaf-value">10000</span> XAF 
+                            <span id="conso-fuel-value-progress-color" class="text-{% if overviewData['currentConsoFuelProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-fuel-value-progress-value">{% if overviewData['currentConsoFuelProgress'] >= 0 or overviewData['currentConsoFuelProgress'] == 'INF'  %}+{% endif %}{% if overviewData['currentConsoFuelProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{overviewData['currentConsoFuelProgress']|number_format(2, '.', ' ')}}{% else %}{{overviewData['currentConsoFuelProgress']}}{% endif %}</span>% 
+                            <svg id="conso-fuel-value-progress-up-icon" class="{% if overviewData['currentConsoFuelProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            <svg id="conso-fuel-value-progress-down-icon" class="{% if overviewData['currentConsoFuelProgress'] > 0 or overviewData['currentConsoFuelProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                            </span>            
+                            <h5 class="">Conso Fuel du mois</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-conso-fuel"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="widget widget-one_hybrid widget-engagement" style="background-color:#fff;">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            {# <p class="w-value"><span id="approv-fuel-value">15</span> L | <span id="approv-fuel-value">1000</span> XAF <span id="approv-fuel-progress-color" class="text-success" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="approv-fuel-progress-value">0</span>% 
+                            <svg id="approv-fuel-progress-up-icon" class="" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            </span>             #}
+                            <p class="w-value"><span id="approv-fuel-value">{{overviewData['currentApproFuel']|number_format(2, '.', ' ')}}</span> L <span id="approv-fuel-progress-color" class="text-{% if overviewData['currentApproFuelProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="approv-fuel-progress-value">{% if overviewData['currentApproFuelProgress'] >= 0 or overviewData['currentApproFuelProgress'] == 'INF'  %}+{% endif %}{% if overviewData['currentApproFuelProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{overviewData['currentApproFuelProgress']|number_format(2, '.', ' ')}}{% else %}{{overviewData['currentApproFuelProgress']}}{% endif %}</span>% 
+                            <svg id="approv-fuel-progress-up-icon" class="{% if overviewData['currentApproFuelProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            <svg id="approv-fuel-progress-down-icon" class="{% if overviewData['currentApproFuelProgress'] > 0 or overviewData['currentApproFuelProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                            </span>            
+                            <h5 class="">Appro Fuel du mois</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-appro-fuel"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-one_hybrid widget-referral">
+                        <div class="widget-heading">
+                            <div class="w-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                            </div>
+                            {# <p class="w-value"><span id="duree-fonct-value">15:20</span> <span id="duree-fonct-progress-color" class="text-success" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="duree-fonct-progress-value">0</span>% 
+                            <svg id="duree-fonct-progress-up-icon" class="" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            </span>             #}
+                            <p class="w-value"><span id="duree-fonct">{{overviewData['dureeFonctionnement']|number_format(2, '.', ' ')}}</span> L <span id="duree-fonct-progress-color" class="text-{% if overviewData['dureeFonctionnementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:13px;letter-spacing: 0px;margin-bottom: 0;"><span id="duree-fonct-progress-value">{% if overviewData['dureeFonctionnementProgress'] >= 0 or overviewData['dureeFonctionnementProgress'] == 'INF'  %}+{% endif %}{% if overviewData['dureeFonctionnementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{overviewData['dureeFonctionnementProgress']|number_format(2, '.', ' ')}}{% else %}{{overviewData['dureeFonctionnementProgress']}}{% endif %}</span>% 
+                            <svg id="duree-fonct-progress-up-icon" class="{% if overviewData['dureeFonctionnementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                            <svg id="duree-fonct-progress-down-icon" class="{% if overviewData['dureeFonctionnementProgress'] > 0 or overviewData['dureeFonctionnementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                            </span>            
+                            <h5 class="">Durée de fonctionnement du mois</h5>
+                        </div>
+                        <div class="widget-content">    
+                            <div class="w-chart">
+                                <div id="w-df"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">   
+                    <div class="widget widget-activity-four" style="background-color:#fff;">
+
+                        <div class="widget-heading mt-2">
+                            <h5 class="">Consommation Fuel</h5>
+                        </div>
+
+                        <div class="widget-content mt-4">
+
+                            <div class="mt-container mx-auto">
+                                <div class="timeline-line">
+                                    
+                                    <div class="item-timeline timeline-primary">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p><span>Ce jour</span></p>
+                                            <span class="badge badge-danger">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                  
+                                            </span>
+                                            <p class="t-time"> 5 L</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-timeline timeline-success">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p>Ce mois</p>
+                                            <span class="badge badge-success">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                    
+                                            </span>
+                                            <p class="t-time">30 L</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-timeline  timeline-danger">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p>Cette année</p>
+                                            
+                                            <span class="badge badge-danger">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                  
+                                            </span>
+                                            <p class="t-time">80 L</p>
+                                        </div>
+                                    </div>
+
+                                </div>                                    
+                            </div>
+
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">   
+                    <div class="widget widget-activity-four" style="background-color:#fff;">
+
+                        <div class="widget-heading mt-2">
+                            <h5 class="">Approvisionnement Fuel</h5>
+                        </div>
+
+                        <div class="widget-content mt-4">
+
+                            <div class="mt-container mx-auto">
+                                <div class="timeline-line">
+                                    
+                                    <div class="item-timeline timeline-primary">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p><span>Ce jour</span></p>
+                                            <span class="badge badge-danger">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                  
+                                            </span>
+                                            <p class="t-time"> 5 L</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-timeline timeline-success">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p>Ce mois</p>
+                                            <span class="badge badge-success">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                    
+                                            </span>
+                                            <p class="t-time">30 L</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-timeline  timeline-danger">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p>Cette année</p>
+                                            <span class="badge badge-danger">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                  
+                                            </span>
+                                            <p class="t-time">80 L</p>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                </div>                                    
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">   
+                    <div class="widget widget-activity-four" style="background-color:#fff;">
+
+                        <div class="widget-heading mt-2">
+                            <h5 class="">Durée de fonctionnement</h5>
+                        </div>
+
+                        <div class="widget-content mt-4">
+
+                            <div class="mt-container mx-auto">
+                                <div class="timeline-line">
+                                    
+                                    <div class="item-timeline timeline-primary">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p><span>Ce jour</span></p>
+                                            <span class="badge badge-danger">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                  
+                                            </span>
+                                            <p class="t-time">1:30</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-timeline timeline-success">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p>Ce mois</p>
+                                            <span class="badge badge-success">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                    
+                                            </span>
+                                            <p class="t-time">10:05</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-timeline  timeline-danger">
+                                        <div class="t-dot" data-original-title="" title="">
+                                        </div>
+                                        <div class="t-text">
+                                            <p>Cette année</p>
+                                            <span class="badge badge-danger">
+                                                <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                  
+                                            </span>
+                                            <p class="t-time">220:00</p>
+                                        </div>
+                                    </div>
+                                </div>                                    
+                            </div>
+
+                        </div>
+                    </div>
+                </div> #}
+                
+                {# <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing"></div> #}
+            </div>
+
+            <div class="row sales">
+
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-table-one">
+                        <div class="widget-heading">
+                            <!-- <h5 class="">Transactions</h5> -->
+                        </div>
+
+                        <div class="widget-content">
+                            <div class="row my-2">
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 mt-2">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="avatar avatar-xl">
+                                                        <span class="avatar-title rounded-circle">AT</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Autonomie</h4>
+                                                    {# <div class="t-rate rate-dec" id="t-nb-arret-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-nb-arret-progress-value"></span>
+                                                        </p>
+                                                    </div> #}
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e7515a;" id="t-nb-arret">01:30:20</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 mt-2">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="icon">
+                                                        <span class="rounded-circle">TU</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Taux d'utilisation GE</h4>
+                                                    <div class="t-rate rate-inc" id="t-tx-utilisation-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                            <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            <small>par rapport au mois passé à la même période</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e2a03f;"><span id="t-tx-utilisation">20</span>%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 mt-2">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="icon">
+                                                        <span class="rounded-circle">ND</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Nombre de démarrage</h4>
+                                                    <div class="t-rate rate-dec" id="t-nb-demarrage-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-nb-demarrage-progress-value">0</span>% 
+                                                            <svg id="t-nb-demarrage-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-nb-demarrage-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            <small>par rapport au mois passé à la même période</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e2a03f;" id="t-nb-demarrage">10</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            {# <div class="widget widget-one layout-spacing  layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Courbe du Niveau de Fuel</h5>
+                    </div>
+
+                    <!-- <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> --> 
+                </div>
+
+                <div class="widget-content">
+                    <div id="fuel-level-chart-histo"></div>
+                </div>
+            </div>  #}
+
+        </div>
+
+        <div class="tab-pane fade " id="historical" role="tabpanel" aria-labelledby="historical-tab">
+            <div class="widget-content widget-content-area br-6 layout-top-spacing layout-top-spacing">
+                <div class="table-responsive mb-4 mt-4">
+                    <table id="historic-dataTable" class="table table-hover" style="width:100%">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Mois</th>
+                                <th>Conso (L)</th>
+                                <th>Durée (h)</th>
+                                <th>Tx d'utilisation (%)</th>
+                                <th>Appro (L)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# {% for data in MonthByMonthDataTable %}
+                            <tr class="text-center">
+                                <td>{% if data.Date is defined %}{% if data.EA is not empty %} {{data['Date']|date('M Y')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.EA is defined %}{% if data.EA is not empty %} {{data['EA']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.kgCO2 is defined %}{% if data.EA is not empty %} {{data['kgCO2']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.consoMoy is defined %}{% if data.EA is not empty %} {{data['consoMoy']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.Pmax is defined %}{% if data.EA is not empty %} {{(data['Pmax'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.talon is defined %}{% if data.EA is not empty %} {{(data['talon'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                
+                            </tr>
+                            {% endfor %} #}
+                            <tr class="text-center">
+                                <td>Jan</td>
+                                <td>10</td>
+                                <td>5:30</td>
+                                <td>20</td>
+                                <td>5</td>
+                            </tr>
+                            <tr class="text-center">
+                                <td>Fév</td>
+                                <td>10</td>
+                                <td>5:30</td>
+                                <td>20</td>
+                                <td>5</td>
+                            </tr>
+                            
+                        </tbody>
+                        {# <tfoot>
+                            <tr class="text-center">
+                                <th>Mois</th>
+                                <th>Conso (kWh)</th>
+                                <th>Émission (kgCO<sub>2</sub>)</th>
+                                <th>Conso Moy (kWh/jr)</th>
+                                <th>Puissance Max (W)</th>
+                                <th>Talon de puissance (W)</th>
+                            </tr>
+                        </tfoot> #}
+                    </table>
+                </div>    
+            </div>
+
+            <div class="statbox widget box layout-spacing layout-top-spacing">
+                <div class="widget-header">                                 
+                    <div class="row">
+                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                            <h4>Sélecteur de date</h4> 
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-content widget-content-area">
+                    {# <p>Date time picker is powered by <span class="text-primary">flatpickr.js</span> that gives the ability to user to select date or time.</p> #}
+                    <div class="form-group mb-0">
+                        <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
+                    </div>
+                </div>
+            </div>
+
+            {# <div class="row sales">
+
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-table-one">
+                        <div class="widget-heading">
+                            <!-- <h5 class="">Transactions</h5> -->
+                        </div>
+
+                        <div class="widget-content">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="icon">
+                                                        <span class="rounded-circle">TU</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Taux d'utilisation GE</h4>
+                                                    <div class="t-rate rate-inc" id="t-tx-utilisation-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-tx-utilisation-progress-value">0</span>% 
+                                                            <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e2a03f;"><span id="t-tx-utilisation">20</span>%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="avatar avatar-xl">
+                                                        <span class="avatar-title rounded-circle">DF</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Durée de fonctionnement</h4>
+                                                    <div class="t-rate rate-inc" id="t-duree-fonc-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-duree-fonc-progress-value">0</span>% 
+                                                            <svg id="t-duree-fonc-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-duree-fonc-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e7515a;" id="t-duree-fonc">12:15</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="avatar avatar-xl">
+                                                        <span class="avatar-title rounded-circle">AP</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Approvisionnement</h4>
+                                                    <div class="t-rate rate-inc" id="t-approv-fuel-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-approv-fuel-progress-value">0</span>% 
+                                                            <svg id="t-approv-fuel-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-approv-fuel-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e7515a;"><span id="t-approv-fuel">50</span> L</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                                <div class="col">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="icon">
+                                                        <span class="rounded-circle">CS</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Consommation</h4>
+                                                    <div class="t-rate rate-inc" id="t-conso-fuel-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-conso-fuel-progress-value">0</span>% 
+                                                            <svg id="t-conso-fuel-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-conso-fuel-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e2a03f;"><span id="t-conso-fuel">10</span> L</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="icon">
+                                                        <span class="rounded-circle">ND</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Nombre de démarrage</h4>
+                                                    <div class="t-rate rate-inc" id="t-nb-demarrage-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-nb-demarrage-progress-value">0</span>% 
+                                                            <svg id="t-nb-demarrage-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-nb-demarrage-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e2a03f;" id="t-nb-demarrage">10</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                                <div class="col">
+                                    <div class="transactions-list">
+                                        <div class="t-item">
+                                            <div class="t-company-name">
+                                                <div class="t-icon">
+                                                    <div class="avatar avatar-xl">
+                                                        <span class="avatar-title rounded-circle">NA</span>
+                                                    </div>
+                                                </div>
+                                                <div class="t-name">
+                                                    <h4>Nombre d'arrêt</h4>
+                                                    <div class="t-rate rate-dec" id="t-nb-arret-progress-color">
+                                                        <p class="meta-date">
+                                                            <span id="t-nb-arret-progress-value">0</span>% 
+                                                            <svg id="t-nb-arret-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                            <svg id="t-nb-arret-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="h4">
+                                                <p style="color: #e7515a;" id="t-nb-arret">10</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div> #}
+            
+            <div class="widget widget-one layout-spacing  layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Courbe du Niveau de Fuel</h5>
+                    </div>
+
+                    {# <!-- <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> --> #}
+                </div>
+
+                <div class="widget-content">
+                    <div id="fuel-level-chart-histo"></div>
+                </div>
+            </div>
+
+            <div class="widget widget-one layout-spacing  layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Courbe de charge du GE</h5>
+                    </div>
+
+                    {# <!-- <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> --> #}
+                </div>
+
+                <div class="widget-content">
+                    <div id="load-level-chart-histo"></div>
+                </div>
+            </div> 
+
+            <div class="widget widget-chart-three layout-spacing  layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Diagramme Durée, et courbe de Consommation</h5>
+                    </div>
+
+                    {# <!-- <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> --> #}
+                </div>
+
+                <div class="widget-content">
+                    <div id="mixed-duree-conso"></div>
+                </div>
+            </div> 
+
+            {# <div class="widget-content widget-content-area br-6 layout-top-spacing layout-top-spacing">
+                <div class="table-responsive mb-4 mt-4">
+                    <table id="historic-dataTable" class="table table-hover" style="width:100%">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Mois</th>
+                                <th>Conso (kWh)</th>
+                                <th>Émission (kgCO<sub>2</sub>)</th>
+                                <th>Conso Moy (kWh/jr)</th>
+                                <th>Puissance Max (W)</th>
+                                <th>Talon de puissance (W)</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in MonthByMonthDataTable %}
+                            <tr class="text-center">
+                                <td>{% if data.Date is defined %}{% if data.EA is not empty %} {{data['Date']|date('M Y')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.EA is defined %}{% if data.EA is not empty %} {{data['EA']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.kgdf is defined %}{% if data.EA is not empty %} {{data['kgdf']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.consoMoy is defined %}{% if data.EA is not empty %} {{data['consoMoy']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.Pmax is defined %}{% if data.EA is not empty %} {{(data['Pmax'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                <td>{% if data.talon is defined %}{% if data.EA is not empty %} {{(data['talon'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
+                                
+                            </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+                        <tfoot>
+                            <tr class="text-center">
+                                <th>Mois</th>
+                                <th>Conso (kWh)</th>
+                                <th>Émission (kgCO<sub>2</sub>)</th>
+                                <th>Conso Moy (kWh/jr)</th>
+                                <th>Puissance Max (W)</th>
+                                <th>Talon de puissance (W)</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>    
+            </div> #}
+
+            {# <div class="statbox widget box layout-spacing layout-top-spacing">
+                <div class="widget-header">                                 
+                    <div class="row">
+                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                            <h4>Selecteur de date</h4> 
+                        </div>
+                    </div>
+                </div>
+                <div class="widget-content widget-content-area">
+                    <!-- <p>Date time picker is powered by <span class="text-primary">flatpickr.js</span> that gives the ability to user to select date or time.</p> -->
+                    <div class="form-group mb-0">
+                        <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
+                    </div>
+                </div>
+            </div> #}
+
+            {# <div class="widget widget-one layout-spacing layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Courbe de charge</h5>
+                    </div>
+
+                    <!-- <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> -->
+                </div>
+
+                <div class="widget-content">
+                    <div id="load-chart-histo"></div>
+                </div>
+            </div> #}
+
+            {# <div class="widget widget-chart-three layout-spacing layout-top-spacing">
+                <div class="widget-heading">
+                    <div class="">
+                        <h5 class="">Diagramme Énergie, Émission CO<sub>2</sub></h5>
+                    </div>
+
+                    <!-- <div class="dropdown  custom-dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
+                            <a class="dropdown-item" href="javascript:void(0);">View</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                        </div>
+                    </div> -->
+                </div>
+
+                <div class="widget-content">
+                    <div id="mixed-conso"></div>
+                </div>
+            </div> #}
+                
+        </div>
+
+        <div class="tab-pane fade " id="reporting" role="tabpanel" aria-labelledby="reporting-tab">
+            <div class="invoice-container">
+                <div class="invoice-inbox">
+                    {# <div id="ct" class="">    #}
+                        {# <div class="invoice-00001"> animated animatedFadeInUp fadeInUp #}
+                            <div class="content-section  ">
+
+                                <div class="row inv--head-section">
+
+                                    <div class="col-sm-6 col-12">
+                                        <h3 class="in-heading">INVOICE</h3>
+                                    </div>
+                                    <div class="col-sm-6 col-12 align-self-center text-sm-right">
+                                        <div class="company-info">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-hexagon"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                                            <h5 class="inv-brand-name">CORK</h5>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="row inv--detail-section">
+
+                                    <div class="col-sm-7 align-self-center">
+                                        <p class="inv-to">Invoice To</p>
+                                    </div>
+                                    <div class="col-sm-5 align-self-center  text-sm-right order-sm-0 order-1">
+                                        <p class="inv-detail-title">From : XYZ Company</p>
+                                    </div>
+                                    
+                                    <div class="col-sm-7 align-self-center">
+                                        <p class="inv-customer-name">Jesse Cory</p>
+                                        <p class="inv-street-addr">405 Mulberry Rd. Mc Grady, NC, 28649</p>
+                                        <p class="inv-email-address">redq@company.com</p>
+                                    </div>
+                                    <div class="col-sm-5 align-self-center  text-sm-right order-2">
+                                        <p class="inv-list-number"><span class="inv-title">Invoice Number : </span> <span class="inv-number">[invoice number]</span></p>
+                                        <p class="inv-created-date"><span class="inv-title">Invoice Date : </span> <span class="inv-date">20 Aug 2019</span></p>
+                                        <p class="inv-due-date"><span class="inv-title">Due Date : </span> <span class="inv-date">26 Aug 2019</span></p>
+                                    </div>
+                                </div>
+
+                                <div class="row inv--product-table-section">
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead class="">
+                                                    <tr>
+                                                        <th scope="col">S.No</th>
+                                                        <th scope="col">Items</th>
+                                                        <th class="text-right" scope="col">Qty</th>
+                                                        <th class="text-right" scope="col">Unit Price</th>
+                                                        <th class="text-right" scope="col">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Electric Shaver</td>
+                                                        <td class="text-right">20</td>
+                                                        <td class="text-right">$300</td>
+                                                        <td class="text-right">$2800</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2</td>
+                                                        <td>Earphones</td>
+                                                        <td class="text-right">49</td>
+                                                        <td class="text-right">$500</td>
+                                                        <td class="text-right">$7000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>3</td>
+                                                        <td>Wireless Router</td>
+                                                        <td class="text-right">30</td>
+                                                        <td class="text-right">$500</td>
+                                                        <td class="text-right">$3500</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-sm-5 col-12 order-sm-0 order-1">
+                                        <div class="inv--payment-info">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-12">
+                                                    <h6 class=" inv-title">Payment Info:</h6>
+                                                </div>
+                                                <div class="col-sm-4 col-12">
+                                                    <p class=" inv-subtitle">Bank Name: </p>
+                                                </div>
+                                                <div class="col-sm-8 col-12">
+                                                    <p class="">Bank of America</p>
+                                                </div>
+                                                <div class="col-sm-4 col-12">
+                                                    <p class=" inv-subtitle">Account Number : </p>
+                                                </div>
+                                                <div class="col-sm-8 col-12">
+                                                    <p class="">1234567890</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-7 col-12 order-sm-1 order-0">
+                                        <div class="inv--total-amounts text-sm-right">
+                                            <div class="row">
+                                                <div class="col-sm-8 col-7">
+                                                    <p class="">Sub Total: </p>
+                                                </div>
+                                                <div class="col-sm-4 col-5">
+                                                    <p class="">$13300</p>
+                                                </div>
+                                                <div class="col-sm-8 col-7">
+                                                    <p class="">Tax Amount: </p>
+                                                </div>
+                                                <div class="col-sm-4 col-5">
+                                                    <p class="">$700</p>
+                                                </div>
+                                                <div class="col-sm-8 col-7">
+                                                    <p class=" discount-rate">Discount : <span class="discount-percentage">5%</span> </p>
+                                                </div>
+                                                <div class="col-sm-4 col-5">
+                                                    <p class="">$700</p>
+                                                </div>
+                                                <div class="col-sm-8 col-7 grand-total-title">
+                                                    <h4 class="">Grand Total : </h4>
+                                                </div>
+                                                <div class="col-sm-4 col-5 grand-total-amount">
+                                                    <h4 class="">$14000</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        {# </div> #}
+                    {# </div> #}
+                </div>
+            </div>
+            {# <div class="row">
+                <div class="widget widget-chart-one">
+                    <div class="widget-heading">
+                        <h5 class="">Récap Fuel</h5>
+                        <ul class="tabs tab-pills">
+                            <li><a href="javascript:void(0);" id="tb_1" class="tabmenu">{{'now'|date('F')}}</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table mb-4">
+                                
+                                <thead>
+                                    <!-- <tr>
+                                        <th class="text-center">#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th class="">Status</th>
+                                        <th>Register</th>
+                                    </tr> -->
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td class="text-left">Durée d'utilisation G.E</td>
+                                        <td class="text-primary"><span id="t-duree-utilisation">{{fuelBillData['DUG']}}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Taux d'utilisation</td>
+                                        <td class="text-primary"><span id="t-taux-utilisation">{{fuelBillData['TUG']}}</span> %</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Énergie produite</td>
+                                        <td class="text-primary"><span id="t-enr-prod">{{fuelBillData['EA_prod']}}</span> kWh</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Consommation Fuel</td>
+                                        <td class="text-primary"><span id="t-conso-fuel">{{fuelBillData['currentConsoFuel']}}</span> L</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Montant Conso Fuel</td>
+                                        <td class="text-primary"><span id="t-amount-conso-fuel">{{fuelBillData['currentConsoFuelAmount']}}</span> F CFA</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> 
+                    </div>
+                </div>
+            </div> #}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+<script src="/js/scrollspyNav.js"></script>
+<script src="/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script src="/plugins/apex/apexcharts.min.js"></script>
+<script src="/js/widgets/modules-widgets.js"></script>
+
+<script src="/plugins/moment/moment.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> #}
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<!-- Chart JS -->
+<script src="/plugins/chartjs/chart.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js" integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> #}
+
+<script src="/plugins/justgage/justgage.js"></script>
+<script src="/plugins/justgage/raphael-2.1.4.min.js"></script>
+
+<script src="/plugins/highlight/highlight.pack.js"></script>
+
+{# <script src="/js/apps/invoice.js"></script> #}
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+
+{# Overview tab panel scripts #}
+<script>
+
+    // w-conso Chart variable
+    var w_consoChart;
+
+    // w-df Chart variable
+    var w_dfChart;
+    
+    var fuel_level = new JustGage({
+        id: "fuel_level",
+        value: 0,
+        min: 0,
+        max: 100,
+        title: "Fuel Level",
+        label: "Fuel Level",
+        pointer: true,
+        textRenderer: function (val) {
+            return val + ' %';
+        },
+        onAnimationEnd: function () {
+            console.log('f: onAnimationEnd()');
+        }
+    });
+
+    // appro Chart variable
+    var approChart;
+    //const promise = function(){
+        new Promise(function(resolve, reject){
+            //$('#appro-chart-loader').removeClass('d-none')
+            setTimeout(function(){
+                
+                fuel_level.refresh( 20 );
+
+                var conso_options = {
+                    chart: {
+                        id: 'consoFuel',
+                        group: 'Conso',
+                        type: 'bar',
+                        height: 160,
+                        sparkline: {
+                            enabled: true
+                        },
+                        animations:{
+                            enabled:false
+                        },
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2,
+                    },
+                    series: [{
+                        name: 'Conso Fuel',
+                        {# data: {{ dayBydayConsoData['consoFuel'] | json_encode | raw }} #}
+                        data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80]
+                    }],
+                    {# labels: {{ dayBydayConsoData['dateConso'] | json_encode | raw }}, #}
+                    labels: ['1', '2', '3', '4', '5', '6', '7'],
+                    xaxis: {
+                        //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+                        categories: [],
+                        labels: {
+                            datetimeFormatter: {
+                                year: 'yyyy',
+                                month: 'MMM \'yy',
+                                day: 'dd MMM',
+                                hour: 'HH:mm'
+                            }
+                        },
+                        title: {
+                            text: moment().format('DD MMMM').toString(),
+                            style: {
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                fontFamily: undefined,
+                                color: '#444'
+                            },
+                        }
+                    },
+                    yaxis: {
+                        min: 0
+                    },
+                    colors: ['#1b55e2'],
+                    tooltip: {
+                        theme: "dark",
+                        //followCursor: true,
+                        y: {
+                            formatter: function (y) {
+                                //console.log(y)
+                                if (typeof y !== "undefined") {
+                                    return y.toFixed(2) + " L"
+                                }
+                                return y;
+                            }
+                        },
+                        x: {
+                            formatter: function (val, timestamp) {
+                                return moment(new Date(val)).format("DD MMM YYYY")
+                            }
+                        }
+                    },
+                    /*tooltip: {
+                        x: {
+                        show: false,
+                        }
+                    },*/
+                    fill: {
+                        type:"gradient",
+                        gradient: {
+                            type: "vertical",
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: .40,
+                            opacityTo: .05,
+                            stops: [45, 100]
+                        }
+                    },
+                }
+                // w-conso-fuel Chart variable
+                w_consoChart = new ApexCharts(document.querySelector("#w-conso-fuel"), conso_options);
+                w_consoChart.render()
+
+                // w-df Chart
+                var w_dfChart_options = {
+                    chart: {
+                        id: 'df',
+                        group: 'Conso',
+                        type: 'bar',
+                        height: 160,
+                        sparkline: {
+                            enabled: true
+                        },
+                        animations:{
+                            enabled:false
+                        },
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2,
+                    },
+                    series: [{
+                        name: 'Durée de fonctionnement',
+                        {# data: {{ dayBydayConsoData['df'] | json_encode | raw }} #}
+                        data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80]
+                    }],
+                    {# labels: {{ dayBydayConsoData['dateConso'] | json_encode | raw }}, #}
+                    labels: ['1', '2', '3', '4', '5', '6', '7'],
+                    xaxis: {
+                        //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+                        categories: [],
+                        labels: {
+                            datetimeFormatter: {
+                                year: 'yyyy',
+                                month: 'MMM \'yy',
+                                day: 'dd MMM',
+                                hour: 'HH:mm'
+                            }
+                        },
+                        title: {
+                            text: moment().format('DD MMMM').toString(),
+                            style: {
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                fontFamily: undefined,
+                                color: '#444'
+                            },
+                        }
+                    },
+                    yaxis: {
+                        min: 0
+                    },
+                    colors: ['#e7515a'],
+                    tooltip: {
+                        theme: "dark",
+                        //followCursor: true,
+                        y: {
+                            formatter: function (y) {
+                                //console.log(y)
+                                if (typeof y !== "undefined") {
+                                    return y.toFixed(2) + " h"
+                                }
+                                return y;
+                            }
+                        },
+                        x: {
+                            formatter: function (val, timestamp) {
+                                return moment(new Date(val)).format("DD MMM YYYY")
+                            }
+                        }
+                    },
+                    /*tooltip: {
+                        x: {
+                        show: false,
+                        }
+                    },*/
+                    fill: {
+                        type:"gradient",
+                        gradient: {
+                            type: "vertical",
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: .40,
+                            opacityTo: .05,
+                            stops: [45, 100]
+                        }
+                    },
+                }
+                w_dfChart = new ApexCharts(document.querySelector("#w-df"), w_dfChart_options);
+                w_dfChart.render()
+
+                // appro Chart
+                var w_approChart_options = {
+                    chart: {
+                        id: 'approv',
+                        group: 'Conso',
+                        type: 'bar',
+                        height: 160,
+                        sparkline: {
+                            enabled: true
+                        },
+                    },
+                    stroke: {
+                        //curve: 'smooth',
+                        width: 2,
+                    },
+                    fill: {
+                        opacity: 1,
+                    },
+                    series: [{
+                        name: 'Appro Fuel',
+                        data: [28, 50, 36, 60, 38, 52, 38 ]
+                    }],
+                    labels: ['1', '2', '3', '4', '5', '6', '7'],
+                    {# series: [{
+                        name: 'Appro Fuel',
+                        data: {{ loadChartData['kW'] | json_encode | raw }}
+                    }], #}
+                    xaxis: {
+                        type: 'datetime',
+                        {# categories: {{ loadChartData['dateP'] | json_encode | raw }}, #}
+                        categories: [],
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        crosshairs: {
+                            show: true
+                        },
+                        labels: {
+                            offsetX: 0,
+                            offsetY: 5,
+                            style: {
+                                fontSize: '12px',
+                                fontFamily: 'Nunito, sans-serif',
+                                cssClass: 'apexcharts-xaxis-title',
+                            },
+                            datetimeFormatter: {
+                                year: 'yyyy',
+                                month: 'MMM \'yy',
+                                day: 'dd MMM',
+                                hour: 'HH:mm'
+                            }
+                        },
+                        /*title: {
+                            text: moment().format('DD MMMM YYYY').toString(),
+                            style: {
+                                fontSize: '12px',
+                                fontFamily: 'Nunito, sans-serif',
+                                cssClass: 'apexcharts-xaxis-title',
+                                //fontWeight: 'bold',
+                                //fontFamily: undefined,
+                                //color: '#444'
+                            },
+                        } */
+                    },
+                    yaxis: {
+                        min: 0
+                    },
+                    colors: ['#8dbf42'],
+                    tooltip: {
+                        theme: 'dark',
+                        /*x: {
+                            show: false,
+                        },*/
+                        y: {
+                            formatter: function (y) {
+                                //console.log(y)
+                                if (typeof y !== "undefined") {
+                                    return y.toFixed(2) + " L"
+                                }
+                                return y;
+                            }
+                        },
+                        x: {
+                            formatter: function (val, timestamp) {
+                                return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                                
+                            }
+                        }
+                    },
+                    fill: {
+                        type:"gradient",
+                        gradient: {
+                            type: "vertical",
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: .40,
+                            opacityTo: .05,
+                            stops: [45, 100]
+                        }
+                    },
+                }
+                w_approChart = new ApexCharts(document.querySelector("#w-appro-fuel"), w_approChart_options);
+                w_approChart.render()
+
+            }, 500)
+            resolve('appro chart render')
+
+        }).then(function(elem){
+            //$('#appro-chart-loader').addClass('d-none')
+        });
+            
+    //})
+
+    function displayChartJsNewData(chart, label, data, multiple, xscale, title){
+        chart.options.title.text = [String(title) + ' W', 'Puissance Actuelle'];
+        chart.data.labels = [];
+        chart.data.datasets.forEach( (dataset) => {
+            dataset.data = [];
+        });
+        chart.data.labels = label;
+        if(multiple > 1){
+            var i = 0;
+            chart.data.datasets.forEach((dataset) => {
+                if( i < multiple) dataset.data = data[i++];
+            });
+        }
+        else if(multiple == 1){
+            /*chart.data.datasets.forEach((dataset) => {
+                dataset.data = data;
+            });*/
+            //console.log(data)
+            chart.data.datasets[0].data = data;
+        }
+        //if(xscale === 'day') chart.options.scales.xAxes[0].scaleLabel.labelString = moment(dateopt).format('DD MMMM').toString();
+        //else if( xscale === 'month') chart.options.scales.xAxes[0].scaleLabel.labelString = moment(dateopt).format('MMMM').toString();
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        chart.update();
+    }
+
+    function progress(prefixSelector, progValue, posLogique, isTime) {
+        
+        var id = '#' + prefixSelector;
+        var progressSelectorValue = $(id + 'value');
+        var progressSelectorColor = $(id + 'color');
+        var upSelectorIcon   = $(id+ 'up-icon');
+        var downSelectorIcon = $(id+ 'down-icon');
+        var greenColor = 'rate-inc';//'text-success';
+        var redColor = 'rate-dec';//'text-danger';
+        
+        if (!isTime) {//On teste s'il s'agit d'une progression numérique 
+            var val = progValue !== 'INF' ? String(parseFloat(progValue).toFixed(2)) : progValue;
+            progressSelectorValue.html(progValue === null ? 0 : (progValue > 0 || progValue === 'INF') ? ('+' + val) : val);
+        }
+        else {//s'il s'agit d'une progression de date
+            var diff = new Date(Math.abs(progValue));
+            var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
+            var str = $dat.format('HH:mm:ss').toString()
+            progressSelectorValue.html(progValue === null ? 0 : progValue > 0 ? '+' + str : '-' + str);
+        }
+
+        if (posLogique) {// Logique positive
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+                /*if (selectorIcon.hasClass(oldClass)) {
+                    // it has class
+                } else {
+                    // it doesn't have specified class
+                }*/
+            }
+            else {//Si la valeur de progression est négative
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+            }
+        }
+        else {// Logique négative
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
+                
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+                
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+            }
+            else {//Si la valeur de progression est négative
+                
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+                
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+                
+            }
+        }
+    }
+
+    setInterval(function () {
+        $.getJSON("{{ path('site_overview_update_data', {'slug': site.slug}) }}", function (result) {//{'selectedDate': $date},
+            
+            if( Object.keys(result).length > 0 ){
+                console.log(result)
+                //#### Mise à jour des données de la card Consommation en kWh du mois cours
+                //Valeur de la consommation du mois en cours en kWh
+                $('#currentkWh').text(String(parseFloat(result['currentMonthkWh']).toFixed(2)))
+                //On gère la progression de la consommation d'énergie
+                progress(prefixSelector='conso-progress-', progValue=result['currentMonthkWhProgress'], posLogique=false, isTime=false);
+                //MAJ de la courbe d'évolution de la consommation en kWh jour après jour
+                displayNewData(w_consoChart, Object.values(result['dayBydayConsoData']['dateConso']), Object.values(result['dayBydayConsoData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                
+                //#### Mise à jour des données de la card Consommation en F CFA du mois cours
+                //Valeur de la consommation du mois en F CFA en kWh
+                $('#conso_amount').text(String(parseFloat(result['currentMonthXAF']).toFixed(2)))
+                $('#budget').text(String(parseFloat(result['budget']).toFixed(2)))
+                //Calcul du pourcentage de consommation du budget
+                var ratio = (parseFloat(result['currentMonthXAF']) * 100.0) / parseFloat(result['budget']);
+                if(ratio < 50) $('#budget-progressbar').removeClass('bg-gradient-danger').addClass('bg-gradient-success');
+                else $('#budget-progressbar').addClass('bg-gradient-danger').removeClass('bg-gradient-success');
+                $('#ratio_budget').text(ratio.toFixed(2))
+                {# console.log($('#budget-progressbar').attr('aria-valuenow')); #}
+                $('#budget-progressbar').css('width', ratio.toFixed(1) + '%'); 
+                $('#budget-progressbar').attr('aria-valuenow', '' + ratio.toFixed(1));
+                {# console.log($('#budget-progressbar').attr('aria-valuenow')); #}
+                $('#last_update').text(String( moment( new Date(result['lastDatetimeData']) ).format("DD MMM YYYY HH:mm:ss")) )
+                                                
+                //#### Mise à jour des données de la card d'émission de carbone du mois cours
+                //Valeur d'émission de carbone du mois en F CFA en kWh
+                $('#emission-value').text(String(parseFloat(result['currentMonthGasEmission']).toFixed(2)))
+                //MAJ de la courbe d'évolution de la consommation en kWh jour après jour
+                displayNewData(w_co2Chart, Object.values(result['dayBydayConsoData']['dateConso']), Object.values(result['dayBydayConsoData']['kgCO2']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                                
+                //#### Mise à jour de la courbe charge du mois cours
+                //Rafraîchissement de la courbe de charge
+                {# displayNewData(loadChart, Object.values(result['loadChartData']['dateP']), Object.values(result['loadChartData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                displayChartJsNewData(loadChart, Object.values(result['loadChartData']['dateP']), Object.values(result['loadChartData']['kW']), 1, 'day', result['loadChartData']['Pnow']);
+                //loadChart.toBase64Image('image/jpeg', 1)
+                //MAJ de la valeur de puissance actuelle
+                {# loadChart.updateOptions({
+                    title: {
+                        text: String(result['loadChartData']['Pnow']) + ' W',
+                    }
+                }); #}
+
+                //++++ Mise à jour du tableau des statistiques d'énergie
+                //Valeur moyenne journalière de la consommation d'énergie
+                $('#t-consoMoy').text(parseFloat(result['currentMonthDataTable']['consoMoy']).toFixed(2));
+                //On gère la progression de la moyenne journalière consommation d'énergie
+                progress(prefixSelector='t-consoMoy-progress-', progValue=result['currentMonthDataTable']['consoMoyProgress'], posLogique=false, isTime=false);
+                
+                //Valeur de la variation autour de la valeur moyenne (écart-type) des consommations d'énergie
+                $('#t-variation').text(parseFloat(result['currentMonthDataTable']['variation']).toFixed(2));
+                
+                //Informations (valeur + date) sur la plus forte consommation d'énergie
+                $('#t-kWhMax').text(result['currentMonthDataTable']['+forteConso']);
+                
+                //Informations (valeur + date) sur la plus faible consommation d'énergie
+                $('#t-kWhMin').text(result['currentMonthDataTable']['+faibleConso']);
+                
+                //Informations (valeur + date) sur le Pic de puissance 
+                $('#t-Pmax').text(result['currentMonthDataTable']['Pic']);
+                
+                //Informations (valeur + date) sur le Talon de puissance 
+                $('#t-talon').text(result['currentMonthDataTable']['Talon']);
+                
+                //Consommation d'énergie en kWh sur la tranche horaire 00-06h du mois en cours
+                $('#t-conso-00-06').text(parseFloat(result['currentMonthDataTable']['conso-00-06']).toFixed(2));
+                //On gère la progression de la consommation d'énergie de la tranche horaire 00h - 06h
+                progress(prefixSelector='t-conso-00-06-progress-', progValue=result['currentMonthDataTable']['conso-00-06Progress'], posLogique=false, isTime=false);
+                
+                //Consommation d'énergie en kWh sur la tranche horaire 06-18h du mois en cours
+                $('#t-conso-06-18').text(parseFloat(result['currentMonthDataTable']['conso-06-18']).toFixed(2));
+                //On gère la progression de la consommation d'énergie de la tranche horaire 06h - 18h
+                progress(prefixSelector='t-conso-06-18-progress-', progValue=result['currentMonthDataTable']['conso-06-18Progress'], posLogique=false, isTime=false);
+                
+                //Consommation d'énergie en kWh sur la tranche horaire 18-00h du mois en cours
+                $('#t-conso-18-00').text(parseFloat(result['currentMonthDataTable']['conso-18-00']).toFixed(2));
+                //On gère la progression de la consommation d'énergie de la tranche horaire 18h - 00h
+                progress(prefixSelector='t-conso-18-00-progress-', progValue=result['currentMonthDataTable']['conso-18-00Progress'], posLogique=false, isTime=false);
+                
+
+            }        
+            else{
+                //$('.spin').addClass('d-none');
+                
+            }
+        }).fail(function() { 
+            
+            console.log('FAIL to get overview Data')
+            
+        });
+    }, 120000); 
+
+</script>
+
+{# Historical tab panel scripts #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script> #}
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+
+<script src="/plugins/datatables/jszip.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> #}
+
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script> #}
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+
+{# <script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script> #}
+<!-- Responsive examples -->
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script>
+    var now = new Date();
+    //var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
+    var FileName = 'Historique Consommation | ' + now.getFullYear();
+    var historicTable = $('#historic-dataTable').DataTable({
+        //lengthChange: false,
+        //buttons: ['copy', 'excel', 'pdf', 'colvis']
+        //buttons: ['excel', 'pdf'],
+        searching: false, 
+        paging: false, 
+        info: false,
+        order: [],
+        //ordering: false,
+        lengthChange: false,
+        //buttons: ['copy', 'excel', 'pdf', 'colvis']
+        buttons: [
+            {
+                //text: 'Exporter Disponibilité',
+                extend: 'pdfHtml5',
+                filename: 'Historique Consommation - ' + now.getFullYear(),//function () { return getExportFileName();},//
+                exportOptions: {
+                    //columns: [ 0, 1, 4 ],
+                    //columns: ':visible'
+                    search: 'applied',
+                    order: 'applied'
+                },
+                title: function( thead, data, start, end, display ) {
+                    return "{{site.name}}\r\n" + FileName;
+                },
+                customize: function (doc) {
+                    //Remove the title created by datatTables
+                    
+                    //Create a date string that we use in the footer. Format is dd-mm-yyyy
+                    var now = new Date();
+                    var jsDate = now.getDate()+'-'+(now.getMonth()+1)+'-'+now.getFullYear();
+                    // Logo converted to base64
+                    // var logo = getBase64FromImageUrl('https://datatables.net/media/images/logo.png');
+                    // The above call should work, but not when called from codepen.io
+                    // So we use a online converter and paste the string in.
+                    // Done on http://codebeautify.org/image-to-base64-converter
+                    // It's a LONG string scroll down to see the rest of the code !!!
+                    //var logo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAICAgICAQICAgIDAgIDAwYEAwMDAwcFBQQGCAcJCAgHCAgJCg0LCQoMCggICw8LDA0ODg8OCQsQERAOEQ0ODg7/2wBDAQIDAwMDAwcEBAcOCQgJDg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg7/wAARCAAwADADASIAAhEBAxEB/8QAGgAAAwEAAwAAAAAAAAAAAAAABwgJBgIFCv/EADUQAAEDAgQDBgUDBAMAAAAAAAECAwQFBgAHESEIEjEJEyJBUXEUI0JhgRVSYhYXMpEzcrH/xAAYAQADAQEAAAAAAAAAAAAAAAAEBQYHAv/EAC4RAAEDAgMGBQQDAAAAAAAAAAECAxEABAUGEhMhMUFRcSIyYaHBFkKB0ZGx8P/aAAwDAQACEQMRAD8Avy44hlhTrqw22kEqUo6BIG5JPkMSxz67RlFPzFquWnDParOaN4QVlmqXDKcKKLS19CCsf8qh6A6e+OfaK573LDTanDJllVV0q8r3ZVIuGqR1fMpdJSdHCCOinN0j7e+FjymydjRKdSbGsikpbSlG5O3/AHfeX5nU6knck6DFdg+DovkquLlWllHE8yeg+f4FBPvluEpEqNC657/4yr4ecm3ZxH1OghzxfptpQERI7X8QrqdPXGNpucXGLltU0SbZ4jazW0tHX4C6IiJcd37HUEj8YoHNtTKOzwuHVPj79rTfhkfCudxEbUOqQQd9Pc4HlaoGRt2JVAcptRsOe54WZZkd6yFHpzakgD3098ahYWuVVDQ/YrKD9wJnvGqfb8UAHH584npWw4eu0+iVO+6Vl3xO2zHy1uKa4GafdcBwqos5w7AOE6lgk+epT68uK8MvNPxmnmHEvMuJCm3EKCkqSRqCCNiCPPHmbzdyWcozkq1rpitVSkzGyqHNbT4HU+S0H6Vp22/9Bw8XZkcQ1wuzLg4V8yqq5U69a0X42zalJXq5NpeuhZJO5LWo0/idPpxI5ryszgyG77D3Nrau+U8weh/cDgQRI3sGXi54VCCKXK6Ku5fnbOcTt2znO/8A0SfFtymcx17llpGqgPTUjDj5WOIOUmYFPpLgjXQ5ES627r43I6R40I9D16fuGEfzPZeyq7afiRtec0W03O/GuSj82wdbdb8ZB89FEjb0xvrIzGk2pmnSrgcdUttl3lkoB2UyrZadPbf8DFFhGHuX+W0bASUyY6kKJg96XPK0XJmt9MrkFuIQw2XNup8IwFbruVaWXkttMgadCCcEfNuPTbbzPkiK87+jVRsTqctlIKVNubkD2J/0RgBVFDVQUpTTEksjdTjpG4xc4TYOvBu5AhB3yf8AcfmgTIUUmiMxcs27+CG42Koy3JqFqym3YLytebuVfRr9gVD2AwvOWt5u2f2qXDle0FK4UhVwijzgFbPMSUlBSftqdcMAqN/TfCVV0yGBDl3O+huMwvZXw6Oqzr67n8jC85VWw/fnakZD2tAaL/wtwGsSuTfu2YyCeY+6ikY5x1yzVlDECB4C8Nn3lEx6SFe9MWtW3R1jfVTu0l4a7lv6wbaz8yqp6p2Z2X6FmXT2U6uVelq8TrQA3UtG6gPMFQG+mJe2Xf8ASL5s1qp0p35qfDLhuHR2M4P8kLT5aH/ePUSpIUnQjUemJh8SXZs2fmVf8/MvJevKyfzNkEuTPhGeamVNZ3JeZGnKonqpPXqQTjE8tZmdwF4hSdbSjvHMHqP1zo24tw8J4EUn9MvWz7iymo9tX27PgTqQ4tMCfGY735SuiFdenTTTyGOIrGV1DSJLCqndb7Z1aamIDEZJHQqGg5vyDga3Fw28bVhS1wqrlHAzAjtkhFSt2sIQHR5HkXoQftjrqJw5cYt81BESDkuxaCVnRU24K0Fpb+/I3qT7Y1b6kygptSi88lKiSWxIEkyRygE8tUUDsbieA71mM2M0mZxlVytTQ0w0jkQlIIQ2PpabR1JJ6Abk4oP2bHDhW6O9WuITMKlLplxV9hMeg06Sn5lPgjdIUPJayedX4HljvOHvs16VbF7Uy/c86/8A3DuyIoOwoAaDdPgL66ts7gqH7lan2xVaJEjQaezFiMIjx2khLbaBoEgYyzMmZTjWi2t0bK3b8qfk+v8AW/jNMGWdn4lGVGv/2SAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA=';
+                    // A documentation reference can be found at
+                    // https://github.com/bpampuch/pdfmake#getting-started
+                    // Set page margins [left,top,right,bottom] or [horizontal,vertical]
+                    // or one number for equal spread
+                    // It's important to create enough space at the top for a header !!!
+                    doc.pageMargins = [60,60,60,30];
+                    // Set the font size fot the entire document
+                    doc.defaultStyle.fontSize = 12;
+                    // Set the fontsize for the table header
+                    doc.styles.tableHeader.fontSize = 13;
+                    //doc.styles.tableBodyOdd.fillColor = "yellow";
+                    doc.styles.tableBodyOdd.alignment = function (rowIndex, node, columnIndex) {
+                                                    return (rowIndex >= 0) ? 'center' : null;
+                                                };
+                    doc.styles.tableHeader.fillColor = "#6c757d";
+                    console.log(doc);
+                    var objTable = {};
+                    //objTable['heights'] = (function(i) { return 100; });
+                    //objTable['widths'] = ['*', 'auto', '*', 'auto', 'auto', 'auto'];
+                    //objTable['widths']   = (function(i) { return ['*', 'auto', '*', 'auto', 'auto', 'auto']; });
+                    //doc.content[1].table = objTable; 
+                    doc.content[1].table.widths = ['auto', '*', 'auto', '*', 'auto', '*']; 
+                    //doc.content[1].table.heights = (function(i) { return 100; }); 
+                    doc.content[1].layout = {
+                                                fillColor: function (rowIndex, node, columnIndex) {
+                                                    return (rowIndex % 2 === 0) ? '#CCCCCC' : null;
+                                                }
+                                            }; 
+                        
+                    // Create a header object with 3 columns
+                    // Left side: Logo
+                    // Middle: brandname
+                    // Right side: A document title
+                    /*doc['header']=(function() {
+                        return {
+                            columns: [
+                                {
+                                    //image: logo,
+                                    "width": 24
+                                },
+                                {
+                                    alignment: 'left',
+                                    italics: true,
+                                    text: 'dataTables',
+                                    fontSize: 18,
+                                    margin: [10,0]
+                                },
+                                {
+                                    alignment: 'right',
+                                    fontSize: 14,
+                                    text: 'Custom PDF export with dataTables'
+                                }
+                            ],
+                            margin: 20
+                        }
+                    });*/
+                    // Create a footer object with 2 columns
+                    // Left side: report creation date
+                    // Right side: current page and total pages
+                    doc['footer']=(function(page, pages) {
+                        return {
+                            columns: [
+                                {
+                                    alignment: 'left',
+                                    text: ['Crée le : ', { text: jsDate.toString() }]
+                                },
+                                {
+                                    alignment: 'center',
+                                    text: ['{{app.user.enterprise.socialReason}} {% if app.user.enterprise.niu is not empty %}- NIU : {{app.user.enterprise.niu}} {% endif %} {% if app.user.enterprise.rccm is not empty %}- RCCM : {{app.user.enterprise.rccm}}{% endif %}']
+                                },
+                                {
+                                    alignment: 'right',
+                                    text: ['page ', { text: page.toString() },	' de ',	{ text: pages.toString() }]
+                                }
+                            ],
+                            margin: 20
+                        }
+                    });
+                    // Change dataTable layout (Table styling)
+                    // To use predefined layouts uncomment the line below and comment the custom lines below
+                    // doc.content[0].layout = 'lightHorizontalLines'; // noBorders , headerLineOnly
+                    var objLayout = {};
+                    objLayout['hLineWidth']   = (function(i) { return .5; });
+                    objLayout['vLineWidth']   = (function(i) { return .5; });
+                    objLayout['hLineColor']   = (function(i) { return '#ccc'; });
+                    objLayout['vLineColor']   = (function(i) { return '#ccc'; });
+                    objLayout['paddingLeft']  = (function(i) { return 4; });
+                    objLayout['paddingRight'] = (function(i) { return 4; });
+                    doc.content[0].layout = objLayout;
+                } 
+            },
+            {
+                //text: 'Exporter Disponibilité',
+                extend: 'excel',
+                filename: FileName,
+                exportOptions: {
+                    //columns: [ 0, 1, 4 ],
+                    //columns: ':visible'
+                    search: 'applied',
+                    order: 'applied'
+                },
+            }
+        ] 
+    });
+
+    historicTable.buttons().container().appendTo('#historic-dataTable_wrapper .col-md-6:eq(0)');
+
+    $('.buttons-pdf').children('span').prepend('<i class="mdi mdi-download mr-2"></i>');
+    $('.buttons-pdf').removeClass('btn-secondary').addClass('btn-outline-danger')
+    $('.buttons-excel').removeClass('btn-secondary').addClass('btn-outline-success')
+</script>
+
+<script>
+    var firstTabHistorical = true;
+    //console.log( parseFloat( String( $('#budget').html() ).replace(' ', '') ) )
+    $('.nav-tabs a').on('shown.bs.tab', function(event){
+        var tab = $(event.target).text();         // active tab
+        var prevTab = $(event.relatedTarget).text();  // previous tab
+        console.log(tab)
+        console.log(prevTab)
+        if( String(tab).indexOf('Historique') >= 0){
+            if(firstTabHistorical){
+                firstTabHistorical = false; 
+                var drp_ = $('#gendaterange').data('daterangepicker');
+                console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+                var startDate_ = drp.startDate.format('YYYY-MM-DD');
+                var endDate_ = drp.endDate.format('YYYY-MM-DD');
+
+                $data = JSON.stringify({
+                //"selectedDate": $dat, // tabGridId,
+                "startDate": startDate_ + ' 00:00:00', // tabGridId,
+                "endDate": endDate_ + '23:59:59', // tabFuelId,
+                });
+
+                // Danger
+
+                swal.queue([{
+                    title: 'Chargement...',
+                    confirmButtonText: 'Confirmez',
+                    text: 'Veuillez patienter svp !',
+                    //showCancelButton: true,
+                    showLoaderOnConfirm: true,
+                    //confirmButtonClass: 'btn btn-primary',
+                    //cancelButtonClass: 'btn btn-danger ml-2',
+                
+                    //title: 'The graphs will be updated for the date range :',
+                    //confirmButtonText: 'Confirm',
+                    //text: 'From ' + startDate_ + ' To ' + endDate_,
+                    //showCancelButton: true,
+                    //showLoaderOnConfirm: true,
+                    //confirmButtonClass: 'btn btn-primary',
+                    //cancelButtonClass: 'btn btn-danger ml-2',
+                    preConfirm: function () {
+                        return new Promise(function (resolve) { 
+                            
+                            $.ajax({
+                                type: "POST", // method type
+                                contentType: "application/json; charset=utf-8",
+                                url: _url, // /Target function that will be return result
+                                data: $data, // parameter pass data is parameter name param is value
+                                dataType: "json",
+                                timeout: 120000, // 64241
+                                success: function (result) {
+                                    // $('.fa-sync').removeClass('fa-spin');
+                                    console.log(result);
+                                    
+                                    swal({
+                                        type: 'success', 
+                                        title: 'Les graphes ont été actualisé !',
+                                        // html: 'Submitted email: ' + email
+                                    });
+
+                                    setTimeout(function () {
+                                        resolve()
+                                    }, 1000);
+
+                                    if( Object.keys(result).length > 0 ){
+                                        {# console.log(Object.values(result['Load_Chart']))
+                                        console.log(Object.values(result['Mixed_Conso']))
+                                        displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
+                                        displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
+                                        MixedConsoChart.toggleSeries('Énergie Active')
+                                        MixedConsoChart.toggleSeries('Énergie Active') #}
+                                        //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+
+                                        
+                                    }
+                                },
+                                error: function (result) {
+                                    // console.log("Error");
+                                    // console.log(result);
+                                    swal('Oups...', "Une erreur s'est produite !", 'error'
+                                    // footer: '<a href>Why do I have this issue?</a>'
+                                    );
+
+                                    setTimeout(function () {
+                                        resolve()
+                                    }, 5000);
+                                }
+                            });
+                        })
+                    },
+                    allowOutsideClick: false
+                }]); 
+
+                $(".swal2-confirm").click();
+            }
+            //alert("Active tab " + x);
+        }
+    });
+</script>
+<!-- Script de gestion du sélecteur de date -->
+<script>
+    var _url = "{{ path('site_histo_update', {'slug':site.slug}) }}";
+    
+    var fuel_level_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: true,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        series: [{
+            name: 'Niveau de Fuel (%)',
+            data: [31, 40, 28, 51, 42, 109, 100]
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            {# categories: [], #}
+            categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
+            labels: {
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: [{
+            title: {
+                text: 'Niveau de Fuel (%)',
+            },
+
+        }],
+        tooltip: {
+            theme: "dark",
+            //followCursor: true,
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + ""
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                }
+            }
+        },
+    }
+
+    var FuelLevelChart = new ApexCharts(
+        document.querySelector("#fuel-level-chart-histo"),
+        fuel_level_options
+    );
+
+    FuelLevelChart.render();
+
+    var load_level_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: true,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        series: [{
+            name: 'Niveau de charge (%)',
+            data: [31, 40, 28, 51, 42, 109, 100]
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            {# categories: [], #}
+            categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
+            labels: {
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: [{
+            title: {
+                text: 'Niveau de charge (%)',
+            },
+
+        }],
+        tooltip: {
+            theme: "dark",
+            //followCursor: true,
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + "%"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                }
+            }
+        },
+    }
+
+    var LoadLevelChart = new ApexCharts(
+        document.querySelector("#load-level-chart-histo"),
+        load_level_options
+    );
+
+    LoadLevelChart.render();
+
+    var mixed_duree_conso_options = {
+        chart: {
+            fontFamily: 'Nunito, sans-serif',
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: true,
+            }
+        },
+        series: [{
+            name: 'Durée de fonctionnement',
+            type: 'column',
+            data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160]
+        }, {
+            name: 'Consommation Fuel',
+            type: 'line',
+            data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 16]
+        }],
+        stroke: {
+            curve: 'smooth',
+            width: [0, 4]
+        },
+        /* title: {
+            text: 'Traffic Sources'
+        }, */
+        xaxis: {
+            type: 'datetime',
+            {# categories: [], #}
+            categories: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
+            labels: {
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: [{
+            title: {
+                text: 'Heure',
+            },
+
+        }, {
+            opposite: true,
+            title: {
+                text: 'Litre'
+            }
+        }],
+        tooltip: {
+            theme: "dark",
+            //followCursor: true,
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + ""
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                }
+            }
+        },
+
+    }
+    
+    var MixedConsoChart = new ApexCharts(
+        document.querySelector("#mixed-duree-conso"),
+        mixed_duree_conso_options
+    );
+    MixedConsoChart.render()
+
+    var start = moment().subtract(1, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('#daterange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        maxSpan: {
+            "days": 31
+        },
+        maxDate: moment().endOf('month'),
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    var drp = $('#daterange').data('daterangepicker');
+    console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+    var startDate = drp.startDate.format('YYYY-MM-DD');
+    var endDate = drp.endDate.format('YYYY-MM-DD');
+    
+
+    $('#daterange').on('apply.daterangepicker', function (ev, picker) {
+        //console.log(picker.startDate.format('YYYY-MM-DD'));
+        //console.log(picker.endDate.format('YYYY-MM-DD'));
+    
+        startDate = picker.startDate.format('YYYY-MM-DD');
+        endDate = picker.endDate.format('YYYY-MM-DD');
+        
+        console.log('startDate = ' + startDate);
+        console.log('endDate = ' + endDate);
+        //updateHistoGraphs();
+        // block of code that runs when the click event triggers
+
+    });
+
+    function displayNewData(chart, label, data, dateopt, multiple, xscale){
+        //chart.data.labels = [];
+        chart.updateOptions({
+            xaxis: {
+                categories: []
+            },
+        });
+        chart.updateOptions({
+            xaxis: {
+                categories: label
+            },
+        });
+        //chart.opts.labels = label;
+        {# chart.updateOptions({
+            labels: label
+            
+        }); #}
+        if(multiple > 1){
+            var i = 0;
+            chart.opts.series.forEach((dataset) => {
+                if( i < multiple){
+                    dataset.data = [];
+                    console.log(dataset.name);
+                    console.log(dataset.data);
+                    dataset.data = data[i];
+                    console.log(data[i]);
+                    console.log(dataset.data);
+                    i++;
+                }
+            });
+        }
+        else if(multiple == 1){
+            chart.updateSeries([{
+                data: []
+            }]);
+        
+            chart.updateSeries([{
+                data: data
+            }]);
+        }
+
+        /*if(xscale === 'day'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        //text: moment(dateopt).format('DD MMMM').toString(),
+                        text: moment(dateopt[0]).format('DD MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('DD MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }
+        else if( xscale === 'month'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        text: moment(dateopt[0]).format('MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }*/
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        //chart.render();
+    }            
+
+    function updateHistoGraphs(){
+        
+        $data = JSON.stringify({
+            //"selectedDate": $dat, // tabGridId,
+            "startDate": startDate + ' 00:00:00', // tabGridId,
+            "endDate": endDate + '23:59:59', // tabFuelId,
+        });
+
+        // Danger
+
+        swal.queue([{
+            title: 'Les graphes seront actualisés pour la période :',
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: 'Annuler',
+            text: 'Du ' + startDate + ' Au ' + endDate,
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            //confirmButtonClass: 'btn btn-primary',
+            //cancelButtonClass: 'btn btn-danger ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) { 
+                    
+                    $.ajax({
+                        type: "POST", // method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url, // /Target function that will be return result
+                        data: $data, // parameter pass data is parameter name param is value
+                        dataType: "json",
+                        timeout: 120000, // 64241
+                        success: function (result) {
+                            // $('.fa-sync').removeClass('fa-spin');
+                            console.log(result);
+                            
+                            swal({
+                                type: 'success', 
+                                title: 'Les graphes ont été mis !',
+                                // html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 1500);
+
+                            if( Object.keys(result).length > 0 ){
+                                console.log(Object.values(result['Load_Chart']))
+                                console.log(Object.values(result['Mixed_Conso']))
+                                displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
+                                MixedConsoChart.destroy()
+                                MixedConsoChart = new ApexCharts(
+                                    document.querySelector("#mixed-conso"),
+                                    mixed_conso_options
+                                );
+                                MixedConsoChart.render()
+                                displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 2, 'day');
+                                //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                MixedConsoChart.toggleSeries('Énergie Active')
+                                MixedConsoChart.toggleSeries('Énergie Active')
+                            }
+                        },
+                        error: function (result) {
+                            // console.log("Error");
+                            // console.log(result);
+                            swal('Oups...', "Une erreur s'est produite !", 'error'
+                            // footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]);
+    }
+
+</script>
+{% endblock %}

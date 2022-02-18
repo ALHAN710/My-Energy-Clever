@@ -117,6 +117,11 @@ class SiteDashboardDataService
     {
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
             $lastConsokWh = $this->getLastMonthkWhConsumption();
+            $currentConsoQuery = [];
+            $currentConsokWh         = 0.0;
+            $currentConsokWh         = 0.0;
+            $currentGasEmission      = 0.0;
+
             if ($this->site->getHasOneSmartMod() == false) { //Site à smartMeter GRID et FUEL séparé
                 /* $currentConsoQuery = $this->manager->createQuery("SELECT SUM(d.ea) AS EA,  SUM(d.depassement) AS Nb_Depassement,
                                             SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
@@ -732,7 +737,7 @@ class SiteDashboardDataService
         $lastConsokWh  = $this->getAverageConsumptionWithLimit(10, $lastMonthDate->format('Y-m') . '%', $lastMonthDate->format('Y-m-d H:i:s') . '%');
         //dump($lastConsokWh);
 
-        $consoMoyProgress = ($lastConsokWh !== 0) ? ($consoMoy - $lastConsokWh) / $lastConsokWh : 'INF';
+        $consoMoyProgress = ($lastConsokWh > 0) ? ($consoMoy - $lastConsokWh) / $lastConsokWh : 'INF';
 
         $currentConso00_06kWh = $currentMonthConsokWhPerHoursRangeQuery[0]['Tranche00_06'] ?? 0;
         $currentConso06_18kWh = $currentMonthConsokWhPerHoursRangeQuery[0]['Tranche06_18'] ?? 0;
@@ -846,6 +851,7 @@ class SiteDashboardDataService
         $FP    = [];
         $kW    = [];
         $WG    = [];
+        $loadChartData = [];
 
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
             if ($this->site->getHasOneSmartMod() == true) { //Site à smartMeter GRID et FUEL en un
@@ -983,6 +989,8 @@ class SiteDashboardDataService
 
     public function getLastDatetimeData()
     {
+        $lastDatetimeData = [];
+
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
             if ($this->site->getHasOneSmartMod() == true) { //Site à smartMeter GRID et FUEL en un
                 $lastDatetimeData = $this->manager->createQuery("SELECT MAX(d.dateTime) AS lastDate

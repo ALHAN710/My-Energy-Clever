@@ -60,6 +60,11 @@ class LoadEnergyData
     /**
      * @ORM\Column(type="float", nullable=true)
      */
+    private $pmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
     private $qamoy;
 
     /**
@@ -116,6 +121,11 @@ class LoadEnergyData
      * @ORM\Column(type="float", nullable=true)
      */
     private $cosfi;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cosfimin;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -546,6 +556,30 @@ class LoadEnergyData
     public function setDepassement(?int $depassement): self
     {
         $this->depassement = $depassement;
+
+        return $this;
+    }
+
+    public function getPmax(): ?float
+    {
+        return $this->pmax;
+    }
+
+    public function setPmax(?float $pmax): self
+    {
+        $this->pmax = $pmax;
+
+        return $this;
+    }
+
+    public function getCosfimin(): ?float
+    {
+        return $this->cosfimin;
+    }
+
+    public function setCosfimin(?float $cosfimin): self
+    {
+        $this->cosfimin = $cosfimin;
 
         return $this;
     }

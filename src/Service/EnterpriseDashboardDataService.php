@@ -156,7 +156,7 @@ class EnterpriseDashboardDataService
     public function getCurrentMonthkWhConsumption()
     {
 
-        $currentConsokWhProgress = ($this->lastConsokWh !== 0) ? ($this->currentConsokWh - $this->lastConsokWh) / $this->lastConsokWh : 'INF';
+        $currentConsokWhProgress = ($this->lastConsokWh > 0) ? ($this->currentConsokWh - $this->lastConsokWh) / $this->lastConsokWh : 'INF';
 
         return array(
             'currentConsokWh'          => number_format((float) $this->currentConsokWh, 2, '.', ' '),
