@@ -183,6 +183,76 @@ class LoadEnergyData
      */
     private $depassement;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $pamax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $pbmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $pcmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $samax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $sbmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $scmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $smax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $qamax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $qbmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $qcmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $qmax;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cosfiamin;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cosfibmin;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $cosficmin;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -580,6 +650,174 @@ class LoadEnergyData
     public function setCosfimin(?float $cosfimin): self
     {
         $this->cosfimin = $cosfimin;
+
+        return $this;
+    }
+
+    public function getPamax(): ?float
+    {
+        return $this->pamax;
+    }
+
+    public function setPamax(?float $pamax): self
+    {
+        $this->pamax = $pamax;
+
+        return $this;
+    }
+
+    public function getPbmax(): ?float
+    {
+        return $this->pbmax;
+    }
+
+    public function setPbmax(?float $pbmax): self
+    {
+        $this->pbmax = $pbmax;
+
+        return $this;
+    }
+
+    public function getPcmax(): ?float
+    {
+        return $this->pcmax;
+    }
+
+    public function setPcmax(?float $pcmax): self
+    {
+        $this->pcmax = $pcmax;
+
+        return $this;
+    }
+
+    public function getSamax(): ?float
+    {
+        return $this->samax;
+    }
+
+    public function setSamax(?float $samax): self
+    {
+        $this->samax = $samax;
+
+        return $this;
+    }
+
+    public function getSbmax(): ?float
+    {
+        return $this->sbmax;
+    }
+
+    public function setSbmax(?float $sbmax): self
+    {
+        $this->sbmax = $sbmax;
+
+        return $this;
+    }
+
+    public function getScmax(): ?float
+    {
+        return $this->scmax;
+    }
+
+    public function setScmax(?float $scmax): self
+    {
+        $this->scmax = $scmax;
+
+        return $this;
+    }
+
+    public function getSmax(): ?float
+    {
+        return $this->smax;
+    }
+
+    public function setSmax(?float $smax): self
+    {
+        $this->smax = $smax;
+
+        return $this;
+    }
+
+    public function getQamax(): ?float
+    {
+        return $this->qamax;
+    }
+
+    public function setQamax(?float $qamax): self
+    {
+        $this->qamax = $qamax;
+
+        return $this;
+    }
+
+    public function getQbmax(): ?float
+    {
+        return $this->qbmax;
+    }
+
+    public function setQbmax(?float $qbmax): self
+    {
+        $this->qbmax = $qbmax;
+
+        return $this;
+    }
+
+    public function getQcmax(): ?float
+    {
+        return $this->qcmax;
+    }
+
+    public function setQcmax(?float $qcmax): self
+    {
+        $this->qcmax = $qcmax;
+
+        return $this;
+    }
+
+    public function getQmax(): ?float
+    {
+        return $this->qmax;
+    }
+
+    public function setQmax(?float $qmax): self
+    {
+        $this->qmax = $qmax;
+
+        return $this;
+    }
+
+    public function getCosfiamin(): ?float
+    {
+        return $this->cosfiamin;
+    }
+
+    public function setCosfiamin(?float $cosfiamin): self
+    {
+        $this->cosfiamin = $cosfiamin;
+
+        return $this;
+    }
+
+    public function getCosfibmin(): ?float
+    {
+        return $this->cosfibmin;
+    }
+
+    public function setCosfibmin(?float $cosfibmin): self
+    {
+        $this->cosfibmin = $cosfibmin;
+
+        return $this;
+    }
+
+    public function getCosficmin(): ?float
+    {
+        return $this->cosficmin;
+    }
+
+    public function setCosficmin(?float $cosficmin): self
+    {
+        $this->cosficmin = $cosficmin;
 
         return $this;
     }
