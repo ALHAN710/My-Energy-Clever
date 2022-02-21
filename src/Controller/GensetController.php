@@ -355,6 +355,15 @@ class GensetController extends ApplicationController
                     if (array_key_exists("FL", $paramJSON)) {
                         $dataMod->setFuelLevel($paramJSON['FL']);
                     }
+                    if (array_key_exists("P", $paramJSON)) {
+                        $dataMod->setP($paramJSON['P']);
+                    }
+                    if (array_key_exists("S", $paramJSON)) {
+                        $dataMod->setS($paramJSON['S']);
+                    }
+                    if (array_key_exists("Q", $paramJSON)) {
+                        $dataMod->setQ($paramJSON['Q']);
+                    }
                     /*if (array_key_exists("WL", $paramJSON)) {
                         $dataMod->setWaterLevel($paramJSON['WL']);
                     }
