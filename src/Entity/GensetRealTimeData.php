@@ -43,7 +43,7 @@ class GensetRealTimeData
     private $l2N;
 
     /**
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      */
     private $l3N;
 
