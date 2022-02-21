@@ -27,7 +27,7 @@ class LoadEnergyDataController extends ApplicationController
     /**
      * Permet de surcharger les données LoadDataEnergy des modules load dans la BDD
      *
-     * @Route("/load-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="loadEnergyData_add") 
+     * @Route("/load-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="loadEnergyData_add", schemes={"http"}) 
      * 
      * @param SmartMod $smartMod
      * @param EntityManagerInterface $manager
@@ -639,7 +639,7 @@ class LoadEnergyDataController extends ApplicationController
     /**
      * Permet de surcharger les données LoadDataEnergy des modules load dans la BDD
      *
-     * @Route("/inverter-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="inverterEnergyData_add") 
+     * @Route("/inverter-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="inverterEnergyData_add", schemes={"http"}) 
      * 
      * @param SmartMod $smartMod
      * @param EntityManagerInterface $manager
