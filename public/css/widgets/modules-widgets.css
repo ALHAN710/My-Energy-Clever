@@ -379,6 +379,52 @@
     .widget-one_hybrid.widget-followers .widget-heading .w-icon {
       color: #1b55e2;
       border: 1px solid #1b55e2; }
+  .widget-one_hybrid.widget-grid-site {
+    background: #fff; 
+    z-index: 2;
+    width:230px;}
+    .widget-one_hybrid.widget-grid-site .widget-heading .w-icon {
+      color: #53e21b;
+      border: 1px solid #53e21b; }
+  .widget-one_hybrid.widget-grid-site .widget-heading .source-name {
+      display: inline-block; 
+      color: #53e21b;}
+  .widget-one_hybrid.widget-genset-site {
+    background: #fff; 
+    z-index: 2;
+    width:230px;}
+    .widget-one_hybrid.widget-genset-site .widget-heading .w-icon {
+      color: #e26b1b;
+      border: 1px solid #e26b1b; }
+  .widget-one_hybrid.widget-genset-site .widget-heading .source-name {
+      display: inline-block; 
+      color: #e26b1b;}
+  .widget-one_hybrid.widget-load-site {
+    background: #fff; 
+    width:230px;
+    position:absolute;
+    z-index: 2;
+    left: 0%;
+    bottom:-100px;}
+    .widget-one_hybrid.widget-load-site .widget-heading .w-icon {
+      color: rgb(112, 48, 160);
+      border: 1px solid rgb(112, 48, 160); }
+    .widget-one_hybrid.widget-load-site .widget-heading .source-name {
+      display: inline-block; 
+      color: rgb(112, 48, 160);}
+  .widget-one_hybrid.widget-solar-site {
+    background: #fff; 
+    z-index: 2;
+    width:230px;}
+    .widget-one_hybrid.widget-solar-site .widget-heading .w-icon {
+      color: rgb(255, 199, 25);/*rgb(255, 199, 25*/
+      border: 1px solid rgb(255, 199, 25); }
+  .widget-one_hybrid.widget-solar-site .widget-heading .source-name {
+      display: inline-block; 
+      color: rgb(255, 199, 25);}
+  .widget-one_hybrid.widget-followers .widget-heading .source-name {
+      display: inline-block; 
+      color: #1b55e2;}
   .widget-one_hybrid.widget-referral {
     background: #ffe1e2; }
     .widget-one_hybrid.widget-referral .widget-heading .w-icon {
@@ -432,6 +478,46 @@
       .widget-account-invoice-two .account-box .acc-action a:first-child {
         margin-right: 2px; }
       .widget-account-invoice-two .account-box .acc-action a svg {
+        width: 18px;
+        height: 18px; }
+
+.widget-generator {
+  padding: 22px 19px;
+  background: #fff;
+  /* background: #e2a03f;
+  background: linear-gradient(to right, #6b7764 0%, #2f384f 100%); */
+ }
+  .widget-generator .account-box .info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 84px; }
+  .widget-generator .account-box h5 {
+    /* color: #e0e6ed; */
+    color: #515365;
+    margin-bottom: 0;
+    font-size: 17px;
+    font-weight: 600; }
+  .widget-generator .account-box p {
+    /* color: #e0e6ed; */
+    color: #515365;
+    font-weight: 700;
+    margin-bottom: 0;
+    align-self: center; }
+  .widget-generator .account-box .acc-action {
+    margin-top: 23px;
+    display: flex;
+    justify-content: space-between; }
+    .widget-generator .account-box .acc-action a {
+      display: inline-block;
+      padding: 8px;
+      border-radius: 6px;
+      /* color: #e0e6ed; */
+      color: #515365;
+      font-weight: 600;
+      box-shadow: 0px 0px 2px 0px #bfc9d4; }
+      .widget-generator .account-box .acc-action a:first-child {
+        margin-right: 2px; }
+      .widget-generator .account-box .acc-action a svg {
         width: 18px;
         height: 18px; }
 
@@ -1043,6 +1129,13 @@
           height: 19px;
           color: #e2a03f;
           stroke-width: 2; }
+        .widget-table-one .transactions-list .t-item .t-icon .icon span {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          color: #e2a03f; }
     .widget-table-one .transactions-list .t-item .t-name {
       align-self: center; }
       .widget-table-one .transactions-list .t-item .t-name h4 {
@@ -1197,7 +1290,7 @@
   padding-left: 0; }
   .widget-activity-four .mt-container {
     position: relative;
-    height: 272px;
+    height: 162px;
     overflow: auto;
     padding-right: 12px; }
   .widget-activity-four .widget-heading {
@@ -1267,7 +1360,7 @@
       margin: 0;
       min-width: 100px;
       max-width: 100px;
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 700;
       color: #888ea8;
       align-self: center; }
@@ -1278,7 +1371,7 @@
       width: 100%;
       justify-content: space-between; }
       .widget-activity-four .timeline-line .item-timeline .t-text p {
-        font-size: 12px;
+        font-size: 15px;
         margin: 0;
         color: #888ea8;
         font-weight: 400; }
@@ -1286,7 +1379,7 @@
         position: absolute;
         right: 11px;
         padding: 2px 4px;
-        font-size: 11px;
+        font-size: 15px;
         letter-spacing: 1px;
         opacity: 0;
         font-weight: 400;
@@ -1296,12 +1389,12 @@
     .widget-activity-four .timeline-line .item-timeline .t-text p.t-time {
       text-align: right;
       color: #888ea8;
-      font-size: 10px; }
+      font-size: 15px; }
     .widget-activity-four .timeline-line .item-timeline .t-time {
       margin: 0;
       min-width: 80px;
       max-width: 80px;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 600;
       color: #acb0c3;
       letter-spacing: 1px; }
