@@ -37,11 +37,14 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_SUPER_ADMIN, requires_channel: http }
-        # - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
-        # - { path: ^/account/recover/password, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
-        # - { path: ^/account/code-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        # - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        # - { path: ^/account/recover/password, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        # - { path: ^/account/code-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/load-energy-data, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
-        - { path: ^/zone, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        - { path: ^/inverter-energy-data, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        - { path: ^/update/mod, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        - { path: ^/genset/data/mod, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        # - { path: ^/zone, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
     
