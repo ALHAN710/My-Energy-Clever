@@ -655,8 +655,8 @@ class GensetController extends ApplicationController
             //$date = new DateTime($paramJSON['date']);
             if (array_key_exists("date", $paramJSON)) {
                 //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
-                //$date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                $date = new DateTime('now');
+                $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                //$date = new DateTime('now');
                 // //dump($date);
                 //die();
 
