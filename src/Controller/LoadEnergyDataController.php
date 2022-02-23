@@ -27,7 +27,7 @@ class LoadEnergyDataController extends ApplicationController
     /**
      * Permet de surcharger les données LoadDataEnergy des modules load dans la BDD
      *
-     * 
+     * @Route("/load-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="loadEnergyData_add", schemes={"http"}) 
      * 
      * @param SmartMod $smartMod
      * @param EntityManagerInterface $manager
@@ -35,7 +35,7 @@ class LoadEnergyDataController extends ApplicationController
      * @return void
      */
     public function loadDataEnergy_add($modId, EntityManagerInterface $manager, Request $request)
-    { //@Route("/load-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="loadEnergyData_add", schemes={"http"}) 
+    { //
         //Récupération et vérification des paramètres au format JSON contenu dans la requête
         $paramJSON = $this->getJSONRequest($request->getContent());
         // //dump($paramJSON);
@@ -639,7 +639,7 @@ class LoadEnergyDataController extends ApplicationController
     /**
      * Permet de surcharger les données LoadDataEnergy des modules load dans la BDD
      *
-     * 
+     * @Route("/inverter-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="inverterEnergyData_add", schemes={"http"}) 
      * 
      * @param SmartMod $smartMod
      * @param EntityManagerInterface $manager
@@ -647,7 +647,7 @@ class LoadEnergyDataController extends ApplicationController
      * @return void
      */
     public function InverterDataEnergy_add($modId, EntityManagerInterface $manager, Request $request)
-    { //@Route("/inverter-energy-data/mod/{modId<[a-zA-Z0-9_-]+>}/add", name="inverterEnergyData_add", schemes={"http"}) 
+    { //
         //Récupération et vérification des paramètres au format JSON contenu dans la requête
         $paramJSON = $this->getJSONRequest($request->getContent());
         // //dump($paramJSON);
