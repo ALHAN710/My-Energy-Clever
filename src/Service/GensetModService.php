@@ -1013,15 +1013,37 @@ class GensetModService
         $loadMax = 0.0;
         if (count($LoadMaxdata) > 0 && $this->gensetMod->getPower() > 0) $loadMax = ($LoadMaxdata[0]['Smax'] * 100) / $this->gensetMod->getPower();
 
+        $gensetkWDataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.p AS Pmoy
+                                        FROM App\Entity\GensetData d
+                                        JOIN d.smartMod sm 
+                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                        AND sm.id = :smartModId         
+                                        ")
+            ->setParameters(array(
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'smartModId'   => $this->gensetMod->getId()
+            ))
+            ->getResult();
+        // dump($gensetkWDataQuery);
+        $gensetkW     = [];
+        $gensetkWDate = [];
+        foreach ($gensetkWDataQuery as $d) {
+            $gensetkWDate[] = $d['dat']->format('Y-m-d H:i:s');
+            $gensetkW[]     = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
+        }
+
         // ######## Récupération des données de consommation et d'approvisionnement de Fuel
         $fuelData = $this->getConsoFuelData();
         //dump($fuelData);
+
         // ######## Récupération des données temps réel du module Genset
         $gensetRealTimeData = $this->manager->getRepository(GensetRealTimeData::class)->findOneBy(['smartMod' => $this->gensetMod->getId()]) ?? new GensetRealTimeData();
         //dump($gensetRealTimeData);
+        $last_update = $gensetRealTimeData->getDateTime() ? $gensetRealTimeData->getDateTime()->format('d M Y H:i:s') : '-';
         return array(
             'Power'   => $gensetRealTimeData->getP() ?? 0,
-            'last_update' => $gensetRealTimeData->getDateTime() ?? '-',
+            'last_update' => $last_update,
             // 'Level'       => [$gensetRealTimeData->getFuelLevel() ?? 0, $gensetRealTimeData->getWaterLevel() ?? 0, $gensetRealTimeData->getOilLevel() ?? 0],
             'CGCR'       => [
                 'CG'    =>  $gensetRealTimeData->getCg() ?? 0,
@@ -1034,6 +1056,10 @@ class GensetModService
             'dayBydayTEPData' => [
                 'date'  => $date,
                 "TEP"   => $TEP
+            ],
+            'loadProfileData' => [
+                'date' => $gensetkWDate,
+                "kW"   => $gensetkW
             ]
         );
     }

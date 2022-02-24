@@ -99,11 +99,11 @@ class SiteController extends ApplicationController
         $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
 
         $siteDash->setSite($site)
-            ->setPower_unit(1000)
+            ->setPower_unit(1)
             ->setStartDate($startDate)
             ->setEndDate($endDate);
         $overViewData = $siteDash->getOverviewData();
-        //dump($overViewData);
+        dump($overViewData);
         $smartMods = $site->getSmartMods();
         $gensetMod  = null;
         foreach ($smartMods as $smartMod) {
@@ -376,7 +376,7 @@ class SiteController extends ApplicationController
         // dump($endDate);
 
         $overview->setSite($site)
-            ->setPower_unit(1000)
+            ->setPower_unit(1)
             ->setStartDate($startDate)
             ->setEndDate($endDate);
 

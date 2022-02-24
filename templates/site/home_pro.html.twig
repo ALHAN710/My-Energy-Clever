@@ -58,7 +58,7 @@
         <div class="row widget-statistic layout-top-spacing">
 
             <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-12 layout-spacing" >
-                <div class="row mt-3"><small class="text-left h6">Date de dernière Mise à jour : <span id="last_update">{{gensetData['last_update']|date('d M Y H:i:s')}}</span></small></div>
+                <div class="row mt-3"><small class="text-left h6">Date de dernière Mise à jour : <span id="last_update">{{gensetData['last_update']}}</span></small></div>
                 <div style="position:relative;">
                     <div class="row" >
                         <div class="col">
@@ -1591,15 +1591,19 @@
                     width: 2,
                 },
                 series: [{
-                    name: 'Énergie Active',
-                    data: {{ gridData['kWh'] | json_encode | raw }}
+                    {# name: 'Énergie Active', #}
+                    name: 'Puissance Active',
+                    {# data: {{ gridData['kWh'] | json_encode | raw }} #}
+                    data: {{ gridData['kW'] | json_encode | raw }}
                     {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
                 }],
-                labels: {{ gridData['date'] | json_encode | raw }},
+                {# labels: {{ gridData['date'] | json_encode | raw }}, #}
+                labels: {{ gridData['dateP'] | json_encode | raw }},
                 {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
                 xaxis: {
                     type: 'datetime',
                     //categories: [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+                    {# categories: {{ gridData['dateP'] | json_encode | raw }}, #}
                     categories: [],
                     labels: {
                         datetimeFormatter: {
@@ -1630,14 +1634,15 @@
                         formatter: function (y) {
                             //console.log(y)
                             if (typeof y !== "undefined") {
-                                return y.toFixed(2) + " kWh"
+                                {# return y.toFixed(2) + " kWh" #}
+                                return y.toFixed(2) + " kW"
                             }
                             return y;
                         }
                     },
                     x: {
                         formatter: function (val, timestamp) {
-                            return moment(new Date(val)).format("DD MMM YYYY")
+                            return moment(new Date(val)).format("DD MMM YYYY HH:mm")
                         }
                     }
                 },
@@ -1693,11 +1698,14 @@
                     width: 2,
                 },
                 series: [{
-                    name: 'Énergie Active',
-                    data: {% if hasgensetMod %}{{ gensetData['dayBydayTEPData']['TEP'] | json_encode | raw }}{% else %}[]{% endif %}
+                    {# name: 'Énergie Active', #}
+                    name: 'Puissance Active',
+                    {# data: {% if hasgensetMod %}{{ gensetData['dayBydayTEPData']['TEP'] | json_encode | raw }}{% else %}[]{% endif %} #}
+                    data: {% if hasgensetMod %}{{ gensetData['loadProfileData']['kW'] | json_encode | raw }}{% else %}[]{% endif %}
                     {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
                 }],
-                labels: {% if hasgensetMod %}{{ gensetData['dayBydayTEPData']['date'] | json_encode | raw }}{% else %}[]{% endif %},
+                {# labels: {% if hasgensetMod %}{{ gensetData['dayBydayTEPData']['date'] | json_encode | raw }}{% else %}[]{% endif %}, #}
+                labels: {% if hasgensetMod %}{{ gensetData['loadProfileData']['date'] | json_encode | raw }}{% else %}[]{% endif %},
                 {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
                 xaxis: {
                     type: 'datetime',
@@ -1732,14 +1740,16 @@
                         formatter: function (y) {
                             //console.log(y)
                             if (typeof y !== "undefined") {
-                                return y.toFixed(2) + " kWh"
+                                {# return y.toFixed(2) + " kWh" #}
+                                return y.toFixed(2) + " kW"
                             }
                             return y;
                         }
                     },
                     x: {
                         formatter: function (val, timestamp) {
-                            return moment(new Date(val)).format("DD MMM YYYY")
+                            {# return moment(new Date(val)).format("DD MMM YYYY") #}
+                            return moment(new Date(val)).format("DD MMM YYYY HH:mm")
                         }
                     }
                 },
@@ -2000,11 +2010,14 @@
                     width: 2,
                 },
                 series: [{
-                    name: 'Énergie Active',
-                    data: {{ loadSiteData['kWh'] | json_encode | raw }}
+                    {# name: 'Énergie Active', #}
+                    name: 'Puissance Active',
+                    {# data: {{ loadSiteData['kWh'] | json_encode | raw }} #}
+                    data: {{ loadSiteData['kW'] | json_encode | raw }}
                     {# data: [28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 28, 40, 36, 52, 38, 60, 38, 27, 51, 80] #}
                 }],
-                labels: {{ loadSiteData['date'] | json_encode | raw }},
+                {# labels: {{ loadSiteData['date'] | json_encode | raw }}, #}
+                labels: {{ loadSiteData['dateP'] | json_encode | raw }},
                 {# labels: ['1', '2', '3', '4', '5', '6', '7'], #}
                 xaxis: {
                     type: 'datetime',
@@ -2039,14 +2052,16 @@
                         formatter: function (y) {
                             //console.log(y)
                             if (typeof y !== "undefined") {
-                                return y.toFixed(2) + " kWh"
+                                {# return y.toFixed(2) + " kWh" #}
+                                return y.toFixed(2) + " kW"
                             }
                             return y;
                         }
                     },
                     x: {
                         formatter: function (val, timestamp) {
-                            return moment(new Date(val)).format("DD MMM YYYY")
+                            {# return moment(new Date(val)).format("DD MMM YYYY") #}
+                            return moment(new Date(val)).format("DD MMM YYYY HH:mm")
                         }
                     }
                 },
@@ -2170,7 +2185,7 @@
         }
     }
 
-    setTimeout(getClimateData, 100);
+    //setTimeout(getClimateData, 100);
 
     function getClimateData(){
         // My key 4e7cd8803316af415207236c1b888ba3
@@ -2209,7 +2224,8 @@
             if( Object.keys(result).length > 0 ){
                 console.log(result)
 
-                $('#last_update').text(String( moment( new Date(result['gensetData']['last_update']) ).format("DD MMM YYYY HH:mm:ss")) )
+                {# $('#last_update').text(String( moment( new Date(result['gensetData']['last_update']) ).format("DD MMM YYYY HH:mm:ss")) ) #}
+                $('#last_update').text(result['gensetData']['last_update']);
                 
                 //++++ Mise à jour des données de la card GRID du mois cours
                 //Valeur de la puissance active en cours du GRID
@@ -2228,8 +2244,10 @@
                 $('#w-grid-fp').text(String(parseFloat(result['gridData']['FP']).toFixed(2)))
                 //Puissance max provenant du GRID pour le mois en cours
                 $('#w-grid-pmax').text(String(parseFloat(result['gridData']['Pmax']).toFixed(2)))
-                //MAJ de la courbe d'évolution de la fourniture en kWh jour après jour provenant du GRID
-                displayNewData(w_loadChartGrid, Object.values(result['gridData']['date']), Object.values(result['gridData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                {# //MAJ de la courbe d'évolution de la fourniture en kWh jour après jour provenant du GRID
+                displayNewData(w_loadChartGrid, Object.values(result['gridData']['date']), Object.values(result['gridData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                //MAJ de la courbe d'évolution de la courbe de charge en kW du GRID
+                displayNewData(w_loadChartGrid, Object.values(result['gridData']['dateP']), Object.values(result['gridData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
                 
                 {% if hasgensetMod %}
                     //++++ Mise à jour des données de la card GENSET du mois cours
@@ -2255,8 +2273,10 @@
                     $('#w-genset-conso-fuel').text(String(parseFloat(result['gensetData']['currentConsoFuel']).toFixed(2)))
                     //Charge max du GENSET pour le mois en cours
                     $('#w-genset-load-max').text(String(parseFloat(result['gensetData']['loadMax']).toFixed(2)))
-                    //MAJ de la courbe d'évolution de la fourniture en kWh jour après jour provenant du GENSET
-                    displayNewData(w_loadChartGenset, Object.values(result['gensetData']['dayBydayTEPData']['date']), Object.values(result['gensetData']['dayBydayTEPData']['TEP']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                    {# //MAJ de la courbe d'évolution de la fourniture en kWh jour après jour provenant du GENSET
+                    displayNewData(w_loadChartGenset, Object.values(result['gensetData']['dayBydayTEPData']['date']), Object.values(result['gensetData']['dayBydayTEPData']['TEP']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                    //MAJ de la courbe d'évolution de la courbe de charge en kW du GENSET
+                    displayNewData(w_loadChartGenset, Object.values(result['gensetData']['loadProfileData']['date']), Object.values(result['gensetData']['loadProfileData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
                 {% endif %}
                              
                 //++++ Mise à jour des données de la card LOAD du mois cours
@@ -2272,8 +2292,10 @@
                 //Puissance max de la charge pour le mois en cours
                 $('#w-load-pmax').text(String(parseFloat(result['loadSiteData']['Pmax']).toFixed(2)))
                 
-                //MAJ de la courbe d'évolution de la fourniture en kWh jour après jour de la charge
-                displayNewData(w_loadChart, Object.values(result['loadSiteData']['date']), Object.values(result['loadSiteData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
+                {# //MAJ de la courbe d'évolution de la fourniture en kWh jour après jour de la charge
+                displayNewData(w_loadChart, Object.values(result['loadSiteData']['date']), Object.values(result['loadSiteData']['kWh']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day'); #}
+                //MAJ de la courbe d'évolution de la courbe de charge en kW de l'installation
+                displayNewData(w_loadChart, Object.values(result['loadSiteData']['dateP']), Object.values(result['loadSiteData']['kW']), [moment().format("DD MMM YYYY"), moment().format("DD MMM YYYY")], 1, 'day');
                                                 
                 //++++ Mise à jour des données de la card d'émission de carbone du mois cours
                 //Empreinte carbonne pour le mois en cours
@@ -2290,7 +2312,7 @@
             console.log('FAIL to get overview Data')
             
         });
-    }, 120000); 
+    }, 10000); 
 
 </script>
 
@@ -2796,12 +2818,12 @@
                                 );
                                 MixedConsoChart.render() #}
                                 displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 4, 'day');
-                                MixedConsoChart.toggleSeries('From Grid ')
+                                {# MixedConsoChart.toggleSeries('From Grid ')
                                 MixedConsoChart.toggleSeries('From Grid ')
                                 MixedConsoChart.toggleSeries('From Genset ')
                                 MixedConsoChart.toggleSeries('From Genset ')
                                 MixedConsoChart.toggleSeries('From Solar ')
-                                MixedConsoChart.toggleSeries('From Solar ')
+                                MixedConsoChart.toggleSeries('From Solar ') #}
                                 MixedConsoChart.toggleSeries('From Battery ')
                                 MixedConsoChart.toggleSeries('From Battery ')
                                 
@@ -2891,12 +2913,12 @@
                                 );
                                 MixedConsoChart.render() #}
                                 displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 4, 'day');
-                                MixedConsoChart.toggleSeries('From Grid ')
+                                {# MixedConsoChart.toggleSeries('From Grid ')
                                 MixedConsoChart.toggleSeries('From Grid ')
                                 MixedConsoChart.toggleSeries('From Genset ')
                                 MixedConsoChart.toggleSeries('From Genset ')
                                 MixedConsoChart.toggleSeries('From Solar ')
-                                MixedConsoChart.toggleSeries('From Solar ')
+                                MixedConsoChart.toggleSeries('From Solar ') #}
                                 MixedConsoChart.toggleSeries('From Battery ')
                                 MixedConsoChart.toggleSeries('From Battery ')
                                 

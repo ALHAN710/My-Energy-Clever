@@ -141,6 +141,30 @@ class SiteProDataService
         $totalGridKWh  = floatval(number_format((float) $totalGridKWh, 2, '.', ''));
         $totalGridER   = floatval(number_format((float) $totalGridER, 2, '.', ''));
 
+        $gridPowerDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.pmoy/:power_unit AS Pmoy
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY jour
+                                                ORDER BY jour ASC")
+            ->setParameters(array(
+                //'length_'      => $length,
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'       => $this->site->getId(),
+                'power_unit'    => $this->power_unit
+            ))
+            ->getResult();
+        // dump($gridPowerDataQuery);
+
+        $gridkW     = [];
+        $gridkWDate = [];
+        foreach ($gridPowerDataQuery as $d) {
+            $gridkWDate[] = $d['jour']->format('Y-m-d H:i:s');
+            $gridkW[]     = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
+        }
+
         // ============== GENSET data ==============
         //get Genset Data
         $gensetData = [];
@@ -168,14 +192,16 @@ class SiteProDataService
         $contriGensetKWh = floatval(number_format((float) $contriGensetKWh, 2, '.', ''));
 
         $gridData = array(
-            "date"      => $gridDate,
-            "Pmax"      => $gridPmax,
-            "kWh"       => $gridkWh,
-            "totalKWh"  => $totalGridKWh,
-            "totalER"   => $totalGridER,
-            "contrib"   => $contriGridKWh,
-            "FP"        => $gridFP,
-            "NbDepassement"        => $gridNbDepassement
+            "date"            => $gridDate,
+            "kWh"             => $gridkWh,
+            "dateP"           => $gridkWDate,
+            "kW"              => $gridkW,
+            "Pmax"            => $gridPmax,
+            "totalKWh"        => $totalGridKWh,
+            "totalER"         => $totalGridER,
+            "contrib"         => $contriGridKWh,
+            "FP"              => $gridFP,
+            "NbDepassement"   => $gridNbDepassement
         );
 
         $gensetData["contriGensetKWh"] = $contriGensetKWh;
@@ -230,10 +256,36 @@ class SiteProDataService
 
         $totalLoadSiteKWh  = floatval(number_format((float) $totalLoadSiteKWh, 2, '.', ''));
 
+        $loadSitePowerData = $this->manager->createQuery("SELECT d.dateTime AS jour, d.pmoy/:power_unit AS Pmoy
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY jour
+                                                ORDER BY jour ASC")
+            ->setParameters(array(
+                //'length_'    => $length,
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'        => $this->site->getId(),
+                'power_unit'    => $this->power_unit
+            ))
+            ->getResult();
+        //dump($loadSitePowerData);
+        $loadSiteDateP    = [];
+        $kW               = [];
+
+        foreach ($loadSitePowerData as $d) {
+            $loadSiteDateP[]   = $d['jour']->format('Y-m-d H:i:s');
+            $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
+        }
+
         $loadSiteData = array(
             "date"         => $loadSiteDate,
-            "Pmax"         => $loadSitePmax,
             "kWh"          => $loadSitekWh,
+            "dateP"        => $loadSiteDateP,
+            "kW"           => $kW,
+            "Pmax"         => $loadSitePmax,
             "totalKWh"     => $totalLoadSiteKWh,
             "FP"           => $loadSiteFP
         );
@@ -288,7 +340,22 @@ class SiteProDataService
 
         // ========= Détermination de la longueur de la datetime =========
         $length = 10; //Si endDate > startDate => regoupement des données par jour de la fenêtre de date
-        if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
+        if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) {
+            $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
+            $date        = [];
+            $dayGridkWh     = [];
+            $dayGensetkWh   = [];
+            $daySolarkWh    = [];
+            $dayBattkWh     = [];
+            for ($h = 0; $h < 24; $h++) {
+                $strHour = $h < 10 ? '0' . $h : $h;
+                $date[]     = $this->endDate->format('Y-m-d') . ' ' . $strHour;
+                $dayGridkWh[$this->endDate->format('Y-m-d') . ' ' . $strHour]   = 0.0;
+                $dayGensetkWh[$this->endDate->format('Y-m-d') . ' ' . $strHour] = 0.0;
+                $daySolarkWh[$this->endDate->format('Y-m-d') . ' ' . $strHour]  = 0.0;
+                $dayBattkWh[$this->endDate->format('Y-m-d') . ' ' . $strHour]   = 0.0;
+            }
+        }
 
         $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.ea) AS kWh
                                             FROM App\Entity\LoadEnergyData d
@@ -304,7 +371,7 @@ class SiteProDataService
                 'siteId'     => $this->site->getId()
             ))
             ->getResult();
-        //dump($consoChartData);
+        // dump($consoChartData);
 
         foreach ($consoChartData as $d) {
             // $date[]     = $d['dt'];
