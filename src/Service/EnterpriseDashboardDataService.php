@@ -121,7 +121,7 @@ class EnterpriseDashboardDataService
 
         foreach ($this->enterprise->getSites() as $site) {
             $this->siteDashService->setSite($site)
-                ->setPower_unit(1000);
+                ->setPower_unit(1);
 
             $temp                      = $this->siteDashService->getCurrentMonthkWhConsumption();
             $this->currentConsokWh    += $temp['currentConsokWh'];

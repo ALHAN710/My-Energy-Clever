@@ -854,22 +854,22 @@ class SiteDashboardDataService
         $loadChartData = [];
 
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
+            $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy/:power_unit AS kW, 
+                                            SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF,
+                                            d.workingGenset AS supply
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                            AND d.dateTime LIKE :currentMonth
+                                            GROUP BY jour
+                                            ORDER BY jour ASC")
+                ->setParameters(array(
+                    'currentMonth'  => $this->currentMonthStringDate,
+                    'siteId'        => $this->site->getId(),
+                    'power_unit'    => $this->power_unit,
+                ))
+                ->getResult();
             if ($this->site->getHasOneSmartMod() == true) { //Site à smartMeter GRID et FUEL en un
-                $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy/:power_unit AS kW, 
-                                                SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF,
-                                                d.workingGenset AS supply
-                                                FROM App\Entity\LoadEnergyData d
-                                                JOIN d.smartMod sm
-                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID_FUEL')
-                                                AND d.dateTime LIKE :currentMonth
-                                                GROUP BY jour
-                                                ORDER BY jour ASC")
-                    ->setParameters(array(
-                        'currentMonth'  => $this->currentMonthStringDate,
-                        'siteId'        => $this->site->getId(),
-                        'power_unit'    => $this->power_unit,
-                    ))
-                    ->getResult();
                 //dump($dayByDayConsoData);
 
             } else { //Site à smartMeter GRID et FUEL séparé
