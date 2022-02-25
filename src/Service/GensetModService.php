@@ -1011,7 +1011,9 @@ class GensetModService
             ))
             ->getResult();
         $loadMax = 0.0;
-        if (count($LoadMaxdata) > 0 && $this->gensetMod->getPower() > 0) $loadMax = ($LoadMaxdata[0]['Smax'] * 100) / $this->gensetMod->getPower();
+        if (count($LoadMaxdata) > 0 && $this->gensetMod->getPower() > 0) $loadMax = ($LoadMaxdata[0]['Smax'] * 100.0) / $this->gensetMod->getPower();
+
+        $loadMax = floatval(number_format((float) $loadMax, 2, '.', ''));
 
         $gensetkWDataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.p AS Pmoy
                                         FROM App\Entity\GensetData d
