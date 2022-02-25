@@ -103,7 +103,7 @@ class SiteController extends ApplicationController
             ->setStartDate($startDate)
             ->setEndDate($endDate);
         $overViewData = $siteDash->getOverviewData();
-        dump($overViewData);
+        // dump($overViewData);
         $smartMods = $site->getSmartMods();
         $gensetMod  = null;
         foreach ($smartMods as $smartMod) {
@@ -137,7 +137,7 @@ class SiteController extends ApplicationController
             ->setStartDate($startDate)
             ->setEndDate($endDate);
         $dataAnalysis = $siteAnalytic->getDataAnalysis();
-        dump($dataAnalysis);
+        // dump($dataAnalysis);
         return $this->render('site/historical_analytic.html.twig', [
             'site'            => $site,
             'dataAnalysis'    => $dataAnalysis,
