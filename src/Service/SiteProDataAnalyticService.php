@@ -1067,7 +1067,7 @@ class SiteProDataAnalyticService
             }
         }
         // dump($dowHighPowerData);
-        dump($Q_highPower);
+        // dump($Q_highPower);
 
         return array(
             'recapProd' => $recapProd,
