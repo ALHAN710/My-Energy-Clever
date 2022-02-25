@@ -248,7 +248,7 @@ class SiteProDataService
             $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
         }
 
-        if (count($kW) > 0) $loadSitePmax = max($kW);
+        //if (count($kW) > 0) $loadSitePmax = max($kW);
 
         $denom = sqrt(($totalLoadSiteKWh * $totalLoadSiteKWh) + ($totalER * $totalER));
         if ($denom > 0.0) $loadSiteFP = $totalLoadSiteKWh / $denom;
@@ -279,6 +279,8 @@ class SiteProDataService
             $loadSiteDateP[]   = $d['jour']->format('Y-m-d H:i:s');
             $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
         }
+
+        if (count($kW) > 0) $loadSitePmax = max($kW);
 
         $loadSiteData = array(
             "date"         => $loadSiteDate,
