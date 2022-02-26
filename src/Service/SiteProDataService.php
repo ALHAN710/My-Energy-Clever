@@ -131,8 +131,6 @@ class SiteProDataService
 
         $totalKWh += $totalGridKWh;
 
-        if (count($kW) > 0) $gridPmax = max($kW);
-
         $denom = sqrt(($totalGridKWh * $totalGridKWh) + ($totalGridER * $totalGridER));
         if ($denom > 0) $gridFP = $totalGridKWh / $denom;
         $gridFP  = floatval(number_format((float) $gridFP, 2, '.', ''));
@@ -164,7 +162,7 @@ class SiteProDataService
             $gridkWDate[] = $d['jour']->format('Y-m-d H:i:s');
             $gridkW[]     = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
         }
-
+        if (count($gridkW) > 0) $gridPmax = max($gridkW);
         // ============== GENSET data ==============
         //get Genset Data
         $gensetData = [];
