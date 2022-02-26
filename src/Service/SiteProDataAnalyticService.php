@@ -328,7 +328,17 @@ class SiteProDataAnalyticService
                 }
             }
 
-            $powerUnitStr = $this->power_unit === 1000 ? 'kW' : 'W';
+            $powerUnitStr = '';
+            // $powerUnitStr = $this->power_unit === 1000 ? 'MW' : 'kW';
+            switch ($this->power_unit) {
+                case 1000:
+                    $powerUnitStr = 'MW';
+                    break;
+
+                default:
+                    $powerUnitStr = 'kW';
+                    break;
+            }
 
             //dump($lowPower);
             // $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W @ ' . $lowPower['jour']->format('d M Y H:i:s') : '-';
