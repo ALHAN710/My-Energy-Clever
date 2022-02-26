@@ -389,7 +389,7 @@ class SiteProDataService
         }
 
         $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, 
-                                            MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
+                                            SUM(d.eaa + d.eab + d.eac) AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
