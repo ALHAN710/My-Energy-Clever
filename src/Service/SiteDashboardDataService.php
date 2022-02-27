@@ -877,7 +877,7 @@ class SiteDashboardDataService
             }
         } else { //Pour les Sites abonnés en BT
             $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy/:power_unit AS kW,
-                                                SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
+                                                d.ea/SQRT( (d.ea*d.ea) + (d.er*d.er) ) AS PF
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
