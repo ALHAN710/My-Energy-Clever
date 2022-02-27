@@ -107,8 +107,8 @@
                                             {# <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M8,10H16V18H11L9,16H7V11M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18H8L10,20H18V16H20V19H23V9H20V12H18V8H12V6H15V4H7Z" /></svg> #}
                                             <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M8,10H16V18H11L9,16H7V11M7,4V6H10V8H7L5,10V13H3V10H1V18H3V15H5V18H8L10,20H18V16H20V19H23V9H20V12H18V8H12V6H15V4H7Z" /></svg>
                                         </div>
-                                        {# <div class="source-name"><a href="{{ path('genset_home', {'slug':site.slug,'id':gensetId}) }}" style="color:#e26b1b">Genset</a></div> #}
-                                        <div class="source-name"><a href="#" style="color:#e26b1b">Genset</a></div>
+                                        <div class="source-name"><a href="{% if isGensetFuel == true %}{{ path('genset_home', {'slug':site.slug,'id':gensetId}) }}{% else %}#{% endif %}" style="color:#e26b1b">Genset</a></div>
+                                        {# <div class="source-name"><a href="#" style="color:#e26b1b">Genset</a></div> #}
                                         <p class="w-value text-center">{% if hasgensetMod %}<span id="genset-kW">{% if gensetData['CGCR']['CG'] %}{{gensetData['Power']}}{% else %}0.0{% endif %}</span> kW{% else %} - {% endif %}
                                         
                                     </div>
@@ -125,10 +125,12 @@
                                             <div class="col">Contribution</div>
                                             <div class="col">{% if hasgensetMod %}<span id="w-genset-contrib">{{contriGensetKWh}}</span> %{% else %}-{% endif %}</div>
                                         </div>
-                                        {# <div class="row ml-2" style="font-size:12px">
+                                        {% if isGensetFuel == true %}
+                                        <div class="row ml-2" style="font-size:12px">
                                             <div class="col">Conso Fuel : </div>
-                                            <div class="col">{% if hasgensetMod %}<span id="w-genset-conso-fuel">{{gensetData['currentConsoFuel']}}</span> L{% else %}-{% endif %}</div>
-                                        </div> #}
+                                            <div class="col"><span id="w-genset-conso-fuel">{{gensetData['currentConsoFuel']}}</span> L</div>
+                                        </div>
+                                        {% endif %}
                                         <div class="row ml-2 mb-2" style="font-size:12px">
                                             <div class="col">Charge Max</div>
                                             <div class="col">{% if hasgensetMod %}<span id="w-genset-load-max">{{gensetData['loadMax']}}</span> %{% else %}-{% endif %}</div>
@@ -2634,6 +2636,12 @@
             },
             x: {
                 formatter: function (val, timestamp) {
+                    if(startDate === endDate){
+                        {# console.log('startDate = ' + startDate);
+                        console.log('endDate = ' + endDate); #}
+
+                        return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    }
                     return moment(new Date(val)).format("DD MMM YYYY")
                 }
             }
@@ -2683,8 +2691,6 @@
         startDate = picker.startDate.format('YYYY-MM-DD');
         endDate = picker.endDate.format('YYYY-MM-DD');
         
-        console.log('startDate = ' + startDate);
-        console.log('endDate = ' + endDate);
         updateHistoGraphs();
         // block of code that runs when the click event triggers
 

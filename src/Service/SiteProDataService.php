@@ -424,22 +424,43 @@ class SiteProDataService
             $BattkWh[]  = 0.0;
         }
 
-        $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, 
-                                            SUM(d.p)*:time AS TEP
-                                            FROM App\Entity\GensetData d
-                                            JOIN d.smartMod sm
-                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
-                                            AND d.dateTime BETWEEN :startDate AND :endDate
-                                            GROUP BY dt
-                                            ORDER BY dt ASC")
-            ->setParameters(array(
-                'length_'    => $length,
-                'time'       => $this->gensetIntervalTime,
-                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
-                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
-                'siteId'     => $this->site->getId()
-            ))
-            ->getResult();
+        $consoChartData = [];
+        if($this->gensetMod->getSubType() === 'ModBus'){//Si le module GENSET est de type Modbus 
+            $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, 
+                                                MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
+                                                FROM App\Entity\GensetData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY dt
+                                                ORDER BY dt ASC")
+                ->setParameters(array(
+                    'length_'    => $length,
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'siteId'     => $this->site->getId()
+                ))
+                ->getResult();
+        }
+        else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter 
+            $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, 
+                                                SUM(d.p)*:time AS TEP
+                                                FROM App\Entity\GensetData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY dt
+                                                ORDER BY dt ASC")
+                ->setParameters(array(
+                    'length_'    => $length,
+                    'time'       => $this->gensetIntervalTime,
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'siteId'     => $this->site->getId()
+                ))
+                ->getResult();
+        }
+        
         //dump($consoChartData);
         foreach ($consoChartData as $d) {
             //$date[]     = $d['dt'];

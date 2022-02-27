@@ -962,11 +962,31 @@ class GensetModService
 
     public function getGensetDataForSiteProDashBoard()
     {
-        $TEPdata = $this->manager->createQuery("SELECT MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
+        $TEPdata = [];
+        $totalTEP = 0.0;
+
+        if($this->gensetMod->getSubType() === 'ModBus'){ //Si le module GENSET est de type Modbus 
+            $TEPdata = $this->manager->createQuery("SELECT MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
+                                            FROM App\Entity\GensetData d
+                                            JOIN d.smartMod sm 
+                                            WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                            AND sm.id = :smartModId         
+                                            ")
+                ->setParameters(array(
+                    'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                    'smartModId'   => $this->gensetMod->getId()
+                ))
+                ->getResult();
+            $totalTEP = $TEPdata[0]['TEP'] ?? 0;
+            
+            $TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId         
+                                        AND sm.id = :smartModId   
+                                        GROUP BY dat
+                                        ORDER BY dat ASC                
                                         ")
             ->setParameters(array(
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
@@ -974,13 +994,12 @@ class GensetModService
                 'smartModId'   => $this->gensetMod->getId()
             ))
             ->getResult();
-        $totalTEP = $TEPdata[0]['TEP'] ?? 0;
 
-        $config = json_decode($this->gensetMod->getConfiguration(), true);
-        $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
-        // dump($intervalTime);
+        } else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter 
+            $config = json_decode($this->gensetMod->getConfiguration(), true);
+            $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+            // dump($intervalTime);
 
-        if ($totalTEP === 0) {
             $TEPdata = $this->manager->createQuery("SELECT SUM(d.p)*:time AS TEP
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
@@ -996,40 +1015,25 @@ class GensetModService
                 ->getResult();
 
             $totalTEP = $TEPdata[0]['TEP'] ?? 0;
-        }
 
-        $totalTEP = floatval(number_format((float) $totalTEP, 2, '.', ''));
-
-        /*$TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
-                                        FROM App\Entity\GensetData d
-                                        JOIN d.smartMod sm 
-                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId   
-                                        GROUP BY dat
-                                        ORDER BY dat ASC                
-                                        ")
+            $TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, SUM(d.p)*:time AS TEP
+                        FROM App\Entity\GensetData d
+                        JOIN d.smartMod sm 
+                        WHERE d.dateTime BETWEEN :startDate AND :endDate
+                        AND sm.id = :smartModId         
+                        GROUP BY dat
+                        ORDER BY dat ASC")
             ->setParameters(array(
+                'time'         => $intervalTime,
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'smartModId'   => $this->gensetMod->getId()
             ))
             ->getResult();
-        */
+        }
 
-        $TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, SUM(d.p)*:time AS TEP
-                    FROM App\Entity\GensetData d
-                    JOIN d.smartMod sm 
-                    WHERE d.dateTime BETWEEN :startDate AND :endDate
-                    AND sm.id = :smartModId         
-                    GROUP BY dat
-                    ORDER BY dat ASC")
-        ->setParameters(array(
-            'time'         => $intervalTime,
-            'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
-            'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
-            'smartModId'   => $this->gensetMod->getId()
-        ))
-        ->getResult();
+        $totalTEP = floatval(number_format((float) $totalTEP, 2, '.', ''));
+
 
         $date = [];
         $TEP  = [];
@@ -1105,6 +1109,7 @@ class GensetModService
             ]
         );
     }
+    
     /**
      * Get smart Module de type Genset
      *
