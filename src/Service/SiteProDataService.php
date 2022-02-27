@@ -53,11 +53,46 @@ class SiteProDataService
     private $gensetModService;
 
     /**
-     * Module Genset
+     * Module GRID du site
+     *
+     * @var SmartMod
+     */
+    private $gridMod;
+
+    /**
+     * Module Load Site
+     *
+     * @var SmartMod
+     */
+    private $loadSiteMod;
+
+    /**
+     * Module GENSET
      *
      * @var SmartMod
      */
     private $gensetMod;
+
+    /**
+     * Interval de temps d'envoi des données du module GRID
+     *
+     * @var float
+     */
+    private $gridIntervalTime = 5.0/60.0;
+
+    /**
+     * Interval de temps d'envoi des données du module GENSET
+     *
+     * @var float
+     */
+    private $gensetIntervalTime = 5.0/60.0;
+
+    /**
+     * Interval de temps d'envoi des données du module Load Site
+     *
+     * @var float
+     */
+    private $loadSiteIntervalTime = 5.0/60.0;
 
     private $currentMonthStringDate = '';
 
@@ -97,7 +132,7 @@ class SiteProDataService
         $totalKWh = 0.0;
 
         // ============== GRID data ==============
-        $gridDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, MAX(d.pmax) AS Pmax, SUM(d.ea) AS EA, SUM(d.er) AS ER, SUM(d.depassement) AS Depassement
+        $gridDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, MAX(d.pmax) AS Pmax, SUM(d.pmoy)*:time AS EA, SUM(d.qmoy)*:time AS ER, SUM(d.depassement) AS Depassement
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
@@ -106,6 +141,7 @@ class SiteProDataService
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 'length_'      => $length,
+                'time'       => $this->gridIntervalTime,
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId()
@@ -213,7 +249,7 @@ class SiteProDataService
             );
         }
         // ============== LOAD data ==============
-        $loadSiteData = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.ea) AS EA, SUM(d.er) AS ER
+        $loadSiteData = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS EA, SUM(d.qmoy)*:time AS ER
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -222,9 +258,10 @@ class SiteProDataService
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 'length_'    => $length,
+                'time'       => $this->loadSiteIntervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
-                'siteId'        => $this->site->getId()
+                'siteId'     => $this->site->getId()
             ))
             ->getResult();
         //dump($loadSiteData);
@@ -355,7 +392,7 @@ class SiteProDataService
             }
         }
 
-        $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.ea) AS kWh
+        $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.pmoy)*:time AS kWh
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
@@ -364,6 +401,7 @@ class SiteProDataService
                                             ORDER BY dt ASC")
             ->setParameters(array(
                 'length_'    => $length,
+                'time'       => $this->gridIntervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'     => $this->site->getId()
@@ -387,7 +425,7 @@ class SiteProDataService
         }
 
         $consoChartData = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, 
-                                            SUM(d.eaa + d.eab + d.eac) AS TEP
+                                            SUM(d.p)*:time AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
@@ -396,6 +434,7 @@ class SiteProDataService
                                             ORDER BY dt ASC")
             ->setParameters(array(
                 'length_'    => $length,
+                'time'       => $this->gensetIntervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'     => $this->site->getId()
@@ -542,8 +581,32 @@ class SiteProDataService
         $this->site = $site;
 
         $smartMods = $this->site->getSmartMods();
+        
         foreach ($smartMods as $smartMod) {
-            if ($smartMod->getModType() === 'GENSET') $this->setGensetMod($smartMod);
+            if ($smartMod->getModType() === 'GRID') {
+                $this->setGridMod($smartMod);
+
+                $config = json_decode($this->gridMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setGridIntervalTime($intervalTime);
+            }
+            if ($smartMod->getModType() === 'GENSET') {
+                $this->setGensetMod($smartMod);
+
+                $config = json_decode($this->gensetMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setGridIntervalTime($intervalTime);
+            }
+            if ($smartMod->getModType() === 'Load Meter') {
+                $this->setLoadSiteMod($smartMod);
+
+                $config = json_decode($this->gensetMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setLoadSiteIntervalTime($intervalTime);
+            }
         }
 
         if ($this->gensetMod) $this->gensetModService->setGensetMod($this->gensetMod);
@@ -691,6 +754,126 @@ class SiteProDataService
     public function setGensetMod(SmartMod $gensetMod)
     {
         $this->gensetMod = $gensetMod;
+
+        return $this;
+    }
+
+    /**
+     * Get module GRID du site
+     *
+     * @return  SmartMod
+     */ 
+    public function getGridMod()
+    {
+        return $this->gridMod;
+    }
+
+    /**
+     * Set module GRID du site
+     *
+     * @param  SmartMod  $gridMod  Module GRID du site
+     *
+     * @return  self
+     */ 
+    public function setGridMod(SmartMod $gridMod)
+    {
+        $this->gridMod = $gridMod;
+
+        return $this;
+    }
+
+    /**
+     * Get module Load Site
+     *
+     * @return  SmartMod
+     */ 
+    public function getLoadSiteMod()
+    {
+        return $this->loadSiteMod;
+    }
+
+    /**
+     * Set module Load Site
+     *
+     * @param  SmartMod  $loadSiteMod  Module Load Site
+     *
+     * @return  self
+     */ 
+    public function setLoadSiteMod(SmartMod $loadSiteMod)
+    {
+        $this->loadSiteMod = $loadSiteMod;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module GRID
+     *
+     * @return  float
+     */ 
+    public function getGridIntervalTime()
+    {
+        return $this->gridIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module GRID
+     *
+     * @param  float  $gridIntervalTime  Interval de temps d'envoi des données du module GRID
+     *
+     * @return  self
+     */ 
+    public function setGridIntervalTime(float $gridIntervalTime)
+    {
+        $this->gridIntervalTime = $gridIntervalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module GENSET
+     *
+     * @return  float
+     */ 
+    public function getGensetIntervalTime()
+    {
+        return $this->gensetIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module GENSET
+     *
+     * @param  float  $gensetIntervalTime  Interval de temps d'envoi des données du module GENSET
+     *
+     * @return  self
+     */ 
+    public function setGensetIntervalTime(float $gensetIntervalTime)
+    {
+        $this->gensetIntervalTime = $gensetIntervalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module Load Site
+     *
+     * @return  float
+     */ 
+    public function getLoadSiteIntervalTime()
+    {
+        return $this->loadSiteIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module Load Site
+     *
+     * @param  float  $loadSiteIntervalTime  Interval de temps d'envoi des données du module Load Site
+     *
+     * @return  self
+     */ 
+    public function setLoadSiteIntervalTime(float $loadSiteIntervalTime)
+    {
+        $this->loadSiteIntervalTime = $loadSiteIntervalTime;
 
         return $this;
     }

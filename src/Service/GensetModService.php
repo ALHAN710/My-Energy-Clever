@@ -976,14 +976,19 @@ class GensetModService
             ->getResult();
         $totalTEP = $TEPdata[0]['TEP'] ?? 0;
 
+        $config = json_decode($this->gensetMod->getConfiguration(), true);
+        $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+        // dump($intervalTime);
+
         if ($totalTEP === 0) {
-            $TEPdata = $this->manager->createQuery("SELECT SUM(d.eaa + d.eab + d.eac) AS TEP
+            $TEPdata = $this->manager->createQuery("SELECT SUM(d.p)*:time AS TEP
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
                                         AND sm.id = :smartModId         
                                         ")
                 ->setParameters(array(
+                    'time'         => $intervalTime,
                     'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                     'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                     'smartModId'   => $this->gensetMod->getId()
@@ -995,7 +1000,7 @@ class GensetModService
 
         $totalTEP = floatval(number_format((float) $totalTEP, 2, '.', ''));
 
-        $TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
+        /*$TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
@@ -1009,6 +1014,22 @@ class GensetModService
                 'smartModId'   => $this->gensetMod->getId()
             ))
             ->getResult();
+        */
+
+        $TEPdata = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, SUM(d.p)*:time AS TEP
+                    FROM App\Entity\GensetData d
+                    JOIN d.smartMod sm 
+                    WHERE d.dateTime BETWEEN :startDate AND :endDate
+                    AND sm.id = :smartModId         
+                    GROUP BY dat
+                    ORDER BY dat ASC")
+        ->setParameters(array(
+            'time'         => $intervalTime,
+            'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+            'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+            'smartModId'   => $this->gensetMod->getId()
+        ))
+        ->getResult();
 
         $date = [];
         $TEP  = [];
