@@ -882,7 +882,6 @@ class SiteDashboardDataService
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                                 AND d.dateTime LIKE :currentMonth
-                                                GROUP BY jour
                                                 ORDER BY jour ASC")
                 ->setParameters(array(
                     'currentMonth'  => $this->currentMonthStringDate,

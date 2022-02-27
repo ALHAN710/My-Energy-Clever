@@ -144,7 +144,6 @@ class SiteProDataService
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
-                                                GROUP BY jour
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 //'length_'      => $length,
@@ -214,7 +213,7 @@ class SiteProDataService
             );
         }
         // ============== LOAD data ==============
-        $loadSiteData = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, d.pmoy AS Pmoy, SUM(d.ea) AS EA, SUM(d.er) AS ER
+        $loadSiteData = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.ea) AS EA, SUM(d.er) AS ER
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -243,7 +242,7 @@ class SiteProDataService
             $totalER          += floatval($d['ER']);
             $loadSiteDate[]    = $d['jour'];
             $loadSitekWh[]     = floatval(number_format((float) $d['EA'], 2, '.', ''));
-            $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
+            // $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
         }
 
         //if (count($kW) > 0) $loadSitePmax = max($kW);
@@ -259,7 +258,6 @@ class SiteProDataService
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
-                                                GROUP BY jour
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 //'length_'    => $length,

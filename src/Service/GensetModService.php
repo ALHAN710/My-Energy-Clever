@@ -962,7 +962,7 @@ class GensetModService
 
     public function getGensetDataForSiteProDashBoard()
     {
-        $TEPdata = $this->manager->createQuery("SELECT d.dateTime as dat, MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
+        $TEPdata = $this->manager->createQuery("SELECT MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
@@ -971,13 +971,13 @@ class GensetModService
             ->setParameters(array(
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
-                'smartModId'     => $this->gensetMod->getId()
+                'smartModId'   => $this->gensetMod->getId()
             ))
             ->getResult();
         $totalTEP = $TEPdata[0]['TEP'] ?? 0;
 
         if ($totalTEP === 0) {
-            $TEPdata = $this->manager->createQuery("SELECT d.dateTime as dat, SUM(d.eaa + d.eab + d.eac) AS TEP
+            $TEPdata = $this->manager->createQuery("SELECT SUM(d.eaa + d.eab + d.eac) AS TEP
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
@@ -1017,7 +1017,7 @@ class GensetModService
             $TEP[]     = $d['TEP'];
         }
 
-        $LoadMaxdata = $this->manager->createQuery("SELECT d.dateTime as dat, MAX(d.smoy) AS Smax
+        $LoadMaxdata = $this->manager->createQuery("SELECT MAX(d.smoy) AS Smax
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
