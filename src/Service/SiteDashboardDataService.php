@@ -5,6 +5,7 @@ namespace App\Service;
 use DateTime;
 use DateInterval;
 use App\Entity\Site;
+use App\Entity\SmartMod;
 use Doctrine\ORM\EntityManagerInterface;
 
 class SiteDashboardDataService
@@ -99,6 +100,48 @@ class SiteDashboardDataService
      * @var DateTime
      */
     private $endDate;
+
+    /**
+     * Module GRID du site
+     *
+     * @var SmartMod
+     */
+    private $gridMod;
+
+    /**
+     * Module Load Site
+     *
+     * @var SmartMod
+     */
+    private $loadSiteMod;
+
+    /**
+     * Module GENSET
+     *
+     * @var SmartMod
+     */
+    private $gensetMod;
+
+    /**
+     * Interval de temps d'envoi des données du module GRID
+     *
+     * @var float
+     */
+    private $gridIntervalTime = 5.0/60.0;
+
+    /**
+     * Interval de temps d'envoi des données du module GENSET
+     *
+     * @var float
+     */
+    private $gensetIntervalTime = 5.0/60.0;
+
+    /**
+     * Interval de temps d'envoi des données du module Load Site
+     *
+     * @var float
+     */
+    private $loadSiteIntervalTime = 5.0/60.0;
 
     private $currentMonthStringDate = '';
 
@@ -217,7 +260,7 @@ class SiteDashboardDataService
                                             SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
-                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID_FUEL')
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                             AND d.dateTime LIKE :currentMonth")
                     ->setParameters(array(
                         'currentMonth'  => $this->currentMonthStringDate,
@@ -264,7 +307,7 @@ class SiteDashboardDataService
                                                                     END) AS EAP_Hours 
                                                                     FROM App\Entity\LoadEnergyData d
                                                                     JOIN d.smartMod sm
-                                                                    WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID_FUEL')
+                                                                    WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                                     AND d.dateTime LIKE :currentMonth
                                                                     ")
                     ->setParameters(array(
@@ -326,13 +369,14 @@ class SiteDashboardDataService
         }
 
         //Pour les Sites abonnés en BT
-        $currentConsoQuery = $this->manager->createQuery("SELECT SUM(d.ea) AS EA, 
-                                            SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
+        $currentConsoQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)*:time AS EA, 
+                                            SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
-                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                             AND d.dateTime LIKE :currentMonth")
             ->setParameters(array(
+                'time'          => $this->loadSiteIntervalTime,
                 'currentMonth'  => $this->currentMonthStringDate,
                 'siteId'        => $this->site->getId()
             ))
@@ -855,7 +899,7 @@ class SiteDashboardDataService
 
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
             $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy/:power_unit AS kW, 
-                                            SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF,
+                                            SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF,
                                             d.workingGenset AS supply
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
@@ -877,15 +921,15 @@ class SiteDashboardDataService
             }
         } else { //Pour les Sites abonnés en BT
             $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy/:power_unit AS kW,
-                                                d.ea/SQRT( (d.ea*d.ea) + (d.er*d.er) ) AS PF
+                                                d.pmoy/SQRT( (d.pmoy*d.pmoy) + (d.qmoy*d.qmoy) ) AS PF
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
-                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                 AND d.dateTime LIKE :currentMonth
                                                 ORDER BY jour ASC")
                 ->setParameters(array(
                     'currentMonth'  => $this->currentMonthStringDate,
-                    'siteId'    => $this->site->getId(),
+                    'siteId'        => $this->site->getId(),
                     'power_unit'    => $this->power_unit,
                 ))
                 ->getResult();
@@ -1396,6 +1440,35 @@ class SiteDashboardDataService
     {
         $this->site = $site;
 
+        $smartMods = $this->site->getSmartMods();
+        
+        foreach ($smartMods as $smartMod) {
+            if ($smartMod->getModType() === 'GRID') {
+                $this->setGridMod($smartMod);
+
+                $config = json_decode($this->gridMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setGridIntervalTime($intervalTime);
+            }
+            /*if ($smartMod->getModType() === 'GENSET') {
+                $this->setGensetMod($smartMod);
+
+                $config = json_decode($this->gensetMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setGridIntervalTime($intervalTime);
+            }*/
+            if ($smartMod->getModType() === 'Load Meter') {
+                $this->setLoadSiteMod($smartMod);
+
+                $config = json_decode($this->loadSiteMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setLoadSiteIntervalTime($intervalTime);
+            }
+        }
+
         return $this;
     }
 
@@ -1515,6 +1588,102 @@ class SiteDashboardDataService
     public function setPower_unit($power_unit)
     {
         $this->power_unit = $power_unit;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module Load Site
+     *
+     * @return  float
+     */ 
+    public function getLoadSiteIntervalTime()
+    {
+        return $this->loadSiteIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module Load Site
+     *
+     * @param  float  $loadSiteIntervalTime  Interval de temps d'envoi des données du module Load Site
+     *
+     * @return  self
+     */ 
+    public function setLoadSiteIntervalTime(float $loadSiteIntervalTime)
+    {
+        $this->loadSiteIntervalTime = $loadSiteIntervalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module GRID
+     *
+     * @return  float
+     */ 
+    public function getGridIntervalTime()
+    {
+        return $this->gridIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module GRID
+     *
+     * @param  float  $gridIntervalTime  Interval de temps d'envoi des données du module GRID
+     *
+     * @return  self
+     */ 
+    public function setGridIntervalTime(float $gridIntervalTime)
+    {
+        $this->gridIntervalTime = $gridIntervalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get module GRID du site
+     *
+     * @return  SmartMod
+     */ 
+    public function getGridMod()
+    {
+        return $this->gridMod;
+    }
+
+    /**
+     * Set module GRID du site
+     *
+     * @param  SmartMod  $gridMod  Module GRID du site
+     *
+     * @return  self
+     */ 
+    public function setGridMod(SmartMod $gridMod)
+    {
+        $this->gridMod = $gridMod;
+
+        return $this;
+    }
+
+    /**
+     * Get module Load Site
+     *
+     * @return  SmartMod
+     */ 
+    public function getLoadSiteMod()
+    {
+        return $this->loadSiteMod;
+    }
+
+    /**
+     * Set module Load Site
+     *
+     * @param  SmartMod  $loadSiteMod  Module Load Site
+     *
+     * @return  self
+     */ 
+    public function setLoadSiteMod(SmartMod $loadSiteMod)
+    {
+        $this->loadSiteMod = $loadSiteMod;
 
         return $this;
     }

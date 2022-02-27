@@ -623,7 +623,7 @@ class SiteProDataService
             if ($smartMod->getModType() === 'Load Meter') {
                 $this->setLoadSiteMod($smartMod);
 
-                $config = json_decode($this->gensetMod->getConfiguration(), true);
+                $config = json_decode($this->loadSiteMod->getConfiguration(), true);
                 $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
                 // dump($intervalTime);
                 $this->setLoadSiteIntervalTime($intervalTime);
