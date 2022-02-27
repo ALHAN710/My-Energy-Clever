@@ -124,6 +124,11 @@ class SmartMod
      */
     private $consoFuelRate = [];
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $configuration;
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
@@ -448,6 +453,18 @@ class SmartMod
     public function setConsoFuelRate(?array $consoFuelRate): self
     {
         $this->consoFuelRate = $consoFuelRate;
+
+        return $this;
+    }
+
+    public function getConfiguration(): ?string
+    {
+        return $this->configuration;
+    }
+
+    public function setConfiguration(?string $configuration): self
+    {
+        $this->configuration = $configuration;
 
         return $this;
     }

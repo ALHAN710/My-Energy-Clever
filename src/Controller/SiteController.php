@@ -106,13 +106,20 @@ class SiteController extends ApplicationController
         // dump($overViewData);
         $smartMods = $site->getSmartMods();
         $gensetMod  = null;
+        $isGensetFuel = false;
         foreach ($smartMods as $smartMod) {
-            if ($smartMod->getModType() === 'GENSET') $gensetMod = $smartMod;
+            if ($smartMod->getModType() === 'GENSET') {
+                $gensetMod = $smartMod;
+                if(strpos($gensetMod->getSubType(), 'FL') !== false || $gensetMod->getSubType() === 'ModBus'){
+                    $isGensetFuel = true;
+                }
+            }
         }
         // dump($gensetMod);
         return $this->render('site/home_pro.html.twig', [
             'site'            => $site,
-            'gensetId'        => $gensetMod->getId() ?? 0,
+            'gensetId'        => $gensetMod !== null ? $gensetMod->getId() : 0,
+            'isGensetFuel'    => $isGensetFuel,
             'loadSiteData'    => $overViewData['loadSiteData'],
             'gridData'        => $overViewData['gridData'],
             'gensetData'      => $overViewData['gensetData'],
