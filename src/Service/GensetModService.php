@@ -403,6 +403,35 @@ class GensetModService
 
         $duree = array_sum($dureeDayByDay);
 
+        if($this->gensetMod->getSubType() !== 'ModBus' || !strpos($this->gensetMod->getSubType(), 'FL') !== false){
+            $config = json_decode($this->gensetMod->getConfiguration(), true);
+            $intervalTime = array_key_exists("Frs", $config) ? $config['Frs'] : 5.0 ;//Temps en minutes
+            // dump($intervalTime);
+
+            $data = $this->manager->createQuery("SELECT COUNT(d.p) AS NB_Mins
+                                        FROM App\Entity\GensetData d
+                                        JOIN d.smartMod sm 
+                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                        AND sm.id = :smartModId         
+                                        AND d.p > 1
+                                        ")
+                ->setParameters(array(
+                    'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                    'smartModId'   => $this->gensetMod->getId()
+                ))
+                ->getResult();
+            
+            if(count($data) > 0){
+                if(array_key_exists("NB_Mins", $data[0])){
+                    // dump($data[0]['NB_Mins']);
+                    $duree = $data[0]['NB_Mins'] * $intervalTime;
+                }
+            }
+        }
+
+        $duree = $this->hoursandmins($duree);
+
         $currentConsoFuelProgress = ($lastConsoFuel !== 0) ? ($currentConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
         $currentApproFuelProgress = ($lastApproFuel !== 0) ? ($currentApproFuel - $lastApproFuel) / $lastApproFuel : 'INF';
         $dureeProgress = ($lastDuree !== 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
@@ -1110,6 +1139,16 @@ class GensetModService
         );
     }
     
+    function hoursandmins($time, $format = '%02d:%02d')
+    {
+        if ($time < 0) {
+            return;
+        }
+        $hours = floor($time / 60);
+        $minutes = ($time % 60);
+        return sprintf($format, $hours, $minutes);
+    }
+
     /**
      * Get smart Module de type Genset
      *

@@ -134,8 +134,8 @@
                                         <td colspan="2" class="text-center"><span id="t-genset-conso-fuel">{{dataAnalysis['recapProd']['gensetData']['currentConsoFuel']|number_format(2, '.', ' ')}}</span></td> 
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="text-right">Durée de fonctionnement G.E (h) :</td> 
-                                        <td colspan="2" class="text-center"><span id="t-genset-duree-fonctionnement">{{dataAnalysis['recapProd']['gensetData']['dureeFonctionnement']|number_format(2, '.', ' ')}}</span></td> 
+                                        <td colspan="3" class="text-right">Durée de fonctionnement G.E (hh:mm) :</td> 
+                                        <td colspan="2" class="text-center"><span id="t-genset-duree-fonctionnement">{{dataAnalysis['recapProd']['gensetData']['dureeFonctionnement']}}</span></td> 
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -1503,7 +1503,7 @@
                                 $('#t-genset-conso-fuel').text(parseFloat(result['dataAnalysis']['recapProd']['gensetData']['currentConsoFuel']).toFixed(2));
                                 
                                 //Valeur de la Durée de Fonctionnement de la source GENSET
-                                $('#t-genset-duree-fonctionnement').text(parseFloat(result['dataAnalysis']['recapProd']['gensetData']['dureeFonctionnement']).toFixed(2));
+                                $('#t-genset-duree-fonctionnement').text(result['dataAnalysis']['recapProd']['gensetData']['dureeFonctionnement']);
                                 
                                 //Valeur de la pénalité et statut du Nombre de Dépassement de la puissance souscrite
                                 $('#t-pen-depassement').text(String(result['dataAnalysis']['recapProd']['gridData']['NbDepassement']));
