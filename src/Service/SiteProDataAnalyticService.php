@@ -1352,7 +1352,7 @@ class SiteProDataAnalyticService
             ))
             ->getResult();
         }
-        dump($gensetProdDataQuery);
+        // dump($gensetProdDataQuery);
         $EA = [];
         foreach ($gensetProdDataQuery as $d) {
             $EA[]     = floatval($d['TEP']);
