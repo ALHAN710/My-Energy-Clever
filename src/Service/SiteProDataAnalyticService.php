@@ -50,6 +50,48 @@ class SiteProDataAnalyticService
      * @var DateTime
      */
     private $endDate;
+    
+    /**
+     * Module GRID du site
+     *
+     * @var SmartMod
+     */
+    private $gridMod;
+
+    /**
+     * Module Load Site
+     *
+     * @var SmartMod
+     */
+    private $loadSiteMod;
+
+    /**
+     * Module GENSET
+     *
+     * @var SmartMod
+     */
+    private $gensetMod;
+
+    /**
+     * Interval de temps d'envoi des données du module GRID
+     *
+     * @var float
+     */
+    private $gridIntervalTime = 5.0/60.0;
+
+    /**
+     * Interval de temps d'envoi des données du module GENSET
+     *
+     * @var float
+     */
+    private $gensetIntervalTime = 5.0/60.0;
+
+    /**
+     * Interval de temps d'envoi des données du module Load Site
+     *
+     * @var float
+     */
+    private $loadSiteIntervalTime = 5.0/60.0;
 
     private $siteProDataService;
 
@@ -161,7 +203,7 @@ class SiteProDataAnalyticService
         $consoMoyProgress = ($lastConsoMoy > 0) ? ($consoMoy - $lastConsoMoy) * 100 / $lastConsoMoy : 'INF';
 
         // ========= Détermination des jours les plus et mois consommateur =========  
-        $consoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.ea) AS kWh
+        $consoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS kWh
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -170,13 +212,14 @@ class SiteProDataAnalyticService
                                                 ORDER BY kWh DESC")
             ->setParameters(array(
                 'length_'    => $length,
+                'time'       => $this->loadSiteIntervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'     => $this->site->getId(),
             ))
             ->getResult();
 
-        $lastConsoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.ea) AS kWh
+        $lastConsoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS kWh
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -184,6 +227,7 @@ class SiteProDataAnalyticService
                                                 GROUP BY jour
                                                 ORDER BY kWh DESC")
             ->setParameters(array(
+                'time'       => $this->loadSiteIntervalTime,
                 'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
                 'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
                 'siteId'         => $this->site->getId(),
@@ -283,7 +327,6 @@ class SiteProDataAnalyticService
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                             AND d.dateTime BETWEEN :startDate AND :endDate
-                                            GROUP BY jour
                                             ORDER BY kW ASC")
             ->setParameters(array(
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
@@ -298,7 +341,6 @@ class SiteProDataAnalyticService
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                             AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
-                                            GROUP BY jour
                                             ORDER BY kW ASC")
             ->setParameters(array(
                 'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
@@ -367,23 +409,24 @@ class SiteProDataAnalyticService
 
         // ========= Détermination des consommations d'énergie active par tranche horaire =========  
         $consokWhPerHoursRangeQuery = $this->manager->createQuery("SELECT SUM(CASE 
-                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '07:59:59' THEN d.ea
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '07:59:59' THEN d.pmoy
                                                                     ELSE 0
-                                                                END) AS Tranche00_08,
+                                                                END)*:time AS Tranche00_08,
                                                                 SUM(CASE 
-                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '08:00:00' AND '17:59:59' THEN d.ea
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '08:00:00' AND '17:59:59' THEN d.pmoy
                                                                     ELSE 0
-                                                                END) AS Tranche08_18, 
+                                                                END)*:time AS Tranche08_18, 
                                                                 SUM(CASE 
-                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '23:59:59' THEN d.ea
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '23:59:59' THEN d.pmoy
                                                                     ELSE 0
-                                                                END) AS Tranche18_00 
+                                                                END)*:time AS Tranche18_00 
                                                                 FROM App\Entity\LoadEnergyData d
                                                                 JOIN d.smartMod sm
                                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                                 AND d.dateTime BETWEEN :startDate AND :endDate
                                                                 ")
             ->setParameters(array(
+                'time'       => $this->loadSiteIntervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'     => $this->site->getId()
@@ -391,23 +434,24 @@ class SiteProDataAnalyticService
             ->getResult();
 
         $lastMonthConsokWhPerHoursRangeQuery = $this->manager->createQuery("SELECT SUM(CASE 
-                                                                           WHEN SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '07:59:59' THEN d.ea
+                                                                           WHEN SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '07:59:59' THEN d.pmoy
                                                                            ELSE 0
-                                                                END) AS Tranche00_08,
+                                                                END)*:time AS Tranche00_08,
                                                                 SUM(CASE 
-                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '08:00:00' AND '17:59:59' THEN d.ea
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '08:00:00' AND '17:59:59' THEN d.pmoy
                                                                     ELSE 0
-                                                                END) AS Tranche08_18, 
+                                                                END)*:time AS Tranche08_18, 
                                                                 SUM(CASE 
-                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '23:59:59' THEN d.ea
+                                                                    WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '23:59:59' THEN d.pmoy
                                                                     ELSE 0
-                                                                END) AS Tranche18_00 
+                                                                END)*:time AS Tranche18_00 
                                                                 FROM App\Entity\LoadEnergyData d
                                                                 JOIN d.smartMod sm
                                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                                 AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
                                                                 ")
             ->setParameters(array(
+                'time'           => $this->loadSiteIntervalTime,
                 'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
                 'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
                 'siteId'         => $this->site->getId()
@@ -443,7 +487,7 @@ class SiteProDataAnalyticService
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'     => $this->site->getId(),
-                'power_unit'     => $this->power_unit,
+                'power_unit' => $this->power_unit,
             ))
             ->getResult();
 
@@ -760,8 +804,8 @@ class SiteProDataAnalyticService
         $minimaCosfiData_ = $minimaCosfiData;
         $medianCosfi = $this->mmmrv($minimaCosfiData_, 'median');
         $n = count($minimaCosfiData);
-        $maxCosfi    = $n > 0 ? $minimaCosfiData[0] : 0.0;
-        $minCosfi    = $n > 0 ? $minimaCosfiData[$n - 1] : 0.0;
+        $maxCosfi    = $n > 0 ? max($minimaCosfiData) : 0.0;
+        $minCosfi    = $n > 0 ? min($minimaCosfiData) : 0.0;
         $nbInsuffisance = 0;
 
         foreach ($minimaCosfiData as $index => $value) {
@@ -795,8 +839,8 @@ class SiteProDataAnalyticService
         $lastMinimaCosfiData_ = $lastMinimaCosfiData;
         $last_medianCosfi = $this->mmmrv($lastMinimaCosfiData_, 'median');
         $n = count($lastMinimaCosfiData);
-        $last_maxCosfi    = $n > 0 ? $lastMinimaCosfiData[0] : 0.0;
-        $last_minCosfi    = $n > 0 ? $lastMinimaCosfiData[$n - 1] : 0.0;
+        $last_maxCosfi    = $n > 0 ? max($lastMinimaCosfiData) : 0.0;
+        $last_minCosfi    = $n > 0 ? min($lastMinimaCosfiData) : 0.0;
         $last_nbInsuffisance = 0;
 
         foreach ($lastMinimaCosfiData as $index => $value) {
@@ -809,7 +853,7 @@ class SiteProDataAnalyticService
         $minCosfiProgress       = ($last_minCosfi > 0) ? ($minCosfi - $last_minCosfi) * 100 / $last_minCosfi : 'INF';
         $nbInsuffisanceProgress = ($last_nbInsuffisance > 0) ? ($nbInsuffisance - $last_nbInsuffisance) * 100 / $last_nbInsuffisance : 'INF';
 
-        $CosfiDataQuery = $this->manager->createQuery("SELECT SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
+        $CosfiDataQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -828,7 +872,7 @@ class SiteProDataAnalyticService
             $cosfiEnergy      = floatval(number_format((float) $data['PF'], 2, '.', ''));
         }
 
-        $lastCosfiDataQuery = $this->manager->createQuery("SELECT SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
+        $lastCosfiDataQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -860,31 +904,31 @@ class SiteProDataAnalyticService
         // ========= Dispersion des Consommations et des Pic de Puissance =========  
         // Dispersion des Consommations
         $dowConsoDataQuery = $this->manager->createQuery("SELECT CASE 
-                                                            WHEN DAYOFWEEK(d.dateTime) =  1 THEN d.ea
+                                                            WHEN DAYOFWEEK(d.dateTime) =  1 THEN d.pmoy*:time
                                                             ELSE 'no'
                                                 END AS Dim,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  2 THEN d.ea
+                                                    WHEN DAYOFWEEK(d.dateTime) =  2 THEN d.pmoy*:time
                                                     ELSE 'no'
                                                 END AS Lun,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  3 THEN d.ea
+                                                    WHEN DAYOFWEEK(d.dateTime) =  3 THEN d.pmoy*:time
                                                     ELSE 'no'
                                                 END AS Mar,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  4 THEN d.ea
+                                                    WHEN DAYOFWEEK(d.dateTime) =  4 THEN d.pmoy*:time
                                                     ELSE 'no'
                                                 END AS Mer,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  5 THEN d.ea
+                                                    WHEN DAYOFWEEK(d.dateTime) =  5 THEN d.pmoy*:time
                                                     ELSE 'no'
                                                 END AS Jeu,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  6 THEN d.ea
+                                                    WHEN DAYOFWEEK(d.dateTime) =  6 THEN d.pmoy*:time
                                                     ELSE 'no'
                                                 END AS Ven,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  7 THEN d.ea
+                                                    WHEN DAYOFWEEK(d.dateTime) =  7 THEN d.pmoy*:time
                                                     ELSE 'no'
                                                 END AS Sam
                                                 FROM App\Entity\LoadEnergyData d
@@ -893,11 +937,12 @@ class SiteProDataAnalyticService
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
                                                 ")
             ->setParameters(array(
+                'time'       => $this->loadSiteIntervalTime,
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId(),
             ))
-            ->setMaxResults(2000)
+            //->setMaxResults(2000)
             ->getResult();
         //dump($dowConsoDataQuery);
 
@@ -971,31 +1016,31 @@ class SiteProDataAnalyticService
 
         // Dispersion des Pics de puissance
         $dowHighPowerDataQuery = $this->manager->createQuery("SELECT CASE 
-                                                            WHEN DAYOFWEEK(d.dateTime) =  1 THEN d.pmax
+                                                            WHEN DAYOFWEEK(d.dateTime) =  1 THEN d.pmax/:power_unit
                                                             ELSE 'no'
                                                 END AS Dim,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  2 THEN d.pmax
+                                                    WHEN DAYOFWEEK(d.dateTime) =  2 THEN d.pmax/:power_unit
                                                     ELSE 'no'
                                                 END AS Lun,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  3 THEN d.pmax
+                                                    WHEN DAYOFWEEK(d.dateTime) =  3 THEN d.pmax/:power_unit
                                                     ELSE 'no'
                                                 END AS Mar,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  4 THEN d.pmax
+                                                    WHEN DAYOFWEEK(d.dateTime) =  4 THEN d.pmax/:power_unit
                                                     ELSE 'no'
                                                 END AS Mer,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  5 THEN d.pmax
+                                                    WHEN DAYOFWEEK(d.dateTime) =  5 THEN d.pmax/:power_unit
                                                     ELSE 'no'
                                                 END AS Jeu,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  6 THEN d.pmax
+                                                    WHEN DAYOFWEEK(d.dateTime) =  6 THEN d.pmax/:power_unit
                                                     ELSE 'no'
                                                 END AS Ven,
                                                 CASE 
-                                                    WHEN DAYOFWEEK(d.dateTime) =  7 THEN d.pmax
+                                                    WHEN DAYOFWEEK(d.dateTime) =  7 THEN d.pmax/:power_unit
                                                     ELSE 'no'
                                                 END AS Sam
                                                 FROM App\Entity\LoadEnergyData d
@@ -1007,8 +1052,9 @@ class SiteProDataAnalyticService
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId(),
+                'power_unit'    => $this->power_unit
             ))
-            ->setMaxResults(2000)
+            //->setMaxResults(2000)
             ->getResult();
         // dump($dowHighPowerDataQuery);
         $dowHighPowerData = [
@@ -1218,13 +1264,14 @@ class SiteProDataAnalyticService
         ];
 
         // Grid Data
-        $gridProdDataQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS dt, SUM(d.ea) AS kWh, AVG(d.ea) AS EAmoy, AVG(d.pmoy) AS Pmoy
+        $gridProdDataQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)*:time AS kWh, AVG(d.pmoy*:time) AS EAmoy, AVG(d.pmoy) AS Pmoy
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime BETWEEN :startDate AND :endDate
                                             ")
             ->setParameters(array(
+                'time'       => $this->gridIntervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'     => $this->site->getId()
@@ -1235,13 +1282,14 @@ class SiteProDataAnalyticService
             $gridData['EAmoy']  = floatval($d['EAmoy']);
             $gridData['Pmoy']   = floatval($d['Pmoy']);
         }
-        $lastGridProdDataQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS dt, SUM(d.ea) AS kWh, AVG(d.ea) AS EAmoy, AVG(d.pmoy) AS Pmoy
+        $lastGridProdDataQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)*:time AS kWh, AVG(d.pmoy*:time) AS EAmoy, AVG(d.pmoy) AS Pmoy
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
                                             ")
             ->setParameters(array(
+                'time'           => $this->gridIntervalTime,
                 'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
                 'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
                 'siteId'         => $this->site->getId()
@@ -1270,6 +1318,9 @@ class SiteProDataAnalyticService
         $gridData['Pmoy']         = floatval(number_format((float) $gridData['Pmoy'], 2, '.', ''));
 
         // Genset Data
+        $gensetProdDataQuery = [];
+
+        if($this->gensetMod->getSubType() === 'ModBus'){ //Si le module GENSET est de type Modbus 
         $gensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
                                             MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                             FROM App\Entity\GensetData d
@@ -1284,6 +1335,24 @@ class SiteProDataAnalyticService
                 'siteId'     => $this->site->getId()
             ))
             ->getResult();
+        } else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter 
+        $gensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
+                                            SUM(d.p)*:time AS TEP
+                                            FROM App\Entity\GensetData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
+                                            AND d.dateTime BETWEEN :startDate AND :endDate
+                                            GROUP BY dt
+                                            ORDER BY dt ASC")
+            ->setParameters(array(
+                'time'       => $this->gensetIntervalTime,
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'     => $this->site->getId()
+            ))
+            ->getResult();
+        }
+        dump($gensetProdDataQuery);
         $EA = [];
         foreach ($gensetProdDataQuery as $d) {
             $EA[]     = floatval($d['TEP']);
@@ -1307,7 +1376,9 @@ class SiteProDataAnalyticService
         foreach ($gensetProdDataQuery as $d) {
             $gensetData['Pmoy']  = floatval($d['Pmoy']);
         }
-
+        
+        $lastGensetProdDataQuery = [];
+        if($this->gensetMod->getSubType() === 'ModBus'){ //Si le module GENSET est de type Modbus 
         $lastGensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
                                             MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                             FROM App\Entity\GensetData d
@@ -1322,6 +1393,23 @@ class SiteProDataAnalyticService
                 'siteId'         => $this->site->getId()
             ))
             ->getResult();
+        } else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter 
+        $lastGensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
+                                            SUM(d.p)*:time AS TEP
+                                            FROM App\Entity\GensetData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
+                                            AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
+                                            GROUP BY dt
+                                            ORDER BY dt ASC")
+            ->setParameters(array(
+                'time'       => $this->gensetIntervalTime,
+                'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
+                'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
+                'siteId'         => $this->site->getId()
+            ))
+            ->getResult();
+        }
         $EA = [];
         $lastEA = 0.0;
         $lastEAmoy = 0.0;
@@ -1383,7 +1471,7 @@ class SiteProDataAnalyticService
         //Longueur de la sous-chaîne de date utilisé pour lengther les données dans la DQL
         //2021-09-28
 
-        $averageConsumption = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.ea) AS EA
+        $averageConsumption = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.pmoy)*:time AS EA
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -1392,6 +1480,7 @@ class SiteProDataAnalyticService
                                             ORDER BY dt ASC")
             ->setParameters(array(
                 'length_'      => $length,
+                'time'       => $this->gridIntervalTime,
                 'startDate'    => $startDate,
                 'endDate'      => $endDate,
                 'siteId'       => $this->site->getId()
@@ -1418,7 +1507,7 @@ class SiteProDataAnalyticService
     public function getVariation(int $length = 10, $startDate, $endDate)
     {
 
-        $consumptionQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.ea) AS EA
+        $consumptionQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS dt, SUM(d.pmoy)*:time AS EA
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -1427,6 +1516,7 @@ class SiteProDataAnalyticService
                                                 ORDER BY dt ASC")
             ->setParameters(array(
                 'length_'      => $length,
+                'time'       => $this->gridIntervalTime,
                 'startDate'    => $startDate,
                 'endDate'      => $endDate,
                 'siteId'       => $this->site->getId()
@@ -1570,7 +1660,35 @@ class SiteProDataAnalyticService
         // }
 
         // if ($this->gensetMod) $this->gensetModService->setGensetMod($this->gensetMod);
+        
+        $smartMods = $this->site->getSmartMods();
+        
+        foreach ($smartMods as $smartMod) {
+            if ($smartMod->getModType() === 'GRID') {
+                $this->setGridMod($smartMod);
 
+                $config = json_decode($this->gridMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setGridIntervalTime($intervalTime);
+            }
+            if ($smartMod->getModType() === 'GENSET') {
+                $this->setGensetMod($smartMod);
+
+                $config = json_decode($this->gensetMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setGridIntervalTime($intervalTime);
+            }
+            if ($smartMod->getModType() === 'Load Meter') {
+                $this->setLoadSiteMod($smartMod);
+
+                $config = json_decode($this->loadSiteMod->getConfiguration(), true);
+                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                // dump($intervalTime);
+                $this->setLoadSiteIntervalTime($intervalTime);
+            }
+        }
         return $this;
     }
 
@@ -1714,6 +1832,126 @@ class SiteProDataAnalyticService
     public function setGensetMod(SmartMod $gensetMod)
     {
         $this->gensetMod = $gensetMod;
+
+        return $this;
+    }
+
+    /**
+     * Get module GRID du site
+     *
+     * @return  SmartMod
+     */ 
+    public function getGridMod()
+    {
+        return $this->gridMod;
+    }
+
+    /**
+     * Set module GRID du site
+     *
+     * @param  SmartMod  $gridMod  Module GRID du site
+     *
+     * @return  self
+     */ 
+    public function setGridMod(SmartMod $gridMod)
+    {
+        $this->gridMod = $gridMod;
+
+        return $this;
+    }
+
+    /**
+     * Get module Load Site
+     *
+     * @return  SmartMod
+     */ 
+    public function getLoadSiteMod()
+    {
+        return $this->loadSiteMod;
+    }
+
+    /**
+     * Set module Load Site
+     *
+     * @param  SmartMod  $loadSiteMod  Module Load Site
+     *
+     * @return  self
+     */ 
+    public function setLoadSiteMod(SmartMod $loadSiteMod)
+    {
+        $this->loadSiteMod = $loadSiteMod;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module GRID
+     *
+     * @return  float
+     */ 
+    public function getGridIntervalTime()
+    {
+        return $this->gridIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module GRID
+     *
+     * @param  float  $gridIntervalTime  Interval de temps d'envoi des données du module GRID
+     *
+     * @return  self
+     */ 
+    public function setGridIntervalTime(float $gridIntervalTime)
+    {
+        $this->gridIntervalTime = $gridIntervalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module GENSET
+     *
+     * @return  float
+     */ 
+    public function getGensetIntervalTime()
+    {
+        return $this->gensetIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module GENSET
+     *
+     * @param  float  $gensetIntervalTime  Interval de temps d'envoi des données du module GENSET
+     *
+     * @return  self
+     */ 
+    public function setGensetIntervalTime(float $gensetIntervalTime)
+    {
+        $this->gensetIntervalTime = $gensetIntervalTime;
+
+        return $this;
+    }
+
+    /**
+     * Get interval de temps d'envoi des données du module Load Site
+     *
+     * @return  float
+     */ 
+    public function getLoadSiteIntervalTime()
+    {
+        return $this->loadSiteIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module Load Site
+     *
+     * @param  float  $loadSiteIntervalTime  Interval de temps d'envoi des données du module Load Site
+     *
+     * @return  self
+     */ 
+    public function setLoadSiteIntervalTime(float $loadSiteIntervalTime)
+    {
+        $this->loadSiteIntervalTime = $loadSiteIntervalTime;
 
         return $this;
     }
