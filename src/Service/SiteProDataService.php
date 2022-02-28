@@ -164,7 +164,8 @@ class SiteProDataService
             $kW[]          = floatval(number_format((float) $d['Pmax'], 2, '.', ''));
             $gridNbDepassement  += intval($d['Depassement']);
         }
-
+        
+        $gridPmax = max($kW);
         $totalKWh += $totalGridKWh;
 
         $denom = sqrt(($totalGridKWh * $totalGridKWh) + ($totalGridER * $totalGridER));
@@ -178,7 +179,7 @@ class SiteProDataService
         $gridPowerDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.pmoy/:power_unit AS Pmoy
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
-                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='')
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
                                                 ORDER BY jour ASC")
             ->setParameters(array(
@@ -197,7 +198,8 @@ class SiteProDataService
             $gridkWDate[] = $d['jour']->format('Y-m-d H:i:s');
             $gridkW[]     = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
         }
-        if (count($gridkW) > 0) $gridPmax = max($gridkW);
+        
+        //if (count($gridkW) > 0) $gridPmax = max($gridkW);
         // ============== GENSET data ==============
         //get Genset Data
         $gensetData = [];
@@ -249,7 +251,7 @@ class SiteProDataService
             );
         }
         // ============== LOAD data ==============
-        $loadSiteData = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS EA, SUM(d.qmoy)*:time AS ER
+        $loadSiteData = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS EA, SUM(d.qmoy)*:time AS ER, MAX(d.pmax) AS Pmax
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -279,10 +281,10 @@ class SiteProDataService
             $totalER          += floatval($d['ER']);
             $loadSiteDate[]    = $d['jour'];
             $loadSitekWh[]     = floatval(number_format((float) $d['EA'], 2, '.', ''));
-            // $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
+            $kW[]              = floatval(number_format((float) $d['Pmax'], 2, '.', ''));
         }
 
-        //if (count($kW) > 0) $loadSitePmax = max($kW);
+        if (count($kW) > 0) $loadSitePmax = max($kW);
 
         $denom = sqrt(($totalLoadSiteKWh * $totalLoadSiteKWh) + ($totalER * $totalER));
         if ($denom > 0.0) $loadSiteFP = $totalLoadSiteKWh / $denom;
@@ -313,7 +315,7 @@ class SiteProDataService
             $kW[]              = floatval(number_format((float) $d['Pmoy'], 2, '.', ''));
         }
 
-        if (count($kW) > 0) $loadSitePmax = max($kW);
+        //if (count($kW) > 0) $loadSitePmax = max($kW);
 
         $loadSiteData = array(
             "date"         => $loadSiteDate,
