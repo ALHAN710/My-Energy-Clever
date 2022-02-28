@@ -20,6 +20,43 @@ class SiteProDataAnalyticService
     private $kWhPrice = 99;
 
     /**
+     * Tableau des tarifs en fonction de la tranche horaire pour 
+     * les abonnés BT de type Résidentiel
+     *
+     * @var array
+     */
+    private $tranchesResidential = [
+        '0-110'   => 50,
+        '111-400' => 79,
+        '401-800' => 94,
+        '800+'    => 99,
+    ];
+
+    /**
+     * Tableau des tarifs en fonction de la tranche horaire pour 
+     * les abonnés BT de type Non Résidentiel
+     *
+     * @var array
+     */
+    private $tranchesNonResidential = [
+        '0-110'   => 84,
+        '111-400' => 92,
+        '401+'    => 99,
+    ];
+
+    /**
+     * Tableau des tarifs en fonction du nbre d'heure d'utilisation de Psous
+     * pour les abonnés MT régime normal
+     *
+     * @var array
+     */
+    private $NHU_Psous = [
+        '0-200'   => 70,
+        '201-400' => 65,
+        '401+'    => 60,
+    ];
+
+    /**
      * Quantité de gaz à effet de serre(en kgCO2) émis par kWh
      *
      * @var float
@@ -95,13 +132,16 @@ class SiteProDataAnalyticService
 
     private $siteProDataService;
 
+    private $siteDashboardDataService;
+
     private $currentMonthStringDate = '';
 
-    public function __construct(EntityManagerInterface $manager, SiteProDataService $siteProDataService)
+    public function __construct(EntityManagerInterface $manager, SiteProDataService $siteProDataService, SiteDashboardDataService $siteDashboardDataService)
     {
-        $this->manager                = $manager;
-        $this->siteProDataService     = $siteProDataService;
-        $this->currentMonthStringDate = date('Y-m') . '%';
+        $this->manager                      = $manager;
+        $this->siteProDataService           = $siteProDataService;
+        $this->siteDashboardDataService     = $siteDashboardDataService;
+        $this->currentMonthStringDate       = date('Y-m') . '%';
     }
 
     public function getDataAnalysis()
@@ -892,12 +932,13 @@ class SiteProDataAnalyticService
         }
         $cosfiEnergyProgress   = ($last_cosfiEnergy > 0) ? ($cosfiEnergy - $last_cosfiEnergy) * 100 / $last_cosfiEnergy : 'INF';
 
-        // ========= Récupération des données pour le Récapitulatif Production, Mix énergie et Stats =========  
+        // ========= Récupération des données pour les Statistques Production, Mix énergie et Stats =========  
         // Récapitulatif Production
         $recapProd = $this->siteProDataService->getOverviewData($onlySrc = true);
+        $amountBill = $this->estimatedBill();
         //dump($recapProd);
 
-        //Mix Energie et stats
+        // Mix Energie et stats
         $mix = $this->getMixEnergieData();
         //dump($mix);
 
@@ -1210,28 +1251,29 @@ class SiteProDataAnalyticService
         // dump($Q_highPower);
 
         return array(
-            'recapProd' => $recapProd,
-            'mix' => $mix,
-            'consoTotal'     => floatval(number_format((float) $consoTotale, 2, '.', '')),
-            'consoTotalProgress'     => $consoTotaleProgress !== 'INF' ? floatval(number_format((float) $consoTotaleProgress, 2, '.', '')) : 'INF',
-            'consoMoy'             => floatval(number_format((float) $consoMoy, 2, '.', '')),
-            'consoMoyProgress'     => $consoMoyProgress !== 'INF' ? floatval(number_format((float) $consoMoyProgress, 2, '.', '')) : 'INF',
-            'consoVariation'            => floatval(number_format((float) $consoVariation, 2, '.', '')),
-            'consoVariationProgress'            => $consoVariationProgress !== 'INF' ? floatval(number_format((float) $consoVariationProgress, 2, '.', '')) : 'INF',
-            '+forteConso'          => $strPlusForteConso,
-            '+forteConsoProgress'          => $PlusForteConsoProgress !== 'INF' ? floatval(number_format((float) $PlusForteConsoProgress, 2, '.', '')) : 'INF',
-            '+faibleConso'         => $strPlusFaibleConso,
-            '+faibleConsoProgress'         => $PlusFaibleConsoProgress !== 'INF' ? floatval(number_format((float) $PlusFaibleConsoProgress, 2, '.', '')) : 'INF',
-            'Talon'                => $strTalon,
-            'TalonProgress'                => $TalonProgress !== 'INF' ? floatval(number_format((float) $TalonProgress, 2, '.', '')) : 'INF',
-            'Pic'                  => $strPic,
-            'PicProgress'                  => $PicProgress !== 'INF' ? floatval(number_format((float) $PicProgress, 2, '.', '')) : 'INF',
-            'conso-00-08'          => floatval(number_format((float) $conso00_08kWh, 2, '.', '')),
-            'conso-00-08Progress'  => $conso00_08kWhProgress !== 'INF' ? floatval(number_format((float) $conso00_08kWhProgress, 2, '.', '')) : 'INF',
-            'conso-08-18'          => floatval(number_format((float) $conso08_18kWh, 2, '.', '')),
-            'conso-08-18Progress'  => $conso08_18kWhProgress !== 'INF' ? floatval(number_format((float) $conso08_18kWhProgress, 2, '.', '')) : 'INF',
-            'conso-18-00'          => floatval(number_format((float) $conso18_00kWh, 2, '.', '')),
-            'conso-18-00Progress'  => $conso18_00kWhProgress !== 'INF' ? floatval(number_format((float) $conso18_00kWhProgress, 2, '.', '')) : 'INF',
+            'recapProd'                => $recapProd,
+            'amount-conso-HT'          => floatval(number_format((float) $amountBill, 2, '.', '')),
+            'mix'                      => $mix,
+            'consoTotal'               => floatval(number_format((float) $consoTotale, 2, '.', '')),
+            'consoTotalProgress'       => $consoTotaleProgress !== 'INF' ? floatval(number_format((float) $consoTotaleProgress, 2, '.', '')) : 'INF',
+            'consoMoy'                 => floatval(number_format((float) $consoMoy, 2, '.', '')),
+            'consoMoyProgress'         => $consoMoyProgress !== 'INF' ? floatval(number_format((float) $consoMoyProgress, 2, '.', '')) : 'INF',
+            'consoVariation'           => floatval(number_format((float) $consoVariation, 2, '.', '')),
+            'consoVariationProgress'   => $consoVariationProgress !== 'INF' ? floatval(number_format((float) $consoVariationProgress, 2, '.', '')) : 'INF',
+            '+forteConso'              => $strPlusForteConso,
+            '+forteConsoProgress'      => $PlusForteConsoProgress !== 'INF' ? floatval(number_format((float) $PlusForteConsoProgress, 2, '.', '')) : 'INF',
+            '+faibleConso'             => $strPlusFaibleConso,
+            '+faibleConsoProgress'     => $PlusFaibleConsoProgress !== 'INF' ? floatval(number_format((float) $PlusFaibleConsoProgress, 2, '.', '')) : 'INF',
+            'Talon'                    => $strTalon,
+            'TalonProgress'            => $TalonProgress !== 'INF' ? floatval(number_format((float) $TalonProgress, 2, '.', '')) : 'INF',
+            'Pic'                      => $strPic,
+            'PicProgress'              => $PicProgress !== 'INF' ? floatval(number_format((float) $PicProgress, 2, '.', '')) : 'INF',
+            'conso-00-08'              => floatval(number_format((float) $conso00_08kWh, 2, '.', '')),
+            'conso-00-08Progress'      => $conso00_08kWhProgress !== 'INF' ? floatval(number_format((float) $conso00_08kWhProgress, 2, '.', '')) : 'INF',
+            'conso-08-18'              => floatval(number_format((float) $conso08_18kWh, 2, '.', '')),
+            'conso-08-18Progress'      => $conso08_18kWhProgress !== 'INF' ? floatval(number_format((float) $conso08_18kWhProgress, 2, '.', '')) : 'INF',
+            'conso-18-00'              => floatval(number_format((float) $conso18_00kWh, 2, '.', '')),
+            'conso-18-00Progress'      => $conso18_00kWhProgress !== 'INF' ? floatval(number_format((float) $conso18_00kWhProgress, 2, '.', '')) : 'INF',
 
             'histoConso'            => [
                 'date'  => $histogramConsoDate,
@@ -1294,7 +1336,7 @@ class SiteProDataAnalyticService
                 ]
             ],
             'disperConso'   => $Q_conso,
-            'disperPic'   => $Q_highPower,
+            'disperPic'     => $Q_highPower,
 
         );
     }
@@ -1541,6 +1583,108 @@ class SiteProDataAnalyticService
         );
     }
 
+
+    public function estimatedBill(){
+        $gridAmountHT = 0.0;
+
+        if ($this->site->getSubscription() === 'MT') {
+
+            $currentConsoQuery = $this->manager->createQuery("SELECT SUM(d.ea) AS EA, SUM(d.depassement) AS Nb_Depassement,
+                                            SUM(d.ea)/SQRT( (SUM(d.ea)*SUM(d.ea)) + (SUM(d.er)*SUM(d.er)) ) AS PF
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                            AND d.dateTime BETWEEN :startDate AND :endDate")
+                ->setParameters(array(
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'siteId'     => $this->site->getId()
+                ))
+                ->getResult();
+            
+            $currentConsokWh   = count($currentConsoQuery) > 0 ? $currentConsoQuery[0]['EA'] ?? 0.0 : 0.0;
+
+            $currentMonthConsokWhPerRangeQuery = $this->manager->createQuery("SELECT SUM(CASE 
+                                                                            WHEN SUBSTRING(d.dateTime, 12) BETWEEN '23:00:00' AND '23:59:59' OR SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '17:59:59' THEN d.pmoy
+                                                                            ELSE 0
+                                                                        END)*:time AS EAHP,
+                                                                        SUM(CASE 
+                                                                            WHEN (d.pmoy >= :psous) AND (SUBSTRING(d.dateTime, 12) BETWEEN '23:00:00' AND '23:59:59' OR SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '17:59:59') THEN 1
+                                                                            ELSE 0
+                                                                        END) AS EAHP_Hours,
+                                                                        SUM(CASE 
+                                                                            WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '22:59:59' THEN d.pmoy
+                                                                            ELSE 0
+                                                                        END)*:time AS EAP, 
+                                                                        SUM(CASE 
+                                                                            WHEN SUBSTRING(d.dateTime, 12) BETWEEN '23:00:00' AND '23:59:59' OR SUBSTRING(d.dateTime, 12) BETWEEN '00:00:00' AND '17:59:59' THEN d.qmoy
+                                                                            ELSE 0
+                                                                        END)*:time AS ERHP,
+                                                                        SUM(CASE 
+                                                                            WHEN SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '22:59:59' THEN d.qmoy
+                                                                            ELSE 0
+                                                                        END)*:time AS ERP, 
+                                                                        SUM(CASE 
+                                                                            WHEN (d.pmoy >= :psous) AND (SUBSTRING(d.dateTime, 12) BETWEEN '18:00:00' AND '22:59:59') THEN 1
+                                                                            ELSE 0
+                                                                        END) AS EAP_Hours 
+                                                                        FROM App\Entity\LoadEnergyData d
+                                                                        JOIN d.smartMod sm
+                                                                        WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                                                        AND d.dateTime BETWEEN :startDate AND :endDate
+                                                                        ")
+                ->setParameters(array(
+                    'time'       => $this->loadSiteIntervalTime,
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'siteId'     => $this->site->getId(),
+                    'psous'      => $this->site->getPowerSubscribed(),
+                ))
+                ->getResult();
+            
+            $EAHP   = $currentMonthConsokWhPerRangeQuery[0]['EAHP'] ?? 0;
+            $EAHP   = floatval($EAHP);
+            $EAP    = $currentMonthConsokWhPerRangeQuery[0]['EAP'] ?? 0;
+            $EAP    = floatval($EAP);
+            $EA     = $EAHP + $EAP;
+
+            $currentConsoHPHours = $currentMonthConsokWhPerRangeQuery[0]['EAHP_Hours'] ?? 0;
+            $currentConsoHPHours = intval($currentConsoHPHours) * $this->gridIntervalTime;
+
+            $gridAmountHT = $this->siteDashboardDataService->getConsumptionXAF($currentConsokWh, array(
+                'EAP'        => $EAP,
+                'EAHP'       => $EAHP,
+                'EAHP_Hours' => $currentConsoHPHours
+            ));
+
+        } else if ($this->site->getSubscription() === 'BT'){
+            // dump('BT');
+            $currentConsoQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)*:time AS EA, 
+                                                SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                                AND d.dateTime BETWEEN :startDate AND :endDate")
+                ->setParameters(array(
+                'time'          => $this->gridIntervalTime,
+                'startDate'     => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'       => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'        => $this->site->getId()
+                ))
+                ->getResult(); 
+            
+            $currentConsokWh  = count($currentConsoQuery) > 0 ? $currentConsoQuery[0]['EA'] ?? 0.0 : 0.0;
+
+            $gridAmountHT = $this->siteDashboardDataService->getConsumptionXAF($currentConsokWh);
+        }
+
+        // dump($gridAmountHT);
+
+        $amount = $gridAmountHT;
+
+        return $amount;
+    }
+
     /**
      * Permet de calculer la consommation moyenne d'énergie active
      *
@@ -1738,6 +1882,7 @@ class SiteProDataAnalyticService
         $this->site = $site;
 
         $this->siteProDataService->setSite($site);
+        $this->siteDashboardDataService->setSite($site);
         // $smartMods = $this->site->getSmartMods();
         // foreach ($smartMods as $smartMod) {
         //     if ($smartMod->getModType() === 'GENSET') $this->setGensetMod($smartMod);

@@ -122,8 +122,8 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right">Facture Énergie Estimée HT(XAF) :</td> 
-                                        {# <td colspan="2" class="text-center"><span id="t-amount-conso-HT">{{gridBillData['amountHT']}}</span> F CFA</td>  #}
-                                        <td colspan="2" class="text-center"><span id="t-amount-conso-HT">2500000</span></td> 
+                                        <td colspan="2" class="text-center"><span id="t-amount-conso-HT">{{dataAnalysis['amount-conso-HT']}}</span> F CFA</td> 
+                                        {# <td colspan="2" class="text-center"><span id="t-amount-conso-HT">2500000</span></td>  #}
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-right">Émission de Gaz à Effet de Serre (kgC0<sub>2eq</sub>) :</td> 
@@ -1493,8 +1493,8 @@
                                 //Valeur du Facteur de puissance de la source GRID
                                 $('#t-grid-fp').text(parseFloat(result['dataAnalysis']['recapProd']['gridData']['FP']).toFixed(2));
                                 
-                                {# //Valeur estimée de la facture de la source GRID
-                                $('#t-amount-conso-HT').text(parseFloat(result['dataAnalysis']['recapProd']['amount-conso-HT']).toFixed(2)); #}
+                                //Valeur estimée de la facture de la source GRID
+                                $('#t-amount-conso-HT').text(parseFloat(result['dataAnalysis']['amount-conso-HT']).toFixed(2));
                                 
                                 //Valeur du Taux d'émission de CO2
                                 $('#t-kgCO2eq').text(parseFloat(result['dataAnalysis']['recapProd']['kgCO2']).toFixed(2));

@@ -141,7 +141,7 @@ class SiteProDataService
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 'length_'      => $length,
-                'time'       => $this->gridIntervalTime,
+                'time'         => $this->gridIntervalTime,
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId()
@@ -179,7 +179,7 @@ class SiteProDataService
         $gridPowerDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.pmoy/:power_unit AS Pmoy
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
-                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='')
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
                                                 ORDER BY jour ASC")
             ->setParameters(array(
@@ -187,7 +187,7 @@ class SiteProDataService
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId(),
-                'power_unit'    => $this->power_unit
+                'power_unit'   => $this->power_unit
             ))
             ->getResult();
         // dump($gridPowerDataQuery);

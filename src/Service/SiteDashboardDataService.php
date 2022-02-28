@@ -1213,7 +1213,7 @@ class SiteDashboardDataService
         return $consoMoy;
     }
 
-    private function getConsumptionXAF($consokWh_ = 0.0, $arrConso = [])
+    public function getConsumptionXAF($consokWh_ = 0.0, $arrConso = [])
     {
         if ($this->site->getSubscription() === 'BT') {
             $tranches = [
