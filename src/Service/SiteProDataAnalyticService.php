@@ -903,7 +903,7 @@ class SiteProDataAnalyticService
 
         // ========= Dispersion des Consommations et des Pic de Puissance =========  
         // Dispersion des Consommations
-        $dowConsoDataQuery = $this->manager->createQuery("SELECT CASE 
+        /*$dowConsoDataQuery = $this->manager->createQuery("SELECT CASE 
                                                             WHEN DAYOFWEEK(d.dateTime) =  1 THEN d.pmoy*:time
                                                             ELSE 'no'
                                                 END AS Dim,
@@ -943,8 +943,24 @@ class SiteProDataAnalyticService
                 'siteId'       => $this->site->getId(),
             ))
             //->setMaxResults(2000)
+            ->getResult();*/
+
+        $dowConsoDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) AS jour, SUM(d.pmoy)*:time AS EA
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY jour
+                                                ORDER BY jour ASC")
+            ->setParameters(array(
+                'time'       => $this->loadSiteIntervalTime,
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'       => $this->site->getId(),
+            ))
+            //->setMaxResults(2000)
             ->getResult();
-        //dump($dowConsoDataQuery);
+        // dump($dowConsoDataQuery);
 
         $dowConsoData = [
             'Dimanche'   => [],
@@ -956,13 +972,40 @@ class SiteProDataAnalyticService
             'Samedi'   => [],
         ];
         foreach ($dowConsoDataQuery as $data) {
-            $dowConsoData['Dimanche'][] = $data['Dim'];
+            switch (date('w', strtotime($data['jour']))) {
+                case 0:
+                    $dowConsoData['Dimanche'][] = $data['EA'];
+                    break;
+                case 1:
+                    $dowConsoData['Lundi'][] = $data['EA'];
+                    break;
+                case 2:
+                    $dowConsoData['Mardi'][] = $data['EA'];
+                    break;
+                case 3:
+                    $dowConsoData['Mercredi'][] = $data['EA'];
+                    break;
+                case 4:
+                    $dowConsoData['Jeudi'][] = $data['EA'];
+                    break;
+                case 5:
+                    $dowConsoData['Vendredi'][] = $data['EA'];
+                    break;
+                case 6:
+                    $dowConsoData['Samedi'][] = $data['EA'];
+                    break;
+                
+                default:
+                    break;
+            }
+            /*$dowConsoData['Dimanche'][] = $data['Dim'];
             $dowConsoData['Lundi'][] = $data['Lun'];
             $dowConsoData['Mardi'][] = $data['Mar'];
             $dowConsoData['Mercredi'][] = $data['Mer'];
             $dowConsoData['Jeudi'][] = $data['Jeu'];
             $dowConsoData['Vendredi'][] = $data['Ven'];
-            $dowConsoData['Samedi'][] = $data['Sam'];
+            $dowConsoData['Samedi'][] = $data['Sam'];*/
+            
         }
 
         $Q_conso = [
@@ -1015,7 +1058,7 @@ class SiteProDataAnalyticService
         // dump($Q_conso);
 
         // Dispersion des Pics de puissance
-        $dowHighPowerDataQuery = $this->manager->createQuery("SELECT CASE 
+        /*$dowHighPowerDataQuery = $this->manager->createQuery("SELECT CASE 
                                                             WHEN DAYOFWEEK(d.dateTime) =  1 THEN d.pmax/:power_unit
                                                             ELSE 'no'
                                                 END AS Dim,
@@ -1055,6 +1098,21 @@ class SiteProDataAnalyticService
                 'power_unit'    => $this->power_unit
             ))
             //->setMaxResults(2000)
+            ->getResult();*/
+        $dowHighPowerDataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) AS jour, MAX(d.pmax)/:power_unit AS Pmax
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY jour
+                                                ORDER BY jour ASC")
+            ->setParameters(array(
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'       => $this->site->getId(),
+                'power_unit'   => $this->power_unit
+            ))
+            //->setMaxResults(2000)
             ->getResult();
         // dump($dowHighPowerDataQuery);
         $dowHighPowerData = [
@@ -1067,13 +1125,39 @@ class SiteProDataAnalyticService
             'Samedi'   => [],
         ];
         foreach ($dowHighPowerDataQuery as $data) {
-            $dowHighPowerData['Dimanche'][] = $data['Dim'];
+            switch (date('w', strtotime($data['jour']))) {
+                case 0:
+                    $dowHighPowerData['Dimanche'][] = $data['Pmax'];
+                    break;
+                case 1:
+                    $dowHighPowerData['Lundi'][] = $data['Pmax'];
+                    break;
+                case 2:
+                    $dowHighPowerData['Mardi'][] = $data['Pmax'];
+                    break;
+                case 3:
+                    $dowHighPowerData['Mercredi'][] = $data['Pmax'];
+                    break;
+                case 4:
+                    $dowHighPowerData['Jeudi'][] = $data['Pmax'];
+                    break;
+                case 5:
+                    $dowHighPowerData['Vendredi'][] = $data['Pmax'];
+                    break;
+                case 6:
+                    $dowHighPowerData['Samedi'][] = $data['Pmax'];
+                    break;
+                
+                default:
+                    break;
+            }
+            /*$dowHighPowerData['Dimanche'][] = $data['Dim'];
             $dowHighPowerData['Lundi'][] = $data['Lun'];
             $dowHighPowerData['Mardi'][] = $data['Mar'];
             $dowHighPowerData['Mercredi'][] = $data['Mer'];
             $dowHighPowerData['Jeudi'][] = $data['Jeu'];
             $dowHighPowerData['Vendredi'][] = $data['Ven'];
-            $dowHighPowerData['Samedi'][] = $data['Sam'];
+            $dowHighPowerData['Samedi'][] = $data['Sam'];*/
         }
 
         $Q_highPower = [
