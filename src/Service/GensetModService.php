@@ -144,7 +144,7 @@ class GensetModService
             ->setParameters(array(
                 'lastMonthDate' => $lastMonthDate->format('Y-m') . '%',
                 'lastNowDate'   => $lastMonthDate->format('Y-m-d H:i:s'),
-                'smartModId'   => $this->gensetMod->getId()
+                'smartModId'    => $this->gensetMod->getId()
             ))
             ->getResult();
         // // dump($firstGensetRealTimeDataMonthRecord);
@@ -190,8 +190,12 @@ class GensetModService
             // // dump($tep_lastmonth);
         }
 
+        $npsProgress = ($nps_lastmonth > 0) ? ($npsm - $nps_lastmonth) / $nps_lastmonth : 'INF';
+
         // ######## Récupération des données de consommation et d'approvisionnement de Fuel
         $fuelData = $this->getConsoFuelData();
+        $consoFuelXAF = $fuelData['currentConsoFuel'] * $this->gensetMod->getFuelPrice();
+        $consoFuelXAF = floatval(number_format($consoFuelXAF, 2, '.', ''));
 
         // ######## Récupération des données temps réel du module Genset
         $gensetRealTimeData = $this->manager->getRepository(GensetRealTimeData::class)->findOneBy(['smartMod' => $this->gensetMod->getId()]) ?? new GensetRealTimeData();
@@ -228,6 +232,7 @@ class GensetModService
             // 'DifferentialIntervention' => $gensetRealTimeData->getDifferentialIntervention() ?? 0,
             'Date' => $gensetRealTimeData->getDateTime() ?? '',
             'currentConsoFuel'         => $fuelData['currentConsoFuel'],
+            'currentConsoFuelXAF'      => $consoFuelXAF,
             'currentConsoFuelProgress' => $fuelData['currentConsoFuelProgress'],
             'currentApproFuel'         => $fuelData['currentApproFuel'],
             'currentApproFuelProgress' => $fuelData['currentApproFuelProgress'],
@@ -239,7 +244,7 @@ class GensetModService
                 "approFuel"   => $fuelData['dayBydayConsoData']['approFuel']
             ],
             'TRH'  => [$trhm, $trh_lastmonth],
-            'NPS'  => [$npsm, $nps_lastmonth],
+            'NPS'  => [$npsm, $npsProgress],
             'NPST' => [$npstm, $npst_lastmonth],
         );
     }
@@ -430,11 +435,11 @@ class GensetModService
             }
         }
 
+        
+        $currentConsoFuelProgress = ($lastConsoFuel > 0) ? ($currentConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
+        $currentApproFuelProgress = ($lastApproFuel > 0) ? ($currentApproFuel - $lastApproFuel) / $lastApproFuel : 'INF';
+        $dureeProgress = ($lastDuree > 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
         $duree = $this->hoursandmins($duree);
-
-        $currentConsoFuelProgress = ($lastConsoFuel !== 0) ? ($currentConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
-        $currentApproFuelProgress = ($lastApproFuel !== 0) ? ($currentApproFuel - $lastApproFuel) / $lastApproFuel : 'INF';
-        $dureeProgress = ($lastDuree !== 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
 
         return array(
             'currentConsoFuel'              => $currentConsoFuel,
