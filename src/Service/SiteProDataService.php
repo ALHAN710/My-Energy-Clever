@@ -165,7 +165,7 @@ class SiteProDataService
             $gridNbDepassement  += intval($d['Depassement']);
         }
         
-        $gridPmax = max($kW);
+        if(count($kW) > 0) $gridPmax = max($kW);
         $totalKWh += $totalGridKWh;
 
         $denom = sqrt(($totalGridKWh * $totalGridKWh) + ($totalGridER * $totalGridER));
