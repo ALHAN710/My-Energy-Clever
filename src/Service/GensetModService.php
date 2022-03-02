@@ -231,17 +231,20 @@ class GensetModService
             // 'IncSeq'       => [$gensetRealTimeData->getMainsIncSeq() ?? 0, $gensetRealTimeData->getGensetIncSeq() ?? 0],
             // 'DifferentialIntervention' => $gensetRealTimeData->getDifferentialIntervention() ?? 0,
             'Date' => $gensetRealTimeData->getDateTime() ?? '',
-            'currentConsoFuel'         => $fuelData['currentConsoFuel'],
-            'currentConsoFuelXAF'      => $consoFuelXAF,
-            'currentConsoFuelProgress' => $fuelData['currentConsoFuelProgress'],
-            'currentApproFuel'         => $fuelData['currentApproFuel'],
-            'currentApproFuelProgress' => $fuelData['currentApproFuelProgress'],
+            'currentConsoFuel'            => $fuelData['currentConsoFuel'],
+            'currentConsoFuelXAF'         => $consoFuelXAF,
+            'currentConsoFuelProgress'    => $fuelData['currentConsoFuelProgress'],
+            'currentApproFuel'            => $fuelData['currentApproFuel'],
+            'currentApproFuelProgress'    => $fuelData['currentApproFuelProgress'],
+            'TUG'                         => $fuelData['TUG'],
+            'TUGProgress'                 => $fuelData['TUGProgress'],
             'dureeFonctionnement'         => $fuelData['dureeFonctionnement'],
             'dureeFonctionnementProgress' => $fuelData['dureeFonctionnementProgress'],
             'dayBydayConsoData' => [
                 'dateConso'   => $fuelData['dayBydayConsoData']['dateConso'],
                 "consoFuel"   => $fuelData['dayBydayConsoData']['consoFuel'],
-                "approFuel"   => $fuelData['dayBydayConsoData']['approFuel']
+                "approFuel"   => $fuelData['dayBydayConsoData']['approFuel'],
+                "duree"       => $fuelData['dayBydayConsoData']['duree']
             ],
             'TRH'  => [$trhm, $trh_lastmonth],
             'NPS'  => [$npsm, $npsProgress],
@@ -341,7 +344,8 @@ class GensetModService
             //Données de la courbe de durée de fonctionnement jour après jour
             if (array_key_exists('TRH', $value)) {
                 if (end($value['TRH']) !== false && reset($value['TRH']) !== false) {
-                    $dureeDayByDay[$key] = abs(end($value['TRH']) - reset($value['TRH']));
+                    // $dureeDayByDay[$key] = abs(end($value['TRH']) - reset($value['TRH']));
+                    $dureeDayByDay[] = abs(end($value['TRH']) - reset($value['TRH']));
                 }
             }
 
@@ -356,6 +360,11 @@ class GensetModService
                         } else {
                             $consoFuel_ += $diff;
                         }
+                        /*if ($temp[$i + 1] - 5 >= $temp[$i]) {
+                            $approFuel_ += $diff;
+                        } else if ($temp[$i] - $temp[$i + 1] >= 5 ){
+                            $consoFuel_ += $diff;
+                        }*/
                     }
                 }
             }
@@ -363,8 +372,10 @@ class GensetModService
             $currentConsoFuel += $consoFuel_;
             $currentApproFuel += $approFuel_;
 
-            $consoFuelDayByDay[$key] = $consoFuel_;
-            $approFuelDayByDay[$key] = $approFuel_;
+            // $consoFuelDayByDay[$key] = $consoFuel_;
+            // $approFuelDayByDay[$key] = $approFuel_;
+            $consoFuelDayByDay[] = $consoFuel_;
+            $approFuelDayByDay[] = $approFuel_;
         }
 
         // ######## Récupération des données de courbe pour le mois (n - 1) ########
@@ -406,9 +417,47 @@ class GensetModService
             }
         }
 
+        // ========== Détermination du temps total de fonctionnement du GE sur la période de date passée en paramètre et le last période correspondant
+        $config = json_decode($this->gensetMod->getConfiguration(), true);
+        $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                
+
+        $workingTimeQuery = $this->manager->createQuery("SELECT COUNT(DISTINCT d.dateTime)/:time AS WT
+                                            FROM App\Entity\GensetData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id = :smartModId
+                                            AND d.dateTime BETWEEN :startDate AND :endDate")
+            ->setParameters(array(
+                'time'       => $intervalTime,
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'smartModId' => $this->gensetMod->getId()
+            ))
+            ->getResult();
+        // dump($workingTimeQuery);
+        $totalWorkingHours = count($workingTimeQuery) > 0 ? $workingTimeQuery[0]['WT'] ?? 0 : 0;
+        $totalWorkingHours = floatval($totalWorkingHours);
+
+        $lastWorkingTimeQuery = $this->manager->createQuery("SELECT COUNT(DISTINCT d.dateTime)/:time AS WT
+                                            FROM App\Entity\GensetData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id = :smartModId
+                                            AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate")
+            ->setParameters(array(
+                'time'          => $intervalTime,
+                'lastStartDate' => $lastStartDate->format('Y-m') . '%',
+                'lastEndDate'   => $lastEndDate->format('Y-m-d H:i:s'),
+                'smartModId'    => $this->gensetMod->getId()
+            ))
+            ->getResult();
+        // dump($lastWorkingTimeQuery);
+        $lastTotalWorkingHours = count($lastWorkingTimeQuery) > 0 ? $lastWorkingTimeQuery[0]['WT'] ?? 0 : 0;
+        $lastTotalWorkingHours = floatval($lastTotalWorkingHours);
+
         $duree = array_sum($dureeDayByDay);
 
-        if($this->gensetMod->getSubType() !== 'ModBus' || !strpos($this->gensetMod->getSubType(), 'FL') !== false){
+        // if($this->gensetMod->getSubType() !== 'ModBus' || !strpos($this->gensetMod->getSubType(), 'FL') !== false){
+        if($this->gensetMod->getSubType() !== 'ModBus'){
             $config = json_decode($this->gensetMod->getConfiguration(), true);
             $intervalTime = array_key_exists("Frs", $config) ? $config['Frs'] : 5.0 ;//Temps en minutes
             // dump($intervalTime);
@@ -439,6 +488,10 @@ class GensetModService
         $currentConsoFuelProgress = ($lastConsoFuel > 0) ? ($currentConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
         $currentApproFuelProgress = ($lastApproFuel > 0) ? ($currentApproFuel - $lastApproFuel) / $lastApproFuel : 'INF';
         $dureeProgress = ($lastDuree > 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
+        
+        $TUG   = $totalWorkingHours > 0 ? ($duree / $totalWorkingHours)*100 : 0;
+        $lastTUG   = $lastTotalWorkingHours > 0 ? ($lastDuree / $lastTotalWorkingHours)*100 : 0;
+        $TUGProgress = ($lastTUG > 0) ? ($TUG - $lastTUG) / $lastTUG : 'INF';
         $duree = $this->hoursandmins($duree);
 
         return array(
@@ -448,10 +501,13 @@ class GensetModService
             'currentConsoFuelProgress'      => floatval(number_format((float) $currentConsoFuelProgress, 2, '.', '')),
             'currentApproFuel'              => $currentApproFuel,
             'currentApproFuelProgress'      => floatval(number_format((float) $currentApproFuelProgress, 2, '.', '')),
+            'TUG'                           => floatval(number_format((float) $TUG, 2, '.', '')),
+            'TUGProgress'                   => floatval(number_format((float) $TUGProgress, 2, '.', '')),
             'dayBydayConsoData' => [
                 'dateConso'   => $day,
                 "consoFuel"   => $consoFuelDayByDay,
-                "approFuel"   => $approFuelDayByDay
+                "approFuel"   => $approFuelDayByDay,
+                "duree"       => $dureeDayByDay,
             ]
         );
     }
@@ -1144,14 +1200,15 @@ class GensetModService
         );
     }
     
-    function hoursandmins($time, $format = '%02d:%02d')
+    function hoursandmins($time, $format = '%02d:%02d:%02d')
     {
         if ($time < 0) {
-            return;
+            return '';
         }
-        $hours = floor($time / 60);
-        $minutes = ($time % 60);
-        return sprintf($format, $hours, $minutes);
+        $hours = floor($time);
+        $minutes = floor(($time - $hours) / 60);
+        $seconds = $time - ($hours) - ($minutes * 60);
+        return sprintf($format, $hours, $minutes, $seconds);
     }
 
     /**

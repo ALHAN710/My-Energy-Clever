@@ -972,7 +972,6 @@ class SiteDashboardDataService
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime BETWEEN :startDate AND :endDate
-                                            GROUP BY dt
                                             ORDER BY dt ASC")
             ->setParameters(array(
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),

@@ -41,6 +41,8 @@ class GensetController extends ApplicationController
 
         $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
         $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // $startDate = new DateTime(date("2022-02-01", strtotime(date('2022-02-d'))) . '00:00:00');
+        // $endDate   = new DateTime(date("2022-02-t", strtotime(date('2022-02-d'))) . '23:59:59');
 
         $site = $manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
         // dump($site);
@@ -49,11 +51,11 @@ class GensetController extends ApplicationController
             ->setEndDate($endDate);
 
         $overViewData = $gensetModService->getDashboardData();
-        dump($overViewData);
+        // dump($overViewData);
         // $siteDash->setSite($site)
         //     ->setPower_unit(1000);
 
-        return $this->render('site/home_data_monitoring.html.twig', [
+        return $this->render('genset/home_data_monitoring.html.twig', [
             'site'                    => $site,
             'genset'                  => $genset,
             'overviewData'            => $overViewData,
@@ -81,6 +83,9 @@ class GensetController extends ApplicationController
 
         $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
         $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // $startDate = new DateTime(date("2022-02-01", strtotime(date('2022-02-d'))) . '00:00:00');
+        // $endDate   = new DateTime(date("2022-02-t", strtotime(date('2022-02-d'))) . '23:59:59');
+        
         // dump($startDate);
         // dump($endDate);
 
@@ -94,6 +99,7 @@ class GensetController extends ApplicationController
 
         return $this->json([
             'code'            => 200,
+            'overviewData'    => $overViewData,
         ], 200);
     }
 
