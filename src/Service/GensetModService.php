@@ -419,8 +419,9 @@ class GensetModService
 
         // ========== Détermination du temps total de fonctionnement du GE sur la période de date passée en paramètre et le last période correspondant
         $config = json_decode($this->gensetMod->getConfiguration(), true);
-        $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
-                
+        if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+        else $intervalTime = 5.0/60.0;// dump($intervalTime);
+                        
 
         $workingTimeQuery = $this->manager->createQuery("SELECT COUNT(DISTINCT d.dateTime)/:time AS WT
                                             FROM App\Entity\GensetData d
@@ -459,7 +460,8 @@ class GensetModService
         // if($this->gensetMod->getSubType() !== 'ModBus' || !strpos($this->gensetMod->getSubType(), 'FL') !== false){
         if($this->gensetMod->getSubType() !== 'ModBus'){
             $config = json_decode($this->gensetMod->getConfiguration(), true);
-            $intervalTime = array_key_exists("Frs", $config) ? $config['Frs'] : 5.0 ;//Temps en minutes
+            if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+            else $intervalTime = 5.0/60.0;// dump($intervalTime);
             // dump($intervalTime);
 
             $data = $this->manager->createQuery("SELECT COUNT(d.p) AS NB_Mins

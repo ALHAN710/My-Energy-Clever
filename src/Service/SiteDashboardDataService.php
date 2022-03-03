@@ -898,9 +898,10 @@ class SiteDashboardDataService
         $loadChartData = [];
 
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
-            $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, d.pmoy/:power_unit AS kW, 
-                                            SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF,
-                                            d.workingGenset AS supply
+            //d.workingGenset AS supply
+                                            
+            $loadChartData = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, AVG(d.pmoy)/:power_unit AS kW, 
+                                            SUM(d.pmoy)/SQRT( (SUM(d.pmoy)*SUM(d.pmoy)) + (SUM(d.qmoy)*SUM(d.qmoy)) ) AS PF
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -1446,7 +1447,8 @@ class SiteDashboardDataService
                 $this->setGridMod($smartMod);
 
                 $config = json_decode($this->gridMod->getConfiguration(), true);
-                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                else $intervalTime = 5.0/60.0;
                 // dump($intervalTime);
                 $this->setGridIntervalTime($intervalTime);
             }
@@ -1454,16 +1456,16 @@ class SiteDashboardDataService
                 $this->setGensetMod($smartMod);
 
                 $config = json_decode($this->gensetMod->getConfiguration(), true);
-                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
-                // dump($intervalTime);
+                if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                else $intervalTime = 5.0/60.0;// dump($intervalTime);
                 $this->setGridIntervalTime($intervalTime);
             }*/
             if ($smartMod->getModType() === 'Load Meter') {
                 $this->setLoadSiteMod($smartMod);
 
                 $config = json_decode($this->loadSiteMod->getConfiguration(), true);
-                $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
-                // dump($intervalTime);
+                if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                else $intervalTime = 5.0/60.0;// dump($intervalTime);
                 $this->setLoadSiteIntervalTime($intervalTime);
             }
         }
