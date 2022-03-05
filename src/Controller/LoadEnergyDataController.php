@@ -88,6 +88,10 @@ class LoadEnergyDataController extends ApplicationController
                             }*/
                             $datetimeData->setCosfi($paramJSON['Cosfi']);
                         }
+                        if (array_key_exists("Cosfimin", $paramJSON)) {
+                            $datetimeData->setCosfimin($paramJSON['Cosfimin']); // 
+                                
+                        }
                         if (array_key_exists("Va", $paramJSON)) {
                             $datetimeData->setVamoy($paramJSON['Va']);
                         }
@@ -95,17 +99,26 @@ class LoadEnergyDataController extends ApplicationController
                         if (array_key_exists("P", $paramJSON)) {
                             $datetimeData->setPmoy($paramJSON['P']); // En Watts
                         }
+                        if (array_key_exists("Pmax", $paramJSON)) {
+                            $datetimeData->setPmax($paramJSON['Pmax']); // En kW
+                        }
                         if (array_key_exists("Q", $paramJSON)) {
-                            $datetimeData->setQmoy($paramJSON['Q']); // En VAR
+                            $datetimeData->setQmoy($paramJSON['Q']); // En kVAr
+                        }
+                        if (array_key_exists("Qmax", $paramJSON)) {
+                            $datetimeData->setQmax($paramJSON['Qmax']); // En kVAr
                         }
                         if (array_key_exists("S", $paramJSON)) {
                             $datetimeData->setSmoy($paramJSON['S']); // En VA
                         }
+                        if (array_key_exists("Smax", $paramJSON)) {
+                            $datetimeData->setSmax($paramJSON['Smax']); // En kVA
+                        }
                         if (array_key_exists("Ea", $paramJSON)) {
-                            $datetimeData->setEa($paramJSON['Ea'] / 1000.0); // En kWh
+                            $datetimeData->setEa($paramJSON['Ea']); // En kWh
                         }
                         if (array_key_exists("Er", $paramJSON)) {
-                            $datetimeData->setEr($paramJSON['Er'] / 1000.0); // En kVARh
+                            $datetimeData->setEr($paramJSON['Er']); // En kVARh
                         }
                     } else if ($smartMod->getNbPhases() === 3) {
                         if (array_key_exists("Va", $paramJSON)) {
@@ -120,50 +133,102 @@ class LoadEnergyDataController extends ApplicationController
                         if (array_key_exists("Pa", $paramJSON)) {
                             $datetimeData->setPamoy($paramJSON['Pa']); // En kW
                         }
+                        if (array_key_exists("Pamax", $paramJSON)) {
+                            $datetimeData->setPamax($paramJSON['Pamax']); // En kW
+                        }
                         if (array_key_exists("Pb", $paramJSON)) {
                             $datetimeData->setPbmoy($paramJSON['Pb']); // En kW
+                        }
+                        if (array_key_exists("Pbmax", $paramJSON)) {
+                            $datetimeData->setPbmax($paramJSON['Pbmax']); // En kW
                         }
                         if (array_key_exists("Pc", $paramJSON)) {
                             $datetimeData->setPcmoy($paramJSON['Pc']); // En kW
                         }
+                        if (array_key_exists("Pcmax", $paramJSON)) {
+                            $datetimeData->setPcmax($paramJSON['Pcmax']); // En kW
+                        }
                         if (array_key_exists("P", $paramJSON)) {
                             $datetimeData->setPmoy($paramJSON['P']); // En kW
+                        }
+                        if (array_key_exists("Pmax", $paramJSON)) {
+                            $datetimeData->setPmax($paramJSON['Pmax']); // En kW
                         }
                         if (array_key_exists("Sa", $paramJSON)) {
                             $datetimeData->setSamoy($paramJSON['Sa']); // En kVA
                         }
+                        if (array_key_exists("Samax", $paramJSON)) {
+                            $datetimeData->setSamax($paramJSON['Samax']); // En kVA
+                        }
                         if (array_key_exists("Sb", $paramJSON)) {
                             $datetimeData->setSbmoy($paramJSON['Sb']); // En kVA
+                        }
+                        if (array_key_exists("Sbmax", $paramJSON)) {
+                            $datetimeData->setSbmax($paramJSON['Sbmax']); // En kVA
                         }
                         if (array_key_exists("Sc", $paramJSON)) {
                             $datetimeData->setScmoy($paramJSON['Sc']); // En kVA
                         }
+                        if (array_key_exists("Scmax", $paramJSON)) {
+                            $datetimeData->setScmax($paramJSON['Scmax']); // En kVA
+                        }
                         if (array_key_exists("S", $paramJSON)) {
                             $datetimeData->setSmoy($paramJSON['S']); // En kVA
+                        }
+                        if (array_key_exists("Smax", $paramJSON)) {
+                            $datetimeData->setSmax($paramJSON['Smax']); // En kVA
                         }
                         if (array_key_exists("Qa", $paramJSON)) {
                             $datetimeData->setQamoy($paramJSON['Qa']); // En kVAR
                         }
+                        if (array_key_exists("Qamax", $paramJSON)) {
+                            $datetimeData->setQamax($paramJSON['Qamax']); // En kVAr
+                        }
                         if (array_key_exists("Qb", $paramJSON)) {
                             $datetimeData->setQbmoy($paramJSON['Qb']); // En kVAR
+                        }
+                        if (array_key_exists("Qbmax", $paramJSON)) {
+                            $datetimeData->setQbmax($paramJSON['Qbmax']); // En kVAr
                         }
                         if (array_key_exists("Qc", $paramJSON)) {
                             $datetimeData->setQcmoy($paramJSON['Qc']); // En kVAR
                         }
+                        if (array_key_exists("Qcmax", $paramJSON)) {
+                            $datetimeData->setQcmax($paramJSON['Qcmax']); // En kVAr
+                        }
                         if (array_key_exists("Q", $paramJSON)) {
                             $datetimeData->setQmoy($paramJSON['Q']); // En kVAR
+                        }
+                        if (array_key_exists("Qmax", $paramJSON)) {
+                            $datetimeData->setQmax($paramJSON['Qmax']); // En kVAr
                         }
                         if (array_key_exists("Cosfia", $paramJSON)) {
                             $datetimeData->setCosfia($paramJSON['Cosfia']);
                         }
+                        if (array_key_exists("Cosfiamin", $paramJSON)) {
+                            $datetimeData->setCosfiamin($paramJSON['Cosfiamin']); // 
+                               
+                        }
                         if (array_key_exists("Cosfib", $paramJSON)) {
                             $datetimeData->setCosfib($paramJSON['Cosfib']);
+                        }
+                        if (array_key_exists("Cosfibmin", $paramJSON)) {
+                            $datetimeData->setCosfibmin($paramJSON['Cosfibmin']); // 
+                               
                         }
                         if (array_key_exists("Cosfic", $paramJSON)) {
                             $datetimeData->setCosfic($paramJSON['Cosfic']);
                         }
+                        if (array_key_exists("Cosficmin", $paramJSON)) {
+                            $datetimeData->setCosficmin($paramJSON['Cosficmin']); // 
+                               
+                        }
                         if (array_key_exists("Cosfi", $paramJSON)) {
                             $datetimeData->setCosfi($paramJSON['Cosfi']);
+                        }
+                        if (array_key_exists("Cosfimin", $paramJSON)) {
+                            $datetimeData->setCosfimin($paramJSON['Cosfimin']); // 
+                               
                         }
                         if (array_key_exists("Eaa", $paramJSON)) {
                             $datetimeData->setEaa($paramJSON['Eaa']); // En kWh
