@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\EnterpriseDashboardDataService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -53,6 +54,7 @@ class EnterpriseController extends AbstractController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/home", name="enterprise_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function show(Enterprise $enterprise, EnterpriseDashboardDataService $dash): Response
     {
@@ -113,7 +115,7 @@ class EnterpriseController extends AbstractController
      * Permet la MAJ des données de l'interface dashboard d'un site
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/overview/update", name="enterprise_overview_update_data")
-     *
+     * @IsGranted("ROLE_USER")
      * @param Enterprise $enterprise
      * @param SiteDashboardDataService $overview
      * @param EntityManagerInterface $manager

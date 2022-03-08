@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 //use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -61,6 +62,7 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}", name="site_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function show(Site $site, EntityManagerInterface $manager, SiteDashboardDataService $dash): Response
     {
@@ -92,6 +94,7 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro", name="site_pro_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function show_site_pro(Site $site, SiteProDataService $siteDash): Response
     {
@@ -131,6 +134,7 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/historical-analytic", name="historical_analytic_site_pro_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function show_historical_analytic_site_pro(Site $site, SiteProDataAnalyticService $siteAnalytic): Response
     {
@@ -159,6 +163,7 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/data/monitoring", name="site_data_monitoring_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function show_site_data_monitoring(Site $site, SiteDashboardDataService $siteDash): Response
     {
@@ -227,6 +232,7 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/define/budget", name="site_budget", methods={"POST"})
+     * @IsGranted("ROLE_USER")
      * @param Request $request
      * @param Site $site
      * @param EntityManagerInterface $manager
@@ -328,7 +334,7 @@ class SiteController extends ApplicationController
      * Permet la MAJ des données de l'interface dashboard d'un site
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/overview/update", name="site_overview_update_data")
-     *
+     * @IsGranted("ROLE_USER")
      * @param Site $site
      * @param SiteDashboardDataService $overview
      * @param EntityManagerInterface $manager
@@ -368,7 +374,7 @@ class SiteController extends ApplicationController
      * Permet la MAJ des données de l'interface dashboard d'un site pro
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/overview/update", name="site_pro_overview_update_data")
-     *
+     * @IsGranted("ROLE_USER")
      * @param Site $site
      * @param SiteProDashboardDataService $overview
      * @param EntityManagerInterface $manager
@@ -405,7 +411,7 @@ class SiteController extends ApplicationController
      * Permet la MAJ des historiques de courbes
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/histo-graphs/update", name="site_histo_update")
-     *
+     * @IsGranted("ROLE_USER")
      * @param Site $site
      * @param SiteDashboardDataService $histo
      * @param EntityManagerInterface $manager
@@ -446,7 +452,7 @@ class SiteController extends ApplicationController
      * Permet la MAJ des historiques des sites pro
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/histo-graphs/update", name="site_pro_histo_update")
-     *
+     * @IsGranted("ROLE_USER")
      * @param Site $site
      * @param SiteProDashboardDataService $histo
      * @param EntityManagerInterface $manager
@@ -485,7 +491,7 @@ class SiteController extends ApplicationController
      * Permet la MAJ des historiques des sites pro
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/historical-analytic/update", name="site_pro_historical_analytic_update")
-     *
+     * @IsGranted("ROLE_USER")
      * @param Site $site
      * @param SiteProDataAnalyticService $siteAnalytic
      * @param EntityManagerInterface $manager
