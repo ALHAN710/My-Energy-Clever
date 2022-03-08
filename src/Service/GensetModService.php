@@ -263,13 +263,14 @@ class GensetModService
         // ========= Détermination de la longueur de la datetime =========
         $length = 10; //Si endDate > startDate => regoupement des données par jour de la fenêtre de date
         if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
-
+        // dump($length);
         // ######## Récupération des données de courbe pour le mois en cours ########
         $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
                                         FROM App\Entity\GensetData d 
                                         JOIN d.smartMod sm
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
                                         AND sm.id = :smartModId
+                                        AND d.fuelLevel IS NOT NULL
                                         ORDER BY dat ASC
                                         ")
             ->setParameters(array(
@@ -279,7 +280,7 @@ class GensetModService
                 'smartModId' => $this->gensetMod->getId()
             ))
             ->getResult();
-        // dump($data);
+        // dump($dataQuery);
         // $FL   = [];
         // $TRH  = [];
         // $date = [];
@@ -294,8 +295,8 @@ class GensetModService
             ];
             //$Cosfi[]   = number_format((float) $d['cosfi'], 2, '.', '');
         }
-        //dump($data);
-        $dayRecord = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) as dat
+        // dump($data);
+        $dayRecord = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat
                                         FROM App\Entity\GensetData d 
                                         JOIN d.smartMod sm
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
@@ -304,7 +305,6 @@ class GensetModService
                                         ORDER BY dat ASC
                                         ")
             ->setParameters(array(
-                'length_'    => $length,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'smartModId' => $this->gensetMod->getId(),
@@ -341,6 +341,10 @@ class GensetModService
             $consoFuel_ = 0;
             $approFuel_ = 0;
 
+            $T_Appro  = [] ; //Tableau des instants d’approvisionnement
+            $T_Appro[0] = 0 ; 
+            $j = 1 ; 
+                        
             //Données de la courbe de durée de fonctionnement jour après jour
             if (array_key_exists('TRH', $value)) {
                 if (end($value['TRH']) !== false && reset($value['TRH']) !== false) {
@@ -353,18 +357,59 @@ class GensetModService
             if (array_key_exists('FL', $value)) {
                 $temp = $value['FL']; //Tableau tampon
                 if (count($temp) > 0) {
-                    for ($i = 0; $i < count($temp) - 1; $i++) {
-                        $diff = abs($temp[$i + 1] - $temp[$i]);
-                        if ($temp[$i + 1] >= $temp[$i]) {
-                            $approFuel_ += $diff;
-                        } else {
-                            $consoFuel_ += $diff;
+                    if($this->gensetMod->getSubType() == 'ModBus'){
+                        for ($i = 0; $i < count($temp) - 1; $i++) {
+                            $diff = abs($temp[$i + 1] - $temp[$i]);
+                            if ($temp[$i + 1] >= $temp[$i]) {
+                                $approFuel_ += $diff;
+                            } else {
+                                $consoFuel_ += $diff;
+                            }
+                            // if ($temp[$i + 1] - 5 >= $temp[$i]) {
+                            //     $approFuel_ += $diff;
+                            // } else if ($temp[$i] - $temp[$i + 1] >= 5 ){
+                                //     $consoFuel_ += $diff;
+                                // }
+                                
                         }
-                        /*if ($temp[$i + 1] - 5 >= $temp[$i]) {
-                            $approFuel_ += $diff;
-                        } else if ($temp[$i] - $temp[$i + 1] >= 5 ){
-                            $consoFuel_ += $diff;
-                        }*/
+                    }else { //if($this->gensetMod->getSubType() !== 'ModBus')
+                        // dump($temp[0]) ;
+                        $N = count($temp);
+                        for ($i=0 ; $i < $N - 3 ; $i ++){ // N est le volume de données sur la fenêtre de temps choisie = size(temp[])
+                            
+                            if  ( ($temp[$i+1]  - $temp[$i]) > 5 && $temp[$i+2] - $temp[$i] > 5 && ($temp[$i+3] - $temp[$i]) > 5  ){ // On compare avec les trois valeurs suivantes pour éviter les valeurs aberrantes 
+                                
+                                $T_Appro[$j] = $i ; // On enregistre tous les instants d’approvisionnement
+                                $j = $j + 1 ; 
+                                $approFuel_ = $approFuel_ + $temp[$i+1] - $temp[$i] ; // On calcul le volume d’approvisionnement
+                            }
+                                    
+                        }
+                        // dump(count($T_Appro));
+                        // dump($j) ; 
+                        if ( count($T_Appro) > 1 ){
+                            
+                            if ( $temp[0]  - $temp[$T_Appro[1]] > 2){
+                                $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$T_Appro[1]] ;
+                            }
+                            if ( count($T_Appro) > 2 ){
+                                for ($i=0 ; $i < count($T_Appro) - 2 ; $i++){ // N est le volume de données sur la fenêtre de temps choisie
+                                    if ( $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] > 2){
+                                        $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] ;
+                                    } 	
+                                
+                                }
+                            }
+                            
+                            if ( $temp[$T_Appro[$j-1]+1]  - $temp[$N-1] > 2){
+                                $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$j-1]+1]   - $temp[$N-1] ;
+                            } 
+                        }
+                        else{
+                            if ( $temp[0]  - $temp[$N-1] > 2){
+                                $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$N-1] ;
+                            } 
+                        }
                     }
                 }
             }

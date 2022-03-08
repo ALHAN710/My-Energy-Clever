@@ -39,10 +39,10 @@ class GensetController extends ApplicationController
         // dump($slug);
         // dump($genset);
 
-        // $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
-        // $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
-        $startDate = new DateTime(date("2022-02-01", strtotime(date('2022-02-d'))) . '00:00:00');
-        $endDate   = new DateTime(date("2022-02-t", strtotime(date('2022-02-d'))) . '23:59:59');
+        $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // $startDate = new DateTime(date("2022-02-01", strtotime(date('2022-02-d'))) . '00:00:00');
+        // $endDate   = new DateTime(date("2022-02-t", strtotime(date('2022-02-d'))) . '23:59:59');
 
         $site = $manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
         // dump($site);
