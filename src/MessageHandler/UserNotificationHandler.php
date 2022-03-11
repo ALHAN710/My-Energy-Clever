@@ -30,22 +30,17 @@ class UserNotificationHandler implements MessageHandlerInterface
     private $twig;
 
     /**
-     * @var TexterInterface 
-     */
-    private $texter;
-
-    /**
      * @var MailerInterface
      */
     private $mailer;
 
     private $client;
 
-    public function __construct(EntityManagerInterface $em, HttpClientInterface $client, Environment $twig, TexterInterface $texter, MailerInterface $mailer)
+    public function __construct(EntityManagerInterface $em, HttpClientInterface $client, Environment $twig, MailerInterface $mailer)
     {
         $this->em = $em;
         $this->twig = $twig;
-        $this->texter = $texter;
+        // $this->texter = $texter; TexterInterface $texter, 
         //$this->fromNumber = $fromNumber;
         $this->mailer = $mailer;
         $this->client = $client;
@@ -64,7 +59,9 @@ class UserNotificationHandler implements MessageHandlerInterface
                 $to = $contact->getEmail();
                 //if ($to) {
                 $email = (new Email())
-                    ->from('stdigital.powermon.alerts@gmail.com')
+                    // ->from('stdigital.powermon.alerts@gmail.com')
+                    // ->from('noc@datacenter-services.net')
+                    ->from('noreply.portal.myenergyclever@gmail.com')
                     ->to($to)
                     //->addTo('cabrelmbakam@gmail.com')
                     //->cc('cabrelmbakam@gmail.com')
@@ -83,7 +80,8 @@ class UserNotificationHandler implements MessageHandlerInterface
                 $to = $contact->getEmail();
                 //if ($to) {
                 $email = (new Email())
-                    ->from('stdigital.powermon.alerts@gmail.com')
+                    // ->from('noc@datacenter-services.net')
+                    ->from('noreply.portal.myenergyclever@gmail.com')
                     ->to($to)
                     //->addTo('cabrelmbakam@gmail.com')
                     //->cc('cabrelmbakam@gmail.com')

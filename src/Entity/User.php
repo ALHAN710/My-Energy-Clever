@@ -131,10 +131,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $zones;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Contacts::class, mappedBy="user")
+     */
+    private $contacts;
+
     public function __construct()
     {
         $this->sites = new ArrayCollection();
         $this->zones = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     /**
@@ -449,5 +455,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getFullPhone(): ?string
     {
         return "{$this->countryCode}{$this->phoneNumber}";
+    }
+
+    /**
+     * @return Collection|Contacts[]
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contacts $contact): self
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+            $contact->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contacts $contact): self
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getUser() === $this) {
+                $contact->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

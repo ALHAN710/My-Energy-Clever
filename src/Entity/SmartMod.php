@@ -129,11 +129,17 @@ class SmartMod
      */
     private $configuration;
 
+    /**
+     * @ORM\OneToMany(targetEntity=AlarmReporting::class, mappedBy="smartMod")
+     */
+    private $alarmReportings;
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
         $this->loadEnergyData = new ArrayCollection();
         $this->gensetData = new ArrayCollection();
+        $this->alarmReportings = new ArrayCollection();
     }
 
     /**
@@ -465,6 +471,36 @@ class SmartMod
     public function setConfiguration(?string $configuration): self
     {
         $this->configuration = $configuration;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|AlarmReporting[]
+     */
+    public function getAlarmReportings(): Collection
+    {
+        return $this->alarmReportings;
+    }
+
+    public function addAlarmReporting(AlarmReporting $alarmReporting): self
+    {
+        if (!$this->alarmReportings->contains($alarmReporting)) {
+            $this->alarmReportings[] = $alarmReporting;
+            $alarmReporting->setSmartMod($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAlarmReporting(AlarmReporting $alarmReporting): self
+    {
+        if ($this->alarmReportings->removeElement($alarmReporting)) {
+            // set the owning side to null (unless already changed)
+            if ($alarmReporting->getSmartMod() === $this) {
+                $alarmReporting->setSmartMod(null);
+            }
+        }
 
         return $this;
     }

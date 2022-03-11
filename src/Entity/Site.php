@@ -131,7 +131,12 @@ class Site
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $hasOneSmartMod; // [Residentiel, Non Residentiel ]
+    private $hasOneSmartMod;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Contacts::class, mappedBy="site")
+     */
+    private $contacts; // [Residentiel, Non Residentiel ]
 
     public function __construct()
     {
@@ -140,6 +145,7 @@ class Site
         $this->zones = new ArrayCollection();
         $this->smartMods = new ArrayCollection();
         $this->budgets = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     /**
@@ -493,6 +499,36 @@ class Site
     public function setHasOneSmartMod(?bool $hasOneSmartMod): self
     {
         $this->hasOneSmartMod = $hasOneSmartMod;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Contacts[]
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contacts $contact): self
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+            $contact->setSite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contacts $contact): self
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getSite() === $this) {
+                $contact->setSite(null);
+            }
+        }
 
         return $this;
     }
