@@ -134,6 +134,11 @@ class SmartMod
      */
     private $alarmReportings;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $fuelCapacity;
+
     public function __construct()
     {
         $this->zones = new ArrayCollection();
@@ -501,6 +506,18 @@ class SmartMod
                 $alarmReporting->setSmartMod(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFuelCapacity(): ?float
+    {
+        return $this->fuelCapacity;
+    }
+
+    public function setFuelCapacity(?float $fuelCapacity): self
+    {
+        $this->fuelCapacity = $fuelCapacity;
 
         return $this;
     }
