@@ -76,7 +76,8 @@
                             <div class="account-box">
                                 <div class="info mb-0">
                                     <h5 class="">HTM : <span id="htm">{{overviewData['HTM']|number_format(2, '.', ' ')}}</span> h</h5>
-                                    <p class="inv-balance"><span id="genset-status" class="badge badge-{% if overviewData['CGCR']['CG'] %}success{% else %}danger{% endif %}">{% if overviewData['CGCR']['CG'] %}ON{% else %}OFF{% endif %}</span></p>
+                                    {# <p class="inv-balance"><span id="genset-status" class="badge badge-{% if overviewData['CGCR']['CG'] %}success{% else %}danger{% endif %}">{% if overviewData['CGCR']['CG'] %}ON{% else %}OFF{% endif %}</span></p> #}
+                                    <p class="inv-balance"><span id="genset-status" class="badge badge-{% if overviewData['Gensetrunning'] %}success{% else %}danger{% endif %}">{% if overviewData['Gensetrunning'] %}ON{% else %}OFF{% endif %}</span></p>
                                 </div>
                                 <div id="fuel_level" class="gauge mt-5 mb-4"></div>
                                 {# <div class="table-responsive">
@@ -378,7 +379,7 @@
                 {# <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing"></div> #}
             </div>
 
-            <div class="row sales">
+            {# <div class="row sales">
 
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
                     <div class="widget widget-table-one">
@@ -399,16 +400,11 @@
                                                 </div>
                                                 <div class="t-name">
                                                     <h4>Autonomie</h4>
-                                                    {# <div class="t-rate rate-dec" id="t-nb-arret-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-nb-arret-progress-value"></span>
-                                                        </p>
-                                                    </div> #}
                                                 </div>
 
                                             </div>
                                             <div class="h4">
-                                                <p style="color: #e7515a;" id="t-autonomie">-{#01:30:20#}</p>
+                                                <p style="color: #e7515a;" id="t-autonomie">-</p>
                                             </div>
                                         </div>
                                     </div>
@@ -477,32 +473,8 @@
                     </div>
                 </div>
 
-            </div>
+            </div> #}
             
-            {# <div class="widget widget-one layout-spacing  layout-top-spacing">
-                <div class="widget-heading">
-                    <div class="">
-                        <h5 class="">Courbe du Niveau de Fuel</h5>
-                    </div>
-
-                    <!-- <div class="dropdown  custom-dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
-                            <a class="dropdown-item" href="javascript:void(0);">View</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
-                        </div>
-                    </div> --> 
-                </div>
-
-                <div class="widget-content">
-                    <div id="fuel-level-chart-histo"></div>
-                </div>
-            </div>  #}
-
         </div>
 
         <div class="tab-pane fade " id="historical" role="tabpanel" aria-labelledby="historical-tab">
@@ -510,40 +482,31 @@
                 <div class="table-responsive mb-4 mt-4">
                     <table id="historic-dataTable" class="table table-hover" style="width:100%">
                         <thead>
-                            <tr class="text-center">
-                                <th>Mois</th>
-                                <th>Conso (L)</th>
-                                <th>Durée (h)</th>
-                                <th>Tx d'utilisation (%)</th>
-                                <th>Appro (L)</th>
+                            <tr class="text-center" >
+                                <th style="text-transform: none">Mois</th>
+                                <th style="text-transform: none">Conso (L)</th>
+                                <th style="text-transform: none">Appro (L)</th>
+                                <th style="text-transform: none">Durée (HH:mm:ss)</th>
+                                <th style="text-transform: none">Tx d'utilisation (%)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {# {% for data in MonthByMonthDataTable %}
+                            {% for key, data in monthDataTable %}
                             <tr class="text-center">
-                                <td>{% if data.Date is defined %}{% if data.EA is not empty %} {{data['Date']|date('M Y')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.EA is defined %}{% if data.EA is not empty %} {{data['EA']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.kgCO2 is defined %}{% if data.EA is not empty %} {{data['kgCO2']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.consoMoy is defined %}{% if data.EA is not empty %} {{data['consoMoy']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.Pmax is defined %}{% if data.EA is not empty %} {{(data['Pmax'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.talon is defined %}{% if data.EA is not empty %} {{(data['talon'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                
+                                <td>{{key}}</td>
+                                <td>{{data['consoFuel']}}</td>
+                                <td>{{data['approFuel']}}</td>
+                                <td>{{data['TRH']}}</td>
+                                <td>{{data['Tx']}}</td>
                             </tr>
-                            {% endfor %} #}
-                            <tr class="text-center">
-                                <td>Jan</td>
-                                <td>10</td>
-                                <td>5:30</td>
-                                <td>20</td>
-                                <td>5</td>
-                            </tr>
-                            <tr class="text-center">
+                            {% endfor %}
+                            {# <tr class="text-center">
                                 <td>Fév</td>
                                 <td>10</td>
                                 <td>5:30</td>
                                 <td>20</td>
                                 <td>5</td>
-                            </tr>
+                            </tr> #}
                             
                         </tbody>
                         {# <tfoot>
@@ -576,378 +539,163 @@
                 </div>
             </div>
 
-            {# <div class="row sales">
-
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
-                    <div class="widget widget-table-one">
-                        <div class="widget-heading">
-                            <!-- <h5 class="">Transactions</h5> -->
-                        </div>
-
-                        <div class="widget-content">
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <div class="transactions-list">
-                                        <div class="t-item">
-                                            <div class="t-company-name">
-                                                <div class="t-icon">
-                                                    <div class="icon">
-                                                        <span class="rounded-circle">TU</span>
-                                                    </div>
-                                                </div>
-                                                <div class="t-name">
-                                                    <h4>Taux d'utilisation GE</h4>
-                                                    <div class="t-rate rate-inc" id="t-tx-utilisation-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-tx-utilisation-progress-value">0</span>% 
-                                                            <svg id="t-tx-utilisation-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                            <svg id="t-tx-utilisation-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                                            
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="h4">
-                                                <p style="color: #e2a03f;"><span id="t-tx-utilisation">20</span>%</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="transactions-list">
-                                        <div class="t-item">
-                                            <div class="t-company-name">
-                                                <div class="t-icon">
-                                                    <div class="avatar avatar-xl">
-                                                        <span class="avatar-title rounded-circle">DF</span>
-                                                    </div>
-                                                </div>
-                                                <div class="t-name">
-                                                    <h4>Durée de fonctionnement</h4>
-                                                    <div class="t-rate rate-inc" id="t-duree-fonc-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-duree-fonc-progress-value">0</span>% 
-                                                            <svg id="t-duree-fonc-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                            <svg id="t-duree-fonc-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                                            
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="h4">
-                                                <p style="color: #e7515a;" id="t-duree-fonc">12:15</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <div class="transactions-list">
-                                        <div class="t-item">
-                                            <div class="t-company-name">
-                                                <div class="t-icon">
-                                                    <div class="avatar avatar-xl">
-                                                        <span class="avatar-title rounded-circle">AP</span>
-                                                    </div>
-                                                </div>
-                                                <div class="t-name">
-                                                    <h4>Approvisionnement</h4>
-                                                    <div class="t-rate rate-inc" id="t-approv-fuel-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-approv-fuel-progress-value">0</span>% 
-                                                            <svg id="t-approv-fuel-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                            <svg id="t-approv-fuel-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                                            
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="h4">
-                                                <p style="color: #e7515a;"><span id="t-approv-fuel">50</span> L</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                                <div class="col">
-                                    <div class="transactions-list">
-                                        <div class="t-item">
-                                            <div class="t-company-name">
-                                                <div class="t-icon">
-                                                    <div class="icon">
-                                                        <span class="rounded-circle">CS</span>
-                                                    </div>
-                                                </div>
-                                                <div class="t-name">
-                                                    <h4>Consommation</h4>
-                                                    <div class="t-rate rate-inc" id="t-conso-fuel-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-conso-fuel-progress-value">0</span>% 
-                                                            <svg id="t-conso-fuel-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                            <svg id="t-conso-fuel-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                                            
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="h4">
-                                                <p style="color: #e2a03f;"><span id="t-conso-fuel">10</span> L</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                            </div>
-
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <div class="transactions-list">
-                                        <div class="t-item">
-                                            <div class="t-company-name">
-                                                <div class="t-icon">
-                                                    <div class="icon">
-                                                        <span class="rounded-circle">ND</span>
-                                                    </div>
-                                                </div>
-                                                <div class="t-name">
-                                                    <h4>Nombre de démarrage</h4>
-                                                    <div class="t-rate rate-inc" id="t-nb-demarrage-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-nb-demarrage-progress-value">0</span>% 
-                                                            <svg id="t-nb-demarrage-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                            <svg id="t-nb-demarrage-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                                            
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="h4">
-                                                <p style="color: #e2a03f;" id="t-nb-demarrage">10</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                                <div class="col">
-                                    <div class="transactions-list">
-                                        <div class="t-item">
-                                            <div class="t-company-name">
-                                                <div class="t-icon">
-                                                    <div class="avatar avatar-xl">
-                                                        <span class="avatar-title rounded-circle">NA</span>
-                                                    </div>
-                                                </div>
-                                                <div class="t-name">
-                                                    <h4>Nombre d'arrêt</h4>
-                                                    <div class="t-rate rate-dec" id="t-nb-arret-progress-color">
-                                                        <p class="meta-date">
-                                                            <span id="t-nb-arret-progress-value">0</span>% 
-                                                            <svg id="t-nb-arret-progress-up-icon" class="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                            <svg id="t-nb-arret-progress-down-icon" class="d-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                                                            
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="h4">
-                                                <p style="color: #e7515a;" id="t-nb-arret">10</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-            </div> #}
-            
-            <div class="widget widget-one layout-spacing  layout-top-spacing">
+            <div class="widget widget-one layout-spacing layout-top-spacing">
                 <div class="widget-heading">
                     <div class="">
                         <h5 class="">Courbe du Niveau de Fuel</h5>
                     </div>
-
-                    {# <!-- <div class="dropdown  custom-dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
-                            <a class="dropdown-item" href="javascript:void(0);">View</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
-                        </div>
-                    </div> --> #}
+                    
                 </div>
 
                 <div class="widget-content">
                     <div id="fuel-level-chart-histo"></div>
                 </div>
             </div>
-
-            <div class="widget widget-one layout-spacing  layout-top-spacing">
-                <div class="widget-heading">
-                    <div class="">
-                        <h5 class="">Courbe de charge du GE</h5>
-                    </div>
-
-                    {# <!-- <div class="dropdown  custom-dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
-                            <a class="dropdown-item" href="javascript:void(0);">View</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+            <div class="row layout-top-spacing">
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-three layout-spacing">
+                        <div class="widget-heading">
+                            <div class="">
+                                <h5 class="">Diagramme Conso - Appro FUEL, Durée de fonctionnement </h5>
+                            </div>
                         </div>
-                    </div> --> #}
-                </div>
 
-                <div class="widget-content">
-                    <div id="load-level-chart-histo"></div>
-                </div>
-            </div> 
-
-            <div class="widget widget-chart-three layout-spacing  layout-top-spacing">
-                <div class="widget-heading">
-                    <div class="">
-                        <h5 class="">Diagramme Durée, et courbe de Consommation</h5>
-                    </div>
-
-                    {# <!-- <div class="dropdown  custom-dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
-                            <a class="dropdown-item" href="javascript:void(0);">View</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
-                        </div>
-                    </div> --> #}
-                </div>
-
-                <div class="widget-content">
-                    <div id="mixed-duree-conso"></div>
-                </div>
-            </div> 
-
-            {# <div class="widget-content widget-content-area br-6 layout-top-spacing layout-top-spacing">
-                <div class="table-responsive mb-4 mt-4">
-                    <table id="historic-dataTable" class="table table-hover" style="width:100%">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Mois</th>
-                                <th>Conso (kWh)</th>
-                                <th>Émission (kgCO<sub>2</sub>)</th>
-                                <th>Conso Moy (kWh/jr)</th>
-                                <th>Puissance Max (W)</th>
-                                <th>Talon de puissance (W)</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for data in MonthByMonthDataTable %}
-                            <tr class="text-center">
-                                <td>{% if data.Date is defined %}{% if data.EA is not empty %} {{data['Date']|date('M Y')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.EA is defined %}{% if data.EA is not empty %} {{data['EA']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.kgdf is defined %}{% if data.EA is not empty %} {{data['kgdf']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.consoMoy is defined %}{% if data.EA is not empty %} {{data['consoMoy']|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.Pmax is defined %}{% if data.EA is not empty %} {{(data['Pmax'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                <td>{% if data.talon is defined %}{% if data.EA is not empty %} {{(data['talon'])|number_format('2','.',' ')}} {% else %}'-'{% endif %}{% else %}'-'{% endif %}</td>
-                                
-                            </tr>
-                            {% endfor %}
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr class="text-center">
-                                <th>Mois</th>
-                                <th>Conso (kWh)</th>
-                                <th>Émission (kgCO<sub>2</sub>)</th>
-                                <th>Conso Moy (kWh/jr)</th>
-                                <th>Puissance Max (W)</th>
-                                <th>Talon de puissance (W)</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>    
-            </div> #}
-
-            {# <div class="statbox widget box layout-spacing layout-top-spacing">
-                <div class="widget-header">                                 
-                    <div class="row">
-                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                            <h4>Selecteur de date</h4> 
+                        <div class="widget-content">
+                            <div id="mixed-duree-conso"></div>
                         </div>
                     </div>
                 </div>
-                <div class="widget-content widget-content-area">
-                    <!-- <p>Date time picker is powered by <span class="text-primary">flatpickr.js</span> that gives the ability to user to select date or time.</p> -->
-                    <div class="form-group mb-0">
-                        <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
-                    </div>
-                </div>
-            </div> #}
-
-            {# <div class="widget widget-one layout-spacing layout-top-spacing">
-                <div class="widget-heading">
-                    <div class="">
-                        <h5 class="">Courbe de charge</h5>
-                    </div>
-
-                    <!-- <div class="dropdown  custom-dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
-                            <a class="dropdown-item" href="javascript:void(0);">View</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-three">
+                        <div class="widget-heading">
+                            {# <h5 class="">Récap Grid</h5> #}
                         </div>
-                    </div> -->
-                </div>
+                        <div class="widget-content">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    {# <caption>List of all users</caption> #}
+                                    <thead >
+                                        {# <tr class="text-center">
+                                            <th></th>
+                                            <th></th>
+                                        </tr> #}
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <tr>
+                                            <td class="text-right">Durée Totale : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-totale">{{dataAnalysis['monotonePower']['stats']['mean']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-totale-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['meanProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-totale-progress-value">{% if dataAnalysis['monotonePower']['stats']['meanProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['meanProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['meanProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['meanProgress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-totale-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['meanProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-totale-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['meanProgress'] > 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
 
-                <div class="widget-content">
-                    <div id="load-chart-histo"></div>
-                </div>
-            </div> #}
+                                                <span id="t-duree-totale">-</span>
+                                                {# <span id="t-duree-totale-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-totale-progress-value">1</span>% 
+                                                <svg id="t-duree-totale-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-totale-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Durée Moyenne : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-moy">{{dataAnalysis['monotonePower']['stats']['median']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-moy-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['medianProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-moy-progress-value">{% if dataAnalysis['monotonePower']['stats']['medianProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['medianProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['medianProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['medianProgress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-moy-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['medianProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-moy-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['medianProgress'] > 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
 
-            {# <div class="widget widget-chart-three layout-spacing layout-top-spacing">
-                <div class="widget-heading">
-                    <div class="">
-                        <h5 class="">Diagramme Énergie, Émission CO<sub>2</sub></h5>
-                    </div>
+                                                <span id="t-duree-moy">-</span>
+                                                {# <span id="t-duree-moy-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-moy-progress-value">1</span>% 
+                                                <svg id="t-duree-moy-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-moy-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Durée Médiane : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-mediane">{{dataAnalysis['monotonePower']['stats']['min']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-mediane-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['minProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-mediane-progress-value">{% if dataAnalysis['monotonePower']['stats']['minProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['minProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['minProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['minProgress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-mediane-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['minProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-mediane-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['minProgress'] > 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
 
-                    <!-- <div class="dropdown  custom-dropdown">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </a>
+                                                <span id="t-duree-mediane">-</span>
+                                                {# <span id="t-duree-mediane-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-mediane-progress-value">1</span>% 
+                                                <svg id="t-duree-mediane-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-mediane-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Durée Min : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-min">{{dataAnalysis['monotonePower']['stats']['max']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-min-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['maxProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-min-progress-value">{% if dataAnalysis['monotonePower']['stats']['maxProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['maxProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['maxProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['maxProgress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-min-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['maxProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-min-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['maxProgress'] > 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
 
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink-1">
-                            <a class="dropdown-item" href="javascript:void(0);">View</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Update</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Download</a>
+                                                <span id="t-duree-min">-</span>
+                                                {# <span id="t-duree-min-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-min-progress-value">1</span>% 
+                                                <svg id="t-duree-min-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-min-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Durée Max : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-max">{{dataAnalysis['monotonePower']['stats']['Prang10']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-max-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-max-progress-value">{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] >= 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-max-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-max-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] > 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-duree-max">-</span>
+                                                {# <span id="t-duree-max-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-max-progress-value">1</span>% 
+                                                <svg id="t-duree-max-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-max-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Durée Q1 : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-Q1">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-Q1-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q1-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-Q1-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-Q1-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-duree-Q1">-</span>
+                                                {# <span id="t-duree-Q1-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q1-progress-value">1</span>% 
+                                                <svg id="t-duree-Q1-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-Q1-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Durée Q3 : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-duree-Q3">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-duree-Q3-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q3-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                                <svg id="t-duree-Q3-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-Q3-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-duree-Q3">-</span>
+                                                {# <span id="t-duree-Q3-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q3-progress-value">1</span>% 
+                                                <svg id="t-duree-Q3-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-duree-Q3-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
+            </div>
 
-                <div class="widget-content">
-                    <div id="mixed-conso"></div>
-                </div>
-            </div> #}
+            
                 
         </div>
 
@@ -1488,7 +1236,7 @@
                         },
                         x: {
                             formatter: function (val, timestamp) {
-                                return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                                return moment(new Date(val)).format("DD MMM YYYY")
                                 
                             }
                         }
@@ -1928,14 +1676,88 @@
                                     }, 1000);
 
                                     if( Object.keys(result).length > 0 ){
-                                        {# console.log(Object.values(result['Load_Chart']))
+                                        console.log(Object.values(result['dataFL']))
                                         console.log(Object.values(result['Mixed_Conso']))
-                                        displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
-                                        displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], result['Mixed_Conso']['conso'], [startDate, endDate], 2, 'day');
-                                        MixedConsoChart.toggleSeries('Énergie Active')
-                                        MixedConsoChart.toggleSeries('Énergie Active') #}
+                                        displayNewData(FuelLevelChart, Object.values(result['dataFL']['date']), Object.values(result['dataFL']['FL']), [startDate, endDate], 1, 'day');
+                                        
+                                        {# displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 3, 'day');
                                         //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                        MixedConsoChart.toggleSeries('Durée de fonctionnement')
+                                        MixedConsoChart.toggleSeries('Durée de fonctionnement') #}
 
+                                        MixedConsoChart.updateOptions({
+                                            series: [{
+                                                name: 'Consommation Fuel',
+                                                type: 'column',
+                                                data: []
+                                            }, {
+                                                name: 'Appro Fuel',
+                                                type: 'column',
+                                                data: []
+                                            }, {
+                                                name: 'Durée de fonctionnement',
+                                                type: 'column',
+                                                data: []
+                                            }],
+                                            xaxis: {
+                                                categories: [],
+                                            }
+                                        })
+
+                                        MixedConsoChart.updateOptions({
+                                            series: [{
+                                                name: 'Consommation Fuel',
+                                                type: 'column',
+                                                data: Object.values(result['Mixed_Conso']['conso'][0])
+                                            }, {
+                                                name: 'Appro Fuel',
+                                                type: 'column',
+                                                data: Object.values(result['Mixed_Conso']['conso'][1])
+                                            }, {
+                                                name: 'Durée de fonctionnement',
+                                                type: 'column',
+                                                data: Object.values(result['Mixed_Conso']['conso'][2])
+                                            }],
+                                            xaxis: {
+                                                categories: Object.values(result['Mixed_Conso']['date']),
+                                                
+                                            }
+                                        })
+                                        
+                                        //Valeur de la durée totale de fonctionnement du GE
+                                        $('#t-duree-totale').text(result['statsDureeFonctionnement']['totale']);
+                                        {# //On gère la progression de la durée totale de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-totale-progress-', progValue=result['statsDureeFonctionnement']['totaleProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée moyenne de fonctionnement du GE
+                                        $('#t-duree-moy').text(result['statsDureeFonctionnement']['mean']);
+                                        {# //On gère la progression de la durée moyenne de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-moy-progress-', progValue=result['statsDureeFonctionnement']['meanProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Médiane de fonctionnement du GE
+                                        $('#t-duree-mediane').text(result['statsDureeFonctionnement']['median']);
+                                        {# //On gère la progression de la durée Médiane de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-mediane-progress-', progValue=result['statsDureeFonctionnement']['medianProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Min de fonctionnement du GE
+                                        $('#t-duree-min').text(result['statsDureeFonctionnement']['min']);
+                                        {# //On gère la progression de la durée Min de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-min-progress-', progValue=result['statsDureeFonctionnement']['minProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Max de fonctionnement du GE
+                                        $('#t-duree-max').text(result['statsDureeFonctionnement']['max']);
+                                        {# //On gère la progression de la durée Max de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-max-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Q1 de fonctionnement du GE
+                                        $('#t-duree-Q1').text(result['statsDureeFonctionnement']['Q1']);
+                                        {# //On gère la progression de la durée Q1 de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-Q1-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Q3 de fonctionnement du GE
+                                        $('#t-duree-Q3').text(result['statsDureeFonctionnement']['Q3']);
+                                        {# //On gère la progression de la durée Q3 de fonctionnement du GE
+                                        progress(prefixSelector='t-duree-Q3-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
                                         
                                     }
                                 },
@@ -1964,7 +1786,7 @@
 </script>
 <!-- Script de gestion du sélecteur de date -->
 <script>
-    var _url = "{{ path('site_histo_update', {'slug':site.slug}) }}";
+    var _url = "{{ path('update_genset_graphs', {'smartMod':genset.id}) }}";
     
     var fuel_level_options = {
         chart: {
@@ -1982,13 +1804,14 @@
         },
         series: [{
             name: 'Niveau de Fuel (%)',
-            data: [31, 40, 28, 51, 42, 109, 100]
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+            data: []
         }],
 
         xaxis: {
             type: 'datetime',
-            {# categories: [], #}
-            categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
+            categories: [],
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"], #}
             labels: {
                 datetimeFormatter: {
                     year: 'yyyy',
@@ -2011,14 +1834,14 @@
                 formatter: function (y) {
                     //console.log(y)
                     if (typeof y !== "undefined") {
-                        return y.toFixed(2) + ""
+                        return y.toFixed(2) + "%"
                     }
                     return y;
                 }
             },
             x: {
                 formatter: function (val, timestamp) {
-                    return moment(new Date(val)).format("DD MMM YYYY")
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
                 }
             }
         },
@@ -2031,71 +1854,6 @@
 
     FuelLevelChart.render();
 
-    var load_level_options = {
-        chart: {
-            height: 350,
-            type: 'area',
-            toolbar: {
-                show: true,
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth'
-        },
-        series: [{
-            name: 'Niveau de charge (%)',
-            data: [31, 40, 28, 51, 42, 109, 100]
-        }],
-
-        xaxis: {
-            type: 'datetime',
-            {# categories: [], #}
-            categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
-            labels: {
-                datetimeFormatter: {
-                    year: 'yyyy',
-                    month: 'MMM \'yy',
-                    day: 'dd MMM',
-                    hour: 'HH:mm'
-                }
-            },
-        },
-        yaxis: [{
-            title: {
-                text: 'Niveau de charge (%)',
-            },
-
-        }],
-        tooltip: {
-            theme: "dark",
-            //followCursor: true,
-            y: {
-                formatter: function (y) {
-                    //console.log(y)
-                    if (typeof y !== "undefined") {
-                        return y.toFixed(2) + "%"
-                    }
-                    return y;
-                }
-            },
-            x: {
-                formatter: function (val, timestamp) {
-                    return moment(new Date(val)).format("DD MMM YYYY")
-                }
-            }
-        },
-    }
-
-    var LoadLevelChart = new ApexCharts(
-        document.querySelector("#load-level-chart-histo"),
-        load_level_options
-    );
-
-    LoadLevelChart.render();
-
     var mixed_duree_conso_options = {
         chart: {
             fontFamily: 'Nunito, sans-serif',
@@ -2106,25 +1864,32 @@
             }
         },
         series: [{
+            name: 'Consommation Fuel',
+            type: 'column',
+            {# data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 16] #}
+            data: []
+        }, {
+            name: 'Appro Fuel',
+            type: 'column',
+            {# data: [10, 22, 15, 17, 23, 12, 7, 11, 12, 12, 6, 4] #}
+            data: []
+        }, {
             name: 'Durée de fonctionnement',
             type: 'column',
-            data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160]
-        }, {
-            name: 'Consommation Fuel',
-            type: 'line',
-            data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 16]
+            {# data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160] #}
+            data: []
         }],
         stroke: {
             curve: 'smooth',
-            width: [0, 4]
+            width: [4, 4, 2]
         },
         /* title: {
             text: 'Traffic Sources'
         }, */
         xaxis: {
             type: 'datetime',
-            {# categories: [], #}
-            categories: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'],
+            categories: [],
+            {# categories: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'], #}
             labels: {
                 datetimeFormatter: {
                     year: 'yyyy',
@@ -2135,14 +1900,19 @@
             },
         },
         yaxis: [{
+            seriesName: 'Consommation Fuel',
+            opposite: false,
             title: {
-                text: 'Heure',
-            },
-
+                text: 'Litres'
+            }
+        }, {
+            seriesName: 'Consommation Fuel',
+            show: false,
         }, {
             opposite: true,
+            seriesName: 'Durée de fonctionnement',
             title: {
-                text: 'Litre'
+                text: 'Durée de fonctionnement (Heures)'
             }
         }],
         tooltip: {
@@ -2211,7 +1981,7 @@
         
         console.log('startDate = ' + startDate);
         console.log('endDate = ' + endDate);
-        //updateHistoGraphs();
+        updateHistoGraphs();
         // block of code that runs when the click event triggers
 
     });
@@ -2325,19 +2095,89 @@
                             }, 1500);
 
                             if( Object.keys(result).length > 0 ){
-                                console.log(Object.values(result['Load_Chart']))
+                                {# console.log(Object.values(result['Load_Chart'])) #}
                                 console.log(Object.values(result['Mixed_Conso']))
-                                displayNewData(loadChart_histo, Object.values(result['Load_Chart'])[0], Object.values(result['Load_Chart'])[1], [startDate, endDate], 1, 'day');
-                                MixedConsoChart.destroy()
-                                MixedConsoChart = new ApexCharts(
-                                    document.querySelector("#mixed-conso"),
-                                    mixed_conso_options
-                                );
-                                MixedConsoChart.render()
-                                displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 2, 'day');
+                                displayNewData(FuelLevelChart, Object.values(result['dataFL']['date']), Object.values(result['dataFL']['FL']), [startDate, endDate], 1, 'day');
+                                
+
+                                {# displayNewData(MixedConsoChart, result['Mixed_Conso']['date'], Object.values(result['Mixed_Conso']['conso']), [startDate, endDate], 3, 'day');
                                 //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
-                                MixedConsoChart.toggleSeries('Énergie Active')
-                                MixedConsoChart.toggleSeries('Énergie Active')
+                                MixedConsoChart.toggleSeries('Durée de fonctionnement')
+                                MixedConsoChart.toggleSeries('Durée de fonctionnement') #}
+                                MixedConsoChart.updateOptions({
+                                    series: [{
+                                        name: 'Consommation Fuel',
+                                        type: 'column',
+                                        data: []
+                                    }, {
+                                        name: 'Appro Fuel',
+                                        type: 'column',
+                                        data: []
+                                    }, {
+                                        name: 'Durée de fonctionnement',
+                                        type: 'column',
+                                        data: []
+                                    }],
+                                    xaxis: {
+                                        categories: [],
+                                    }
+                                })
+
+                                MixedConsoChart.updateOptions({
+                                    series: [{
+                                        name: 'Consommation Fuel',
+                                        type: 'column',
+                                        data: Object.values(result['Mixed_Conso']['conso'][0])
+                                    }, {
+                                        name: 'Appro Fuel',
+                                        type: 'column',
+                                        data: Object.values(result['Mixed_Conso']['conso'][1])
+                                    }, {
+                                        name: 'Durée de fonctionnement',
+                                        type: 'column',
+                                        data: Object.values(result['Mixed_Conso']['conso'][2])
+                                    }],
+                                    xaxis: {
+                                        categories: Object.values(result['Mixed_Conso']['date']),
+                                        
+                                    }
+                                })
+
+                                //Valeur de la durée totale de fonctionnement du GE
+                                $('#t-duree-totale').text(result['statsDureeFonctionnement']['totale']);
+                                {# //On gère la progression de la durée totale de fonctionnement du GE
+                                progress(prefixSelector='t-duree-totale-progress-', progValue=result['statsDureeFonctionnement']['totaleProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée moyenne de fonctionnement du GE
+                                $('#t-duree-moy').text(result['statsDureeFonctionnement']['mean']);
+                                {# //On gère la progression de la durée moyenne de fonctionnement du GE
+                                progress(prefixSelector='t-duree-moy-progress-', progValue=result['statsDureeFonctionnement']['meanProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Médiane de fonctionnement du GE
+                                $('#t-duree-mediane').text(result['statsDureeFonctionnement']['median']);
+                                {# //On gère la progression de la durée Médiane de fonctionnement du GE
+                                progress(prefixSelector='t-duree-mediane-progress-', progValue=result['statsDureeFonctionnement']['medianProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Min de fonctionnement du GE
+                                $('#t-duree-min').text(result['statsDureeFonctionnement']['min']);
+                                {# //On gère la progression de la durée Min de fonctionnement du GE
+                                progress(prefixSelector='t-duree-min-progress-', progValue=result['statsDureeFonctionnement']['minProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Max de fonctionnement du GE
+                                $('#t-duree-max').text(result['statsDureeFonctionnement']['max']);
+                                {# //On gère la progression de la durée Max de fonctionnement du GE
+                                progress(prefixSelector='t-duree-max-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Q1 de fonctionnement du GE
+                                $('#t-duree-Q1').text(result['statsDureeFonctionnement']['Q1']);
+                                {# //On gère la progression de la durée Q1 de fonctionnement du GE
+                                progress(prefixSelector='t-duree-Q1-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Q3 de fonctionnement du GE
+                                $('#t-duree-Q3').text(result['statsDureeFonctionnement']['Q3']);
+                                {# //On gère la progression de la durée Q3 de fonctionnement du GE
+                                progress(prefixSelector='t-duree-Q3-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                
                             }
                         },
                         error: function (result) {

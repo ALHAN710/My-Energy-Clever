@@ -41,6 +41,10 @@ class GensetModService
 
     private $currentMonthStringDate = '';
 
+    private $intervalTime = 5.0/60.0 ;
+
+    private $fuelCapacity = 100.0;
+
     public function __construct(EntityManagerInterface $manager)
     {
         $this->manager  = $manager;
@@ -246,6 +250,7 @@ class GensetModService
                 "approFuel"   => $fuelData['dayBydayConsoData']['approFuel'],
                 "duree"       => $fuelData['dayBydayConsoData']['duree']
             ],
+            'statsDureeFonctionnement' => $fuelData['statsDureeFonctionnement'],
             'TRH'  => [$trhm, $trh_lastmonth],
             'NPS'  => [$npsm, $npsProgress],
             'NPST' => [$npstm, $npst_lastmonth],
@@ -264,30 +269,53 @@ class GensetModService
         $length = 10; //Si endDate > startDate => regoupement des données par jour de la fenêtre de date
         if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
         // dump($length);
+
         // ######## Récupération des données de courbe pour le mois en cours ########
-        $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
-                                        FROM App\Entity\GensetData d 
-                                        JOIN d.smartMod sm
+        //if($this->gensetMod->getSubType() === 'ModBus'){
+            $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
+                                            FROM App\Entity\GensetData d 
+                                            JOIN d.smartMod sm
+                                            WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                            AND sm.id = :smartModId
+                                            AND d.fuelLevel IS NOT NULL
+                                            ORDER BY dat ASC
+                                            ")
+                ->setParameters(array(
+                    //'length'     => $length,
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'smartModId' => $this->gensetMod->getId()
+                ))
+                ->getResult();
+        //}
+        /*else if($this->gensetMod->getSubType() !== 'ModBus'){
+            
+            $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, SUM(d.fuelLevel) as FL, COUNT(d.p) as TRH
+                                        FROM App\Entity\GensetData d
+                                        JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId
+                                        AND sm.id = :smartModId         
                                         AND d.fuelLevel IS NOT NULL
-                                        ORDER BY dat ASC
+                                        AND d.p > 1
+                                        GROUP BY dat
                                         ")
-            ->setParameters(array(
-                //'selDate'      => $dateparam,
-                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
-                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
-                'smartModId' => $this->gensetMod->getId()
-            ))
-            ->getResult();
+                ->setParameters(array(
+                    'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                    'smartModId'   => $this->gensetMod->getId()
+                ))
+                ->getResult();
+        }*/
         // dump($dataQuery);
         // $FL   = [];
         // $TRH  = [];
-        // $date = [];
-        $data = [];
+        $date   = [];
+        $data   = [];
+        $dataFL = [];
+
         foreach ($dataQuery as $d) {
-            // $date[]    = $d['dat']->format('Y-m-d H:i:s');
-            // $FL[]      = $d['FL'];
+            $date[]    = $d['dat']->format('Y-m-d H:i:s');
+            $dataFL[]  = $d['FL'];
             // $TRH[]     = $d['TRH'];
             $data[$d['dat']->format('Y-m-d H:i:s')] = [
                 'FL'    => $d['FL'],
@@ -419,9 +447,12 @@ class GensetModService
 
             // $consoFuelDayByDay[$key] = $consoFuel_;
             // $approFuelDayByDay[$key] = $approFuel_;
-            $consoFuelDayByDay[] = $consoFuel_;
-            $approFuelDayByDay[] = $approFuel_;
+            $consoFuelDayByDay[] = ($consoFuel_* $this->fuelCapacity)/100.0;
+            $approFuelDayByDay[] = ($approFuel_* $this->fuelCapacity)/100.0;
         }
+
+        $currentConsoFuel = ($currentConsoFuel * $this->fuelCapacity)/100.0;
+        $currentApproFuel = ($currentApproFuel * $this->fuelCapacity)/100.0;
 
         // ######## Récupération des données de courbe pour le mois (n - 1) ########
         $lastData = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
@@ -462,19 +493,18 @@ class GensetModService
             }
         }
 
-        // ========== Détermination du temps total de fonctionnement du GE sur la période de date passée en paramètre et le last période correspondant
-        $config = json_decode($this->gensetMod->getConfiguration(), true);
-        if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
-        else $intervalTime = 5.0/60.0;// dump($intervalTime);
-                        
+        $lastConsoFuel = ($lastConsoFuel * $this->fuelCapacity)/100.0;
+        $lastApproFuel = ($lastApproFuel * $this->fuelCapacity)/100.0;
 
+        // ========== Détermination du temps total de fonctionnement du GE sur la période de date passée en paramètre et le last période correspondant
+                    
         $workingTimeQuery = $this->manager->createQuery("SELECT COUNT(DISTINCT d.dateTime)/:time AS WT
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id = :smartModId
                                             AND d.dateTime BETWEEN :startDate AND :endDate")
             ->setParameters(array(
-                'time'       => $intervalTime,
+                'time'       => $this->intervalTime,
                 'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
                 'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
                 'smartModId' => $this->gensetMod->getId()
@@ -490,7 +520,7 @@ class GensetModService
                                             WHERE sm.id = :smartModId
                                             AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate")
             ->setParameters(array(
-                'time'          => $intervalTime,
+                'time'          => $this->intervalTime,
                 'lastStartDate' => $lastStartDate->format('Y-m') . '%',
                 'lastEndDate'   => $lastEndDate->format('Y-m-d H:i:s'),
                 'smartModId'    => $this->gensetMod->getId()
@@ -499,22 +529,21 @@ class GensetModService
         // dump($lastWorkingTimeQuery);
         $lastTotalWorkingHours = count($lastWorkingTimeQuery) > 0 ? $lastWorkingTimeQuery[0]['WT'] ?? 0 : 0;
         $lastTotalWorkingHours = floatval($lastTotalWorkingHours);
-
-        $duree = array_sum($dureeDayByDay);
-
+        
+        $duree = -0.0;
+        if(count($dureeDayByDay) > 0) $duree = array_sum($dureeDayByDay);
+        // dump($dureeDayByDay);        
         // if($this->gensetMod->getSubType() !== 'ModBus' || !strpos($this->gensetMod->getSubType(), 'FL') !== false){
-        if($this->gensetMod->getSubType() !== 'ModBus'){
-            $config = json_decode($this->gensetMod->getConfiguration(), true);
-            if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
-            else $intervalTime = 5.0/60.0;// dump($intervalTime);
-            // dump($intervalTime);
-
-            $data = $this->manager->createQuery("SELECT COUNT(d.p) AS NB_Mins
+        /*if($this->gensetMod->getSubType() !== 'ModBus' || $this->gensetMod->getSubType() !== 'FL'){
+            if($this->gensetMod->getSubType() == 'Inv' || $this->gensetMod->getSubType() == 'Inv+FL'){
+                $dataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, COUNT(d.p) AS NB_Mins
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
                                         AND sm.id = :smartModId         
                                         AND d.p > 1
+                                        GROUP BY dat
+                                        ORDER BY dat ASC
                                         ")
                 ->setParameters(array(
                     'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
@@ -522,25 +551,105 @@ class GensetModService
                     'smartModId'   => $this->gensetMod->getId()
                 ))
                 ->getResult();
-            
-            if(count($data) > 0){
-                if(array_key_exists("NB_Mins", $data[0])){
-                    // dump($data[0]['NB_Mins']);
-                    $duree = $data[0]['NB_Mins'] * $intervalTime;
+                
+                dump($dataQuery);
+                if(count($dataQuery) > 0){
+                    //if(array_key_exists("NB_Mins", $dataQuery[0])){
+                        $dureeDayByDay = [];
+                        foreach ($dataQuery as $dat) {
+                            $dureeDayByDay[] = floatval($dat['NB_Mins'])* $this->intervalTime;
+                        }
+                        // $duree = $data[0]['NB_Mins'] * $this->intervalTime;
+                        if(count($dureeDayByDay) > 0) $duree = array_sum($dureeDayByDay);
+                        
+                        dump($dureeDayByDay); 
+
+                        if($duree <= 0){
+                            if($this->gensetMod->getSubType() == 'Inv+FL'){
+                                
+                                $dataQuery = $this->manager->createQuery("SELECT d.totalRunningHours AS TRH
+                                                            FROM App\Entity\GensetData d
+                                                            JOIN d.smartMod sm 
+                                                            WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                                            AND sm.id = :smartModId
+                                                            AND d.totalRunningHours IS NOT NULL
+                                                            ORDER BY TRH ASC
+                                                            ")
+                                    ->setParameters(array(
+                                        'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                                        'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                                        'smartModId'   => $this->gensetMod->getId()
+                                    ))
+                                    ->getResult();
+                                
+                                // dump($dataQuery);
+                                $dureeDayByDay = [];
+                                foreach ($dataQuery as $dat) {
+                                    $dureeDayByDay[] = floatval($dat['TRH']);
+                                }
+                                // dump($dureeDayByDay);
+                                if(count($dureeDayByDay) > 0){
+                                    // dump($dureeDayByDay[0]['TRH']);
+                                    $duree = end($dureeDayByDay) - reset($dureeDayByDay);
+                                }
+                            } 
+                        }
+                    //}
                 }
             }
-        }
+        }*/
 
         
-        $currentConsoFuelProgress = ($lastConsoFuel > 0) ? ($currentConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
+        $currentConsoFuelProgress = ($lastConsoFuel > 0) ? ($lastConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
         $currentApproFuelProgress = ($lastApproFuel > 0) ? ($currentApproFuel - $lastApproFuel) / $lastApproFuel : 'INF';
-        $dureeProgress = ($lastDuree > 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
+        $dureeProgress            = ($lastDuree > 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
         
-        $TUG   = $totalWorkingHours > 0 ? ($duree / $totalWorkingHours)*100 : 0;
-        $lastTUG   = $lastTotalWorkingHours > 0 ? ($lastDuree / $lastTotalWorkingHours)*100 : 0;
+        $TUG         = $totalWorkingHours > 0 ? ($duree / $totalWorkingHours)*100 : 0;
+        $lastTUG     = $lastTotalWorkingHours > 0 ? ($lastDuree / $lastTotalWorkingHours)*100 : 0;
         $TUGProgress = ($lastTUG > 0) ? ($TUG - $lastTUG) / $lastTUG : 'INF';
-        $duree = $this->hoursandmins($duree);
+        $duree       = $this->hoursandmins($duree);
 
+        //Données de la courbe de durée de fonctionnement jour après jour
+        $dureeTotale   = -0.0;
+        $dureeMoyenne  = -0.0;
+        $dureeMediane  = -0.0;
+        $dureeMax      = -0.0;
+        $dureeMin      = -0.0;
+        $dureeQ1       = -0.0;
+        $dureeQ3       = -0.0;
+
+        $dureeDayByDayFilter = [];
+        if (count($dureeDayByDay) > 0) {
+            $dureeDayByDayFilter = array_filter($dureeDayByDay);
+            if (count($dureeDayByDayFilter) > 0) {
+                sort($dureeDayByDayFilter);
+                $n = count($dureeDayByDayFilter) - 1;
+                $dureeTotale = array_sum($dureeDayByDayFilter);
+                $dureeMin = min($dureeDayByDayFilter);
+                // $q1 = floor(($n + 3) / 4) + 1;
+                // $q2 = floor(($n + 1) / 2) + 1;
+                // $q2 = ceil($n / 2);
+                $dureeMoyenne = $this->mmmrv($dureeDayByDayFilter, 'mean');
+                $dureeMediane = $this->mmmrv($dureeDayByDayFilter, 'median');
+                // $q3 = floor(($n + 1) / 4) + 1;
+                $dureeMax = max($dureeDayByDayFilter);
+                $q1 = ceil($n / 4);
+                $dureeQ1 = $dureeDayByDayFilter[$q1];
+                $q3 = ceil((3 * $n) / 4);
+                $dureeQ3 = $dureeDayByDayFilter[$q3];
+                $dQ = $dureeQ3 - $dureeQ1;
+            }
+        }
+        
+        $dureeTotale  = $this->hoursandmins($dureeTotale);
+        $dureeMoyenne = $this->hoursandmins($dureeMoyenne);
+        $dureeMediane = $this->hoursandmins($dureeMediane);
+        $dureeMin     = $this->hoursandmins($dureeMin);
+        $dureeMax     = $this->hoursandmins($dureeMax);
+        $dureeQ1      = $this->hoursandmins($dureeQ1);
+        $dureeQ3      = $this->hoursandmins($dureeQ3);
+        // dump($dureeDayByDayFilter);
+        
         return array(
             'currentConsoFuel'              => $currentConsoFuel,
             'dureeFonctionnement'           => $duree,
@@ -555,12 +664,395 @@ class GensetModService
                 "consoFuel"   => $consoFuelDayByDay,
                 "approFuel"   => $approFuelDayByDay,
                 "duree"       => $dureeDayByDay,
+            ],
+            'dataFL'    => [
+                'date' => $date,
+                'FL'   => $dataFL
+            ],
+            'statsDureeFonctionnement' => [
+                'totale' => $dureeTotale, 
+                'mean'   => $dureeMoyenne, 
+                'median' => $dureeMediane, 
+                'min'    => $dureeMin, 
+                'max'    => $dureeMax, 
+                'Q1'     => $dureeQ1, 
+                'Q3'     => $dureeQ3
             ]
         );
     }
 
-    public function getDataForGraph()
+    public function getDataForMonthDataTable()
     {
+        $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
+                                            FROM App\Entity\GensetData d 
+                                            JOIN d.smartMod sm
+                                            WHERE d.dateTime LIKE :thisYear
+                                            AND sm.id = :smartModId
+                                            AND d.fuelLevel IS NOT NULL
+                                            ORDER BY dat ASC
+                                            ")
+                ->setParameters(array(
+                    //'length'     => $length,
+                    'thisYear'   => date('Y') . '%',
+                    'smartModId' => $this->gensetMod->getId()
+                ))
+                ->getResult();
+        $date   = [];
+        $data   = [];
+        $dataFL = [];
+
+        foreach ($dataQuery as $d) {
+            $date[]    = $d['dat']->format('Y-m-d H:i:s');
+            $dataFL[]  = $d['FL'];
+            // $TRH[]     = $d['TRH'];
+            $data[$d['dat']->format('Y-m-d H:i:s')] = [
+                'FL'    => $d['FL'],
+                'TRH'   => $d['TRH']
+            ];
+            //$Cosfi[]   = number_format((float) $d['cosfi'], 2, '.', '');
+        }
+
+        $totalRecordMonthByMonth = [];
+        // $totalRecordMonthByMonth = count($date) * $this->intervalTime;
+                    
+        // dump($data);
+        $monthRecord = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,7) as mois, COUNT(d.dateTime) AS Nb_Record
+                                        FROM App\Entity\GensetData d 
+                                        JOIN d.smartMod sm
+                                        WHERE d.dateTime LIKE :thisYear
+                                        AND sm.id = :smartModId
+                                        AND d.fuelLevel IS NOT NULL
+                                        GROUP BY mois
+                                        ORDER BY mois ASC
+                                        ")
+            ->setParameters(array(
+                'thisYear'   => date('Y') . '%',
+                'smartModId' => $this->gensetMod->getId(),
+            ))
+            ->getResult();
+
+        // dump($monthRecord);
+        $month = [];
+        foreach ($monthRecord as $d) {
+            $month[]    = $d['mois'];
+            $totalRecordMonthByMonth[$d['mois']] = $d['Nb_Record'];
+        }
+        // dump($month);
+        // dump($totalRecordMonthByMonth);
+
+        $dataOrderByMonth = []; //Tableau des valeurs mois après mois
+        foreach ($data as $key => $value) {
+            // dump($key);
+            foreach ($month as $index => $val) {
+                //dump($val);
+                if (strpos($key, $val) !== false) { // On vérifie si le la sous-chaîne du mois est contenue dans la date
+                    $dataOrderByMonth[$val]['FL'][]  = $value['FL'];
+                    $dataOrderByMonth[$val]['TRH'][] = $value['TRH'];
+                }
+            }
+        }
+
+        // $currentConsoFuel = 0;
+        // $currentApproFuel = 0;
+
+        $monthData = [
+            'Janvier'   => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", // Taux d'utilisation du GE
+            ],
+            'Février'   => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Mars'      => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Avril'     => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Mai'       => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Juin'      => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Juillet'   => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Août'      => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Septembre' => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Octobre'   => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Novembre'  => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+            'Décembre'  => [
+                'consoFuel' => "-", 
+                'approFuel' => "-", 
+                'TRH'       => "-", 
+                'Tx'        => "-", 
+            ],
+        ];
+        
+        foreach ($dataOrderByMonth as $key => $value) {
+            $consoFuelMonth = 0.0;
+            $approFuelMonth = 0.0;
+    
+            $dureeMonth = 0.0;
+            $consoFuel_ = 0;
+            $approFuel_ = 0;
+
+            $T_Appro  = [] ; //Tableau des instants d’approvisionnement
+            $T_Appro[0] = 0 ; 
+            $j = 1 ; 
+                        
+            //Données de la courbe de durée de fonctionnement jour après jour
+            if (array_key_exists('TRH', $value)) {
+                if (end($value['TRH']) !== false && reset($value['TRH']) !== false) {
+                    $dureeMonth = abs(end($value['TRH']) - reset($value['TRH']));
+                    // $dureeMonthByMonth[] = abs(end($value['TRH']) - reset($value['TRH']));
+                }
+            }
+
+            //Données des courbe de consommation et approvisionnement jour après jour
+            if (array_key_exists('FL', $value)) {
+                $temp = $value['FL']; //Tableau tampon
+                if (count($temp) > 0) {
+                    if($this->gensetMod->getSubType() == 'ModBus'){
+                        for ($i = 0; $i < count($temp) - 1; $i++) {
+                            $diff = abs($temp[$i + 1] - $temp[$i]);
+                            if ($temp[$i + 1] >= $temp[$i]) {
+                                $approFuel_ += $diff;
+                            } else {
+                                $consoFuel_ += $diff;
+                            }
+                            // if ($temp[$i + 1] - 5 >= $temp[$i]) {
+                            //     $approFuel_ += $diff;
+                            // } else if ($temp[$i] - $temp[$i + 1] >= 5 ){
+                                //     $consoFuel_ += $diff;
+                                // }
+                                
+                        }
+                    }else { //if($this->gensetMod->getSubType() !== 'ModBus')
+                        // dump($temp[0]) ;
+                        $N = count($temp);
+                        for ($i=0 ; $i < $N - 3 ; $i ++){ // N est le volume de données sur la fenêtre de temps choisie = size(temp[])
+                            
+                            if  ( ($temp[$i+1]  - $temp[$i]) > 5 && $temp[$i+2] - $temp[$i] > 5 && ($temp[$i+3] - $temp[$i]) > 5  ){ // On compare avec les trois valeurs suivantes pour éviter les valeurs aberrantes 
+                                
+                                $T_Appro[$j] = $i ; // On enregistre tous les instants d’approvisionnement
+                                $j = $j + 1 ; 
+                                $approFuel_ = $approFuel_ + $temp[$i+1] - $temp[$i] ; // On calcul le volume d’approvisionnement
+                            }
+                                    
+                        }
+                        // dump(count($T_Appro));
+                        // dump($j) ; 
+                        if ( count($T_Appro) > 1 ){
+                            
+                            if ( $temp[0]  - $temp[$T_Appro[1]] > 2){
+                                $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$T_Appro[1]] ;
+                            }
+                            if ( count($T_Appro) > 2 ){
+                                for ($i=0 ; $i < count($T_Appro) - 2 ; $i++){ // N est le volume de données sur la fenêtre de temps choisie
+                                    if ( $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] > 2){
+                                        $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] ;
+                                    } 	
+                                
+                                }
+                            }
+                            
+                            if ( $temp[$T_Appro[$j-1]+1]  - $temp[$N-1] > 2){
+                                $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$j-1]+1]   - $temp[$N-1] ;
+                            } 
+                        }
+                        else{
+                            if ( $temp[0]  - $temp[$N-1] > 2){
+                                $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$N-1] ;
+                            } 
+                        }
+                    }
+                }
+            }
+
+            // $currentConsoFuel += $consoFuel_;
+            // $currentApproFuel += $approFuel_;
+
+            $consoFuelMonth = ($consoFuel_* $this->fuelCapacity)/100.0;
+            $approFuelMonth = ($approFuel_* $this->fuelCapacity)/100.0;
+            // $consoFuelMonthByMonth[] = ($consoFuel_* $this->fuelCapacity)/100.0;
+            // $approFuelMonthByMonth[] = ($approFuel_* $this->fuelCapacity)/100.0;
+
+            switch (date('n', strtotime($key))) {
+                case 1:
+                    $monthData['Janvier']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Janvier']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Janvier']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Janvier']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 2:
+                    $monthData['Février']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Février']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Février']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Février']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 3:
+                    $monthData['Mars']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Mars']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Mars']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Mars']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 4:
+                    $monthData['Avril']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Avril']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Avril']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Avril']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 5:
+                    $monthData['Mai']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Mai']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Mai']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Mai']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 6:
+                    $monthData['Juin']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Juin']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Juin']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Juin']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 7:
+                    $monthData['Juillet']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Juillet']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Juillet']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Juillet']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 8:
+                    $monthData['Août']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Août']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Août']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Août']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 9:
+                    $monthData['Septembre']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Septembre']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Septembre']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Septembre']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 10:
+                    $monthData['Octobre']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Octobre']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Octobre']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Octobre']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 11:
+                    $monthData['Novembre']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Novembre']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Novembre']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Novembre']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                case 12:
+                    $monthData['Décembre']['consoFuel'] = floatval(number_format((float) $consoFuelMonth, 2, '.', ''));
+                    $monthData['Décembre']['approFuel'] = floatval(number_format((float) $approFuelMonth, 2, '.', ''));
+                    $monthData['Décembre']['TRH']       = $this->hoursandmins($dureeMonth);
+
+                    $tx          = $totalRecordMonthByMonth[$key] > 0 ? ($dureeMonth / $totalRecordMonthByMonth[$key])*100.0 : 0.0;
+                    $monthData['Décembre']['Tx'] = floatval(number_format((float) $tx, 2, '.', ''));
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+
+        // dump($monthData);
+
+        /*foreach ($dataQuery as $data) {
+            switch (date('w', strtotime($data['jour']))) {
+                case 0:
+                    $monthData['Dimanche'][] = $data['EA'];
+                    break;
+                case 1:
+                    $monthData['Lundi'][] = $data['EA'];
+                    break;
+                case 2:
+                    $monthData['Mardi'][] = $data['EA'];
+                    break;
+                case 3:
+                    $monthData['Mercredi'][] = $data['EA'];
+                    break;
+                case 4:
+                    $monthData['Jeudi'][] = $data['EA'];
+                    break;
+                case 5:
+                    $monthData['Vendredi'][] = $data['EA'];
+                    break;
+                case 6:
+                    $monthData['Samedi'][] = $data['EA'];
+                    break;
+                
+                default:
+                    break;
+            }
+        }*/
+        return $monthData;
     }
 
     public function getGensetRealTimeData()
@@ -1247,10 +1739,103 @@ class GensetModService
         );
     }
     
+    private function ecart_type(array $donnees)
+    {
+        //0 - Nombre d’éléments dans le tableau
+        $population = count($donnees);
+        // dump($donnees);
+        // dump('population = ' . $population);
+        if ($population != 0) {
+            //1 - somme du tableau
+            $somme_tableau = array_sum($donnees);
+            // dump('somme_tableau = ' . $somme_tableau);
+            //2 - Calcul de la moyenne
+            $moyenne = ($somme_tableau * 1.0) / $population;
+            // dump('moyenne = ' . $moyenne);
+            //3 - écart pour chaque valeur
+            $ecart = [];
+            for ($i = 0; $i < $population; $i++) {
+                //écart entre la valeur et la moyenne
+                $ecart_donnee = $donnees[$i] - $moyenne;
+                // dump('ecart_donnee ' . $i . ' = ' . $ecart_donnee);
+                //carré de l'écart
+                $ecart_donnee_carre = pow($ecart_donnee, 2);
+                // dump('ecart_donnee_carre ' . $i . ' = ' . $ecart_donnee_carre);
+                //Insertion dans le tableau
+                array_push($ecart, $ecart_donnee_carre);
+            }
+            // dump($ecart);
+            //4 - somme des écarts
+            $somme_ecart = array_sum($ecart);
+            // dump('somme_ecart = ' . $somme_ecart);
+            //5 - division de la somme des écarts par la population
+            $division = $somme_ecart / $population;
+            // dump('division = ' . $division);
+            //6 - racine carrée de la division
+            $ecart_type = sqrt($division);
+        } else {
+            $ecart_type = 0; //"Le tableau est vide";
+        }
+        // dump('ecart_type = ' . $ecart_type);
+        //7 - renvoi du résultat
+        return $ecart_type;
+    }
+
+    private function mmmrv($array, $output = 'mean')
+    {
+        if (!is_array($array)) {
+            return FALSE;
+        } else {
+            $total = 0.0;
+            if (count($array) <= 0) return $total;
+            switch ($output) {
+                case 'mean':
+                    $total = array_sum($array) / count($array);
+                    break;
+                case 'median':
+                    $count = count($array); //total numbers in array
+                    $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
+                    if ($count % 2) { // odd number, middle is the median
+                        $total = $array[$middleval];
+                    } else { // even number, calculate avg of 2 medians
+                        $low = $array[$middleval];
+                        $high = $array[$middleval + 1];
+                        $total = (($low + $high) / 2);
+                    }
+                    break;
+                case 'mode':
+                    $v = array_count_values($array);
+                    arsort($v);
+                    foreach ($v as $k => $v) {
+                        $total = $k;
+                        break;
+                    }
+                    break;
+                case 'range':
+                    sort($array);
+                    $sml = $array[0];
+                    rsort($array);
+                    $lrg = $array[0];
+                    $total = $lrg - $sml;
+                    break;
+                case 'variation':
+                    $variation = 0.0;
+                    $moyenne = 0.0;
+                    if (count($array) > 0) {
+                        $moyenne = array_sum($array) / (count($array) * 1.0);
+                        $variation = $this->ecart_type($array);
+                    }
+
+                    $total = $moyenne != 0.0 ? ($variation / $moyenne) * 100 : 0.0;
+            }
+            return $total;
+        }
+    }
+
     function hoursandmins($time, $format = '%02d:%02d:%02d')
     {
         if ($time < 0) {
-            return '';
+            return '-:-:-';
         }
         $hours = floor($time);
         $minutes = floor(($time - $hours) / 60);
@@ -1278,6 +1863,13 @@ class GensetModService
     public function setGensetMod(SmartMod $gensetMod)
     {
         $this->gensetMod = $gensetMod;
+        if($this->gensetMod){
+            $config = json_decode($this->gensetMod->getConfiguration(), true);
+            if($config) $this->intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+            else $this->intervalTime = 5.0/60.0;
+
+            $this->fuelCapacity = $this->gensetMod->getFuelCapacity() ?? 100.0;
+        }
 
         return $this;
     }

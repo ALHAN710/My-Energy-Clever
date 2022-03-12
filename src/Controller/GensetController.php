@@ -56,10 +56,13 @@ class GensetController extends ApplicationController
         // $siteDash->setSite($site)
         //     ->setPower_unit(1000);
 
+        $monthDataTable = $gensetModService->getDataForMonthDataTable();
+
         return $this->render('genset/home_data_monitoring.html.twig', [
-            'site'                    => $site,
-            'genset'                  => $genset,
-            'overviewData'            => $overViewData,
+            'site'            => $site,
+            'genset'          => $genset,
+            'overviewData'    => $overViewData,
+            'monthDataTable'  => $monthDataTable,
         ]);
     }
 
@@ -89,15 +92,14 @@ class GensetController extends ApplicationController
         
         // dump($startDate);
         // dump($endDate);
-
-        //dump($overViewData);
-
+        
         $gensetModService->setGensetMod($genset)
-            ->setStartDate($startDate)
-            ->setEndDate($endDate);
-
+        ->setStartDate($startDate)
+        ->setEndDate($endDate);
+        
         $overViewData = $gensetModService->getDashboardData();
-
+        // dump($overViewData);
+        
         return $this->json([
             'code'            => 200,
             'overviewData'    => $overViewData,
@@ -105,38 +107,23 @@ class GensetController extends ApplicationController
     }
 
     /**
-     * Permet de mettre à jour les graphes liés aux données d'un module genset
+     * Permet de mettre à jour l'historique des graphes liés aux données d'un module genset Modbus ou Fuel
      *
      * @Route("/update/genset/mod/{smartMod<\d+>}/graphs/", name="update_genset_graphs")
      * 
-     * @IsGranted("USER")
      * 
-     * @param [SmartMod] $smartMod
+     * 
+     * @param [SmartMod] $genset
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function updateGensetGraphs(SmartMod $smartMod, EntityManagerInterface $manager, Request $request): Response
+    public function updateGensetGraphs(SmartMod $smartMod, EntityManagerInterface $manager, Request $request, GensetModService $gensetModService): Response
     {
+        // @IsGranted("USER")
         //@Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_NOC_SUPERVISOR') and smartMod.getSite().getEnterprise() === user.getEnterprise() )" )
 
         //Récupération et vérification des paramètres au format JSON contenu dans la requête
         $paramJSON = $this->getJSONRequest($request->getContent());
-
-        //$smartModRepo = $this->getDoctrine()->getRepository(SmartModRepository::class);
-        //$smartMod = $smartModRepo->find($id);
-        // //dump($smartModRepo);
-        // //dump($smartMod->getModType());
-        //$temps = DateTime::createFromFormat("d-m-Y H:i:s", "120");
-        // //dump($temps);
-        //die();
-        $date       = [];
-        $P          = [];
-        $S          = [];
-        $Cosfi      = [];
-        $TRH        = [];
-        $TEP        = [];
-        $FC         = [];
-        $dateE      = [];
 
         // $dateparam = $request->get('selectedDate'); // Ex : %2020-03-20%
         //$dateparam = $paramJSON['selectedDate']; // Ex : %2020-03-20%
@@ -144,84 +131,33 @@ class GensetController extends ApplicationController
         $startDate = new DateTime($paramJSON['startDate']); // Ex : %2020-03-20%
         //$endDate = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['endDate']); // Ex : %2020-03-20%
         $endDate = new DateTime($paramJSON['endDate']); // Ex : %2020-03-20%
-        // dump($startDate->format('Y-m-d H:i:s'));
-        // dump($endDate->format('Y-m-d H:i:s'));
-        //$dat = "2020-02"; //'%' . $dat . '%'
-        //$dat = substr($dateparam, 0, 8); // Ex : %2020-03
-        // //dump($dat);
-        //die();
-        //$dat = $dat . '%';
 
-        $Energy = $manager->createQuery("SELECT SUBSTRING(d.dateTime, 1, 10) AS jour, MAX(d.totalRunningHours) - MIN(NULLIF(d.totalRunningHours, 0)) AS TRH, 
-                                        MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy, 0)) AS TEP, AVG(NULLIF(d.fuelInstConsumption, 0))*( MAX(d.totalRunningHours) - MIN(NULLIF(d.totalRunningHours, 0)) ) AS FC
-                                        FROM App\Entity\GensetData d
-                                        JOIN d.smartMod sm 
-                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId
-                                        GROUP BY jour
-                                        ORDER BY jour ASC                       
-                                        ")
-            ->setParameters(array(
-                //'selDate'      => $dat,
-                'startDate'    => $startDate->format('Y-m-d H:i:s'),
-                'endDate'    => $endDate->format('Y-m-d H:i:s'),
-                'smartModId'   => $smartMod->getId()
-            ))
-            ->getResult();
-        // dump($Energy);
-        //die();
-        foreach ($Energy as $d) {
-            $dateE[] = $d['jour'];
-            $TRH[] = number_format((float) $d['TRH'], 2, '.', '');
-            $TEP[] = number_format((float) $d['TEP'], 2, '.', '');
-            $FC[] = number_format((float) $d['FC'], 2, '.', '') ?? 0;
-        }
-
-
-        /*
-        SELECT d.dateTime as dat, d.va, d.vb, d.vc, d.sa, d.sb, d.sc, d.s3ph
-                                                FROM App\Entity\DataMod d, App\Entity\SmartMod sm 
-                                                WHERE d.dateTime LIKE :selDate
-                                                AND sm.id = :modId
-                                                ORDER BY dat ASC
-        */
-
-        $data = $manager->createQuery("SELECT d.dateTime as dat, d.p, (d.s*100.0)/:genpower as s, d.cosfi
-                                        FROM App\Entity\GensetData d 
-                                        JOIN d.smartMod sm
-                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId
-                                        ORDER BY dat ASC
-                                        
-                                        ")
-            ->setParameters(array(
-                //'selDate'      => $dateparam,
-                'startDate'   => $startDate,
-                'endDate'     => $endDate,
-                'genpower'  => $smartMod->getPower(),
-                'smartModId'  => $smartMod->getId()
-            ))
-            ->getResult();
-
-
-        // dump($data);
-        foreach ($data as $d) {
-            $date[]    = $d['dat']->format('Y-m-d H:i:s');
-            //$P[]       = number_format((float) $d['p'], 2, '.', '');
-            $S[]    = number_format((float) $d['s'], 2, '.', '');
-            //$Cosfi[]   = number_format((float) $d['cosfi'], 2, '.', '');
-        }
+        $gensetModService->setGensetMod($smartMod)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+        
+        // ######## Récupération des données de consommation et d'approvisionnement de Fuel
+        $fuelData = $gensetModService->getConsoFuelData();
+        
 
         return $this->json([
             'code'         => 200,
             //'startDate'    => $startDate,
             //'endDate'      => $endDate,
-            'date'         => $date,
-            'Mix1'            => [$TRH, $TEP, $FC],
+            // 'date'         => $date,
+            'Mixed_Conso'            => [
+                'date'  => $fuelData['dayBydayConsoData']['dateConso'],
+                'conso' => [$fuelData['dayBydayConsoData']['consoFuel'], $fuelData['dayBydayConsoData']['approFuel'], $fuelData['dayBydayConsoData']['duree']]
+            ],
+            'dataFL'    => [
+                'date' => $fuelData['dataFL']['date'],
+                'FL'   => $fuelData['dataFL']['FL']
+            ],
+            'statsDureeFonctionnement' => $fuelData['statsDureeFonctionnement'],
             //'Mix2'            => [$S, $P, $Cosfi],
-            'Load_Level'    => $S,
+            // 'Load_Level'    => $S,
             // 'S3ph'         => $S3ph,
-            'dateE'           => $dateE,
+            // 'dateE'           => $dateE,
             // 'kWh'          => $kWh,
             // 'kVarh'        => $kVarh,
         ], 200);
@@ -468,6 +404,9 @@ class GensetController extends ApplicationController
                         $VOLT = "MINV"; // 4
                         $FREQ = "MINF"; // 5
                         $GENRUN = "GENR"; // 6
+                        $GENST = "GENST"; // 6
+                        $GOTL = "GOTL"; // 6
+                        $GNOTL = "GNOTL"; // 6
                         $FUEL = "LOFL"; // 7
                         $DIFFC = "DIFFC"; // 8
                         $WATFL = "WATFL"; // 9
@@ -560,7 +499,16 @@ class GensetController extends ApplicationController
                         }*/
                         if (array_key_exists("CG", $paramJSON)) {
                          if (($oldData->getCg() === 0 && $paramJSON['CG'] === 1)) {
-                             $mess = "{\"code\":\"{$GENRUN}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+                             $mess = "{\"code\":\"{$GOTL}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+                             //$mess = "{\"code\":\"{$GENRUN}\",\"date\":\"{$paramJSON['date1']}\"}";
+
+                             $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
+                                 'mess'   => $mess,
+                                 'modId'  => $smartMod->getModuleId(),
+                             ]);
+                         }
+                         if (($oldData->getCg() === 1 && $paramJSON['CG'] === 0)) {
+                             $mess = "{\"code\":\"{$GNOTL}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
                              //$mess = "{\"code\":\"{$GENRUN}\",\"date\":\"{$paramJSON['date1']}\"}";
 
                              $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
@@ -573,6 +521,15 @@ class GensetController extends ApplicationController
                          if (($oldData->getGensetRunning() === 0 && $paramJSON['GenRun'] === 1)) {
                              $mess = "{\"code\":\"{$GENRUN}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
                              //$mess = "{\"code\":\"{$GENRUN}\",\"date\":\"{$paramJSON['date1']}\"}";
+
+                             $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
+                                 'mess'   => $mess,
+                                 'modId'  => $smartMod->getModuleId(),
+                             ]);
+                         }
+                         if (($oldData->getGensetRunning() === 1 && $paramJSON['GenRun'] === 0)) {
+                             $mess = "{\"code\":\"{$GENST}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+                             //$mess = "{\"code\":\"{$GENST}\",\"date\":\"{$paramJSON['date1']}\"}";
 
                              $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
                                  'mess'   => $mess,
@@ -1201,8 +1158,16 @@ class GensetController extends ApplicationController
                     $data = clone $smartMod->getGensetRealTimeData();
                     $fuelStr = $data->getFuelLevel() != null ? ' avec un niveau de Fuel de ' . $data->getFuelLevel() . '%' : ''; 
                     if ($alarmCode->getCode() === 'GENR') $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . ' survenu(e) le ' . $date->format('d/m/Y à H:i:s') . $fuelStr;
-                    else if ($alarmCode->getCode() === 'SFL50' || $alarmCode->getCode() === 'SFL20') {
-                        $message = $alarmCode->getLabel() . " dans le réservoir du groupe électrogène du site " . $site->getName() . " détecté le " . $date->format('d/m/Y à H:i:s') . $fuelStr;
+                    else if ($alarmCode->getCode() === 'GENST') {
+                        $message = $alarmCode->getLabel() . " du site " . $site->getName() . " survenu le " . $date->format('d/m/Y à H:i:s') . $fuelStr;
+                    } else if ($alarmCode->getCode() === 'SFL50' ) {
+                        $message = $alarmCode->getLabel() . " dans le réservoir du groupe électrogène du site " . $site->getName() . " détecté le " . $date->format('d/m/Y à H:i:s') . ". Nous vous prions de bien vouloir effectuer une opération de ravitaillement. Niveau de Fuel Actuel : " . $data->getFuelLevel() . '%';
+                    }  else if ($alarmCode->getCode() === 'SFL20') {
+                        $message = $alarmCode->getLabel() . " dans le réservoir du groupe électrogène du site " . $site->getName() . " détecté le " . $date->format('d/m/Y à H:i:s') . '. Niveau de Fuel de ' . $data->getFuelLevel() . '%';
+                    } else if ($alarmCode->getCode() === 'GOTL') {
+                        $message = $alarmCode->getLabel() . ' ' . $site->getName() . " depuis le " . $date->format('d/m/Y à H:i:s') . $fuelStr;
+                    } else if ($alarmCode->getCode() === 'GNOTL') {
+                        $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . " survenue le " . $date->format('d/m/Y à H:i:s');
                     } else $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . ' survenu(e) le ' . $date->format('d/m/Y à H:i:s');
                 }
 
