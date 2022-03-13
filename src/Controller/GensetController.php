@@ -410,6 +410,8 @@ class GensetController extends ApplicationController
                         $FUEL = "LOFL"; // 7
                         $DIFFC = "DIFFC"; // 8
                         $WATFL = "WATFL"; // 9
+                        $SFL50 = "SFL50"; // 11
+                        $SFL20 = "SFL20"; // 12
 
                         /*if ($oldData->getMinBattVolt()  === 0 && $paramJSON['MinBV']  === 1) {
                             $mess = "{\"code\":\"{$BATT}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
@@ -547,6 +549,26 @@ class GensetController extends ApplicationController
                                  'modId'  => $smartMod->getModuleId(),
                              ]);
                          }
+                        }
+                        if (array_key_exists("FL", $paramJSON)) {
+                            if ($oldData->getFuelLevel() > 50 && $paramJSON['FL'] <= 50) {
+                                $mess = "{\"code\":\"{$SFL50}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+                                //$mess = "{\"code\":\"{$SFL50}\",\"date\":\"{$paramJSON['date1']}\"}";
+        
+                                $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
+                                    'mess' => $mess,
+                                    'modId'  => $smartMod->getModuleId(),
+                                ]);
+                            }
+                            if ($oldData->getFuelLevel() > 20 && $paramJSON['FL'] <= 20) {
+                                $mess = "{\"code\":\"{$SFL20}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+                                //$mess = "{\"code\":\"{$SFL20}\",\"date\":\"{$paramJSON['date1']}\"}";
+        
+                                $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
+                                    'mess' => $mess,
+                                    'modId'  => $smartMod->getModuleId(),
+                                ]);
+                            }
                         }
                         /*if ($oldData->getDifferentialIntervention() === 0 && $paramJSON['DIT'] === 1) {
                             $mess = "{\"code\":\"{$DIFFC}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
