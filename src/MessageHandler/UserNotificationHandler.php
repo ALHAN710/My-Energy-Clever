@@ -61,7 +61,7 @@ class UserNotificationHandler implements MessageHandlerInterface
                 $email = (new Email())
                     // ->from('stdigital.powermon.alerts@gmail.com')
                     // ->from('noc@datacenter-services.net')
-                    ->from('noreply.portal.myenergyclever@gmail.com')
+                    ->from('noreply@portal-myenergyclever.com')
                     ->to($to)
                     //->addTo('cabrelmbakam@gmail.com')
                     //->cc('cabrelmbakam@gmail.com')
@@ -81,7 +81,7 @@ class UserNotificationHandler implements MessageHandlerInterface
                 //if ($to) {
                 $email = (new Email())
                     // ->from('noc@datacenter-services.net')
-                    ->from('noreply.portal.myenergyclever@gmail.com')
+                    ->from('noreply@portal-myenergyclever.com')
                     ->to($to)
                     //->addTo('cabrelmbakam@gmail.com')
                     //->cc('cabrelmbakam@gmail.com')
