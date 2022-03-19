@@ -6,16 +6,18 @@ use Faker;
 use DateTime;
 use DateInterval;
 use App\Entity\Site;
+use DateTimeImmutable;
 use App\Entity\SmartMod;
 use App\Entity\GensetData;
 use App\Entity\AlarmReporting;
 use App\Entity\LoadEnergyData;
 use App\Service\GensetModService;
 use App\Entity\GensetRealTimeData;
+use App\Service\SiteProDataService;
 use App\Message\UserNotificationMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
-use DateTimeImmutable;
+use App\Service\SiteProDataAnalyticService;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +31,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class GensetController extends ApplicationController
 {
+    private $projectDirectory;
+    private $manager;
+
+    public function __construct(EntityManagerInterface $manager, string $projectDirectory)
+    {
+        $this->manager = $manager;
+        $this->projectDirectory = $projectDirectory;
+    }
+
     /**
      * @Route("/installation/{slug<[a-zA-Z0-9-_]+>}/genset/{id<\d+>}", name="genset_home")
      * 
@@ -65,7 +76,6 @@ class GensetController extends ApplicationController
             'monthDataTable'  => $monthDataTable,
         ]);
     }
-
 
     /**
      * Permet de mettre à jour l'affichage des données temps réel d'un module genset
@@ -412,6 +422,7 @@ class GensetController extends ApplicationController
                         $WATFL = "WATFL"; // 9
                         $SFL50 = "SFL50"; // 11
                         $SFL20 = "SFL20"; // 12
+                        $SNPW = "SNPW"; // 12
 
                         /*if ($oldData->getMinBattVolt()  === 0 && $paramJSON['MinBV']  === 1) {
                             $mess = "{\"code\":\"{$BATT}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
@@ -486,7 +497,7 @@ class GensetController extends ApplicationController
                                     'modId'  => $smartMod->getModuleId(),
                                 ]
                             );
-                        }
+                        } 
                         if ($oldData->getMinFreq() === 0 && $paramJSON['MinFr'] === 1) {
                             $mess = "{\"code\":\"{$FREQ}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
                             //$mess = "{\"code\":\"{$FREQ}\",\"date\":\"{$paramJSON['date1']}\"}";
@@ -538,6 +549,17 @@ class GensetController extends ApplicationController
                                  'modId'  => $smartMod->getModuleId(),
                              ]);
                          }
+                        }
+
+                        if (array_key_exists("CR", $paramJSON) && array_key_exists("CG", $paramJSON) && array_key_exists("P", $paramJSON)) {
+                            if (($oldData->getP()  > 1 && $paramJSON['P']  === 0) && ($paramJSON['CR'] === 0)&& ($paramJSON['CG'] === 0)) {
+                                $mess = "{\"code\":\"{$SNPW}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+   
+                                $response = $this->forward('App\Controller\GensetController::sendToAlarmController', [
+                                    'mess'   => $mess,
+                                    'modId'  => $smartMod->getModuleId(),
+                                ]);
+                            }
                         }
                         if (array_key_exists("LowFuel", $paramJSON)) {
                          if ($oldData->getLowFuel() === 0 && $paramJSON['LowFuel'] === 1) {
@@ -1190,13 +1212,15 @@ class GensetController extends ApplicationController
                         $message = $alarmCode->getLabel() . ' ' . $site->getName() . " depuis le " . $date->format('d/m/Y à H:i:s') . $fuelStr;
                     } else if ($alarmCode->getCode() === 'GNOTL') {
                         $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . " survenue le " . $date->format('d/m/Y à H:i:s');
+                    } else if ($alarmCode->getCode() === 'SNPW') {
+                        $message = $alarmCode->getLabel() . $site->getName() . " n'est pas alimenté depuis le " . $date->format('d/m/Y à H:i:s');
                     } else $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . ' survenu(e) le ' . $date->format('d/m/Y à H:i:s');
                 }
 
-                foreach ($site->getContacts() as $contact) {
+                /*foreach ($site->getContacts() as $contact) {
                     $messageBus->dispatch(new UserNotificationMessage($contact->getId(), $message, $alarmCode->getMedia(), $alarmCode->getAlerte()));
                     //$messageBus->dispatch(new UserNotificationMessage($contact->getId(), $message, 'SMS', ''));
-                }
+                }*/
 
                 //$adminUsers = [];
                 $Users = $manager->getRepository('App:User')->findAll();
