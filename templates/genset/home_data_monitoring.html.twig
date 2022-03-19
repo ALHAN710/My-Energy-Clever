@@ -568,7 +568,7 @@
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 layout-spacing">
                     <div class="widget widget-chart-three">
                         <div class="widget-heading">
-                            {# <h5 class="">Récap Grid</h5> #}
+                            <h5 class="">Stats Durée de fonctionnement</h5>
                         </div>
                         <div class="widget-content">
                             <div class="table-responsive">
@@ -582,7 +582,7 @@
                                     </thead>
                                     <tbody class="text-center">
                                         <tr>
-                                            <td class="text-right">Durée Totale : </td>
+                                            <td class="text-right">Total : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-totale">{{dataAnalysis['monotonePower']['stats']['mean']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-totale-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['meanProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-totale-progress-value">{% if dataAnalysis['monotonePower']['stats']['meanProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['meanProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['meanProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['meanProgress']}}{% endif %}</span>% 
@@ -597,7 +597,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right">Durée Moyenne : </td>
+                                            <td class="text-right">Moyenne : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-moy">{{dataAnalysis['monotonePower']['stats']['median']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-moy-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['medianProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-moy-progress-value">{% if dataAnalysis['monotonePower']['stats']['medianProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['medianProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['medianProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['medianProgress']}}{% endif %}</span>% 
@@ -612,7 +612,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right">Durée Médiane : </td>
+                                            <td class="text-right">Médiane : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-mediane">{{dataAnalysis['monotonePower']['stats']['min']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-mediane-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['minProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-mediane-progress-value">{% if dataAnalysis['monotonePower']['stats']['minProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['minProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['minProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['minProgress']}}{% endif %}</span>% 
@@ -627,7 +627,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right">Durée Min : </td>
+                                            <td class="text-right">Min : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-min">{{dataAnalysis['monotonePower']['stats']['max']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-min-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['maxProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-min-progress-value">{% if dataAnalysis['monotonePower']['stats']['maxProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['maxProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['maxProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['maxProgress']}}{% endif %}</span>% 
@@ -642,7 +642,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right">Durée Max : </td>
+                                            <td class="text-right">Max : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-max">{{dataAnalysis['monotonePower']['stats']['Prang10']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-max-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-max-progress-value">{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] >= 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']}}{% endif %}</span>% 
@@ -657,7 +657,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right">Durée Q1 : </td>
+                                            <td class="text-right">Q1 : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-Q1">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-Q1-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q1-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
@@ -672,7 +672,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right">Durée Q3 : </td>
+                                            <td class="text-right">Q3 : </td>
                                             <td class="text-left">
                                                 {# <span id="t-duree-Q3">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
                                                 <span id="t-duree-Q3-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q3-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
@@ -684,6 +684,151 @@
                                                 {# <span id="t-duree-Q3-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q3-progress-value">1</span>% 
                                                 <svg id="t-duree-Q3-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                                                 <svg id="t-duree-Q3-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Diagramme du nombre de démarrage #}
+            <div class="row layout-top-spacing">
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-three layout-spacing">
+                        <div class="widget-heading">
+                            <div class="">
+                                <h5 class="">Diagramme Nombre de démarrage </h5>
+                            </div>
+                        </div>
+
+                        <div class="widget-content">
+                            <div id="nps-chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-three">
+                        <div class="widget-heading">
+                            <h5 class="">Stats Nombre de démarrage</h5>
+                        </div>
+                        <div class="widget-content">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    {# <caption>List of all users</caption> #}
+                                    <thead >
+                                        {# <tr class="text-center">
+                                            <th></th>
+                                            <th></th>
+                                        </tr> #}
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <tr>
+                                            <td class="text-right">Total : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-totale">{{dataAnalysis['monotonePower']['stats']['mean']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-totale-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['meanProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-totale-progress-value">{% if dataAnalysis['monotonePower']['stats']['meanProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['meanProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['meanProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['meanProgress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-totale-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['meanProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-totale-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['meanProgress'] > 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-totale">-</span>
+                                                {# <span id="t-nps-totale-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-totale-progress-value">1</span>% 
+                                                <svg id="t-nps-totale-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-totale-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Moyenne : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-moy">{{dataAnalysis['monotonePower']['stats']['median']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-moy-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['medianProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-moy-progress-value">{% if dataAnalysis['monotonePower']['stats']['medianProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['medianProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['medianProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['medianProgress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-moy-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['medianProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-moy-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['medianProgress'] > 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-moy">-</span>
+                                                {# <span id="t-nps-moy-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-moy-progress-value">1</span>% 
+                                                <svg id="t-nps-moy-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-moy-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Médiane : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-mediane">{{dataAnalysis['monotonePower']['stats']['min']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-mediane-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['minProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-mediane-progress-value">{% if dataAnalysis['monotonePower']['stats']['minProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['minProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['minProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['minProgress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-mediane-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['minProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-mediane-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['minProgress'] > 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-mediane">-</span>
+                                                {# <span id="t-nps-mediane-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-mediane-progress-value">1</span>% 
+                                                <svg id="t-nps-mediane-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-mediane-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Min : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-min">{{dataAnalysis['monotonePower']['stats']['max']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-min-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['maxProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-min-progress-value">{% if dataAnalysis['monotonePower']['stats']['maxProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['maxProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['maxProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['maxProgress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-min-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['maxProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-min-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['maxProgress'] > 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-min">-</span>
+                                                {# <span id="t-nps-min-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-min-progress-value">1</span>% 
+                                                <svg id="t-nps-min-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-min-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Max : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-max">{{dataAnalysis['monotonePower']['stats']['Prang10']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-max-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-max-progress-value">{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] >= 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-max-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-max-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] > 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-max">-</span>
+                                                {# <span id="t-nps-max-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-max-progress-value">1</span>% 
+                                                <svg id="t-nps-max-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-max-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Q1 : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-Q1">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-Q1-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-Q1-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-Q1-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-Q1-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-Q1">-</span>
+                                                {# <span id="t-nps-Q1-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-Q1-progress-value">1</span>% 
+                                                <svg id="t-nps-Q1-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-Q1-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">Q3 : </td>
+                                            <td class="text-left">
+                                                {# <span id="t-nps-Q3">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
+                                                <span id="t-nps-Q3-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-Q3-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                                <svg id="t-nps-Q3-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-Q3-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                </span> #}
+
+                                                <span id="t-nps-Q3">-</span>
+                                                {# <span id="t-nps-Q3-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nps-Q3-progress-value">1</span>% 
+                                                <svg id="t-nps-Q3-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                <svg id="t-nps-Q3-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
                                             </td>
                                         </tr>
                                         
@@ -1759,6 +1904,46 @@
                                         {# //On gère la progression de la durée Q3 de fonctionnement du GE
                                         progress(prefixSelector='t-duree-Q3-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
                                         
+                                        displayNewData(NPSChart, result['NPSchart']['date'], Object.values(result['NPSchart']['NPS']), [startDate, endDate], 1, 'day');
+                                        //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                        NPSChart.toggleSeries('Nombre de démarrage')
+                                        NPSChart.toggleSeries('Nombre de démarrage')
+
+                                        //Valeur de la durée total de fonctionnement du GE
+                                        $('#t-nps-totale').text(result['statsNPS']['total']);
+                                        {# //On gère la progression de la durée totale de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-totale-progress-', progValue=result['statsNPS']['totaleProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée moyen de fonctionnement du GE
+                                        $('#t-nps-moy').text(result['statsNPS']['mean']);
+                                        {# //On gère la progression de la durée moyenne de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-moy-progress-', progValue=result['statsNPS']['meanProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Médian de fonctionnement du GE
+                                        $('#t-nps-mediane').text(result['statsNPS']['median']);
+                                        {# //On gère la progression de la durée Médiane de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-mediane-progress-', progValue=result['statsNPS']['medianProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Min de fonctionnement du GE
+                                        $('#t-nps-min').text(result['statsNPS']['min']);
+                                        {# //On gère la progression de la durée Min de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-min-progress-', progValue=result['statsNPS']['minProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Max de fonctionnement du GE
+                                        $('#t-nps-max').text(result['statsNPS']['max']);
+                                        {# //On gère la progression de la durée Max de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-max-progress-', progValue=result['statsNPS']['maxProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Q1 de fonctionnement du GE
+                                        $('#t-nps-Q1').text(result['statsNPS']['Q1']);
+                                        {# //On gère la progression de la durée Q1 de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-Q1-progress-', progValue=result['statsNPS']['maxProgress'], posLogique=false, isTime=false); #}
+                                        
+                                        //Valeur de la durée Q3 de fonctionnement du GE
+                                        $('#t-nps-Q3').text(result['statsNPS']['Q3']);
+                                        {# //On gère la progression de la durée Q3 de fonctionnement du GE
+                                        progress(prefixSelector='t-nps-Q3-progress-', progValue=result['NPSchart']['maxProgress'], posLogique=false, isTime=false); #}
+                                        
                                     }
                                 },
                                 error: function (result) {
@@ -1941,6 +2126,94 @@
         mixed_duree_conso_options
     );
     MixedConsoChart.render()
+
+    var nps_options = {
+        chart: {
+            fontFamily: 'Nunito, sans-serif',
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: true,
+            }
+        },
+        series: [{
+            name: 'Nombre de démarrage',
+            type: 'column',
+            data: [23, 42, 35, 27, 43, 22, 17, 31, 22, 22, 12, 16]
+            {# data: [] #}
+        }{#, {
+            name: 'Appro Fuel',
+            type: 'column',
+            data: [10, 22, 15, 17, 23, 12, 7, 11, 12, 12, 6, 4]
+            //data: []
+        }, {
+            name: 'Durée de fonctionnement',
+            type: 'column',
+            data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160]
+            //data: []
+        } #}],
+        stroke: {
+            curve: 'smooth',
+            width: [4, 4, 2]
+        },
+        /* title: {
+            text: 'Traffic Sources'
+        }, */
+        xaxis: {
+            type: 'datetime',
+            categories: [],
+            {# categories: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'], #}
+            labels: {
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: [{
+            seriesName: 'Nombre de démarrage',
+            opposite: false,
+            title: {
+                text: 'Litres'
+            }
+        }{#, {
+            seriesName: 'Consommation Fuel',
+            show: false,
+        }, {
+            opposite: true,
+            seriesName: 'Durée de fonctionnement',
+            title: {
+                text: 'Durée de fonctionnement (Heures)'
+            }
+        }#}],
+        tooltip: {
+            theme: "dark",
+            //followCursor: true,
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    /*if (typeof y !== "undefined") {
+                        return y.toFixed(2) + ""
+                    }*/
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                }
+            }
+        },
+
+    }
+    
+    var NPSChart = new ApexCharts(
+        document.querySelector("#nps-chart"),
+        nps_options
+    );
+    NPSChart.render()
 
     var start = moment().subtract(1, 'days');
     var end = moment();
@@ -2178,6 +2451,46 @@
                                 {# //On gère la progression de la durée Q3 de fonctionnement du GE
                                 progress(prefixSelector='t-duree-Q3-progress-', progValue=result['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
                                 
+
+                                displayNewData(NPSChart, result['NPSchart']['date'], Object.values(result['NPSchart']['NPS']), [startDate, endDate], 1, 'day');
+                                //displayNewData(PowerProfile_Linechart, dateLabel, Object.values(result['Mix2']), date, 3, 'day');
+                                NPSChart.toggleSeries('Nombre de démarrage')
+                                NPSChart.toggleSeries('Nombre de démarrage')
+
+                                //Valeur de la durée total de fonctionnement du GE
+                                $('#t-nps-totale').text(result['statsNPS']['total']);
+                                {# //On gère la progression de la durée totale de fonctionnement du GE
+                                progress(prefixSelector='t-nps-totale-progress-', progValue=result['statsNPS']['totaleProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée moyen de fonctionnement du GE
+                                $('#t-nps-moy').text(result['statsNPS']['mean']);
+                                {# //On gère la progression de la durée moyenne de fonctionnement du GE
+                                progress(prefixSelector='t-nps-moy-progress-', progValue=result['statsNPS']['meanProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Médian de fonctionnement du GE
+                                $('#t-nps-mediane').text(result['statsNPS']['median']);
+                                {# //On gère la progression de la durée Médiane de fonctionnement du GE
+                                progress(prefixSelector='t-nps-mediane-progress-', progValue=result['statsNPS']['medianProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Min de fonctionnement du GE
+                                $('#t-nps-min').text(result['statsNPS']['min']);
+                                {# //On gère la progression de la durée Min de fonctionnement du GE
+                                progress(prefixSelector='t-nps-min-progress-', progValue=result['statsNPS']['minProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Max de fonctionnement du GE
+                                $('#t-nps-max').text(result['statsNPS']['max']);
+                                {# //On gère la progression de la durée Max de fonctionnement du GE
+                                progress(prefixSelector='t-nps-max-progress-', progValue=result['statsNPS']['maxProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Q1 de fonctionnement du GE
+                                $('#t-nps-Q1').text(result['statsNPS']['Q1']);
+                                {# //On gère la progression de la durée Q1 de fonctionnement du GE
+                                progress(prefixSelector='t-nps-Q1-progress-', progValue=result['statsNPS']['maxProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Q3 de fonctionnement du GE
+                                $('#t-nps-Q3').text(result['statsNPS']['Q3']);
+                                {# //On gère la progression de la durée Q3 de fonctionnement du GE
+                                progress(prefixSelector='t-nps-Q3-progress-', progValue=result['NPSchart']['maxProgress'], posLogique=false, isTime=false); #}
                             }
                         },
                         error: function (result) {

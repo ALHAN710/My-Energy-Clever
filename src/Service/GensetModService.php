@@ -44,6 +44,8 @@ class GensetModService
     private $intervalTime = 5.0/60.0 ;
 
     private $fuelCapacity = 100.0;
+    
+    private $fuelprice = 575.0;
 
     public function __construct(EntityManagerInterface $manager)
     {
@@ -312,10 +314,12 @@ class GensetModService
         $date   = [];
         $data   = [];
         $dataFL = [];
+        $dataFLXAF = [];
 
         foreach ($dataQuery as $d) {
             $date[]    = $d['dat']->format('Y-m-d H:i:s');
             $dataFL[]  = $d['FL'];
+            $dataFLXAF[]  = (($d['FL']* $this->fuelCapacity)/100.0) * $this->fuelPrice;
             // $TRH[]     = $d['TRH'];
             $data[$d['dat']->format('Y-m-d H:i:s')] = [
                 'FL'    => $d['FL'],
@@ -620,7 +624,7 @@ class GensetModService
 
         $dureeDayByDayFilter = [];
         if (count($dureeDayByDay) > 0) {
-            $dureeDayByDayFilter = array_filter($dureeDayByDay);
+            $dureeDayByDayFilter = array_filter($dureeDayByDay); //Filtrage du tableau pour supprimer les valeurs nulles
             if (count($dureeDayByDayFilter) > 0) {
                 sort($dureeDayByDayFilter);
                 $n = count($dureeDayByDayFilter) - 1;
@@ -666,8 +670,9 @@ class GensetModService
                 "duree"       => $dureeDayByDay,
             ],
             'dataFL'    => [
-                'date' => $date,
-                'FL'   => $dataFL
+                'date'  => $date,
+                'FL'    => $dataFL,
+                'XAF'   => $dataFLXAF
             ],
             'statsDureeFonctionnement' => [
                 'totale' => $dureeTotale, 
@@ -680,6 +685,103 @@ class GensetModService
             ]
         );
     }
+
+    public function getNPSstats()
+    {
+        // ========= Détermination de la longueur de la datetime =========
+        $length = 10; //Si endDate > startDate => regoupement des données par jour de la fenêtre de date
+        if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
+        // dump($length);
+
+        $date   = [];
+        $NPSDayByDay   = [];
+        
+        $NPSDayByDayRecordQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) AS dat, MAX(NULLIF(d.nbPerformedStartUps,0)) - MIN(NULLIF(d.nbPerformedStartUps,0)) AS NPS
+                                        FROM App\Entity\GensetData d
+                                        JOIN d.smartMod sm 
+                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                        AND sm.id = :smartModId    
+                                        AND d.nbPerformedStartUps IS NOT NULL               
+                                        GROUP BY dat
+                                        ORDER BY dat ASC")
+            ->setParameters(array(
+                //'length'     => $length,
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'smartModId'   => $this->gensetMod->getId()
+            ))
+            ->getResult();
+        
+        // dump($NPSDayByDayRecordQuery);
+
+        foreach ($NPSDayByDayRecordQuery as $d) {
+            $date[]  = $d['dat'];
+            $NPSDayByDay[]  = intval($d['NPS']) ?? 0;
+        }
+
+        // dump($date);
+        // dump($NPSDayByDay);
+
+        //Données de la courbe de durée de fonctionnement jour après jour
+        $NPSTotal    = 0;
+        $NPSMoyenne  = 0;
+        $NPSMediane  = 0;
+        $NPSMax      = 0;
+        $NPSMin      = 0;
+        $NPSQ1       = 0;
+        $NPSQ3       = 0;
+
+        $NPSDayByDayFilter = [];
+        if (count($NPSDayByDay) > 0) {
+            $NPSDayByDayFilter = $NPSDayByDay;
+            // $NPSDayByDayFilter = array_map(function ($object) { return clone $object; }, $NPSDayByDay);
+            if (count($NPSDayByDayFilter) > 0) {
+                sort($NPSDayByDayFilter);
+                // dump($NPSDayByDayFilter);
+                // dump($NPSDayByDay);
+                $n = count($NPSDayByDayFilter) - 1;
+                $NPSTotal = array_sum($NPSDayByDayFilter);
+                $NPSMin = min($NPSDayByDayFilter);
+                // $q1 = floor(($n + 3) / 4) + 1;
+                // $q2 = floor(($n + 1) / 2) + 1;
+                // $q2 = ceil($n / 2);
+                $NPSMoyenne = $this->mmmrv($NPSDayByDayFilter, 'mean');
+                $NPSMediane = $this->mmmrv($NPSDayByDayFilter, 'median');
+                // $q3 = floor(($n + 1) / 4) + 1;
+                $NPSMax = max($NPSDayByDayFilter);
+                $q1 = ceil($n / 4);
+                $NPSQ1 = $NPSDayByDayFilter[$q1];
+                $q3 = ceil((3 * $n) / 4);
+                $NPSQ3 = $NPSDayByDayFilter[$q3];
+                $dQ = $NPSQ3 - $NPSQ1;
+            }
+        }
+        
+        $NPSTotal   = $NPSTotal;
+        $NPSMoyenne = $NPSMoyenne;
+        $NPSMediane = $NPSMediane;
+        $NPSMin     = $NPSMin;
+        $NPSMax     = $NPSMax;
+        $NPSQ1      = $NPSQ1;
+        $NPSQ3      = $NPSQ3;
+        // dump($dureeDayByDayFilter);
+
+        return array(
+            'NPSchart' => [
+                'date' => $date,
+                'NPS'  => $NPSDayByDay
+            ],
+            'statsNPS' => [
+                'total'  => $NPSTotal, 
+                'mean'   => floatval(number_format((float) $NPSMoyenne, 2, '.', '')), 
+                'median' => $NPSMediane, 
+                'min'    => $NPSMin, 
+                'max'    => $NPSMax, 
+                'Q1'     => $NPSQ1, 
+                'Q3'     => $NPSQ3
+            ]
+        );
+    } 
 
     public function getDataForMonthDataTable()
     {
@@ -1869,6 +1971,7 @@ class GensetModService
             else $this->intervalTime = 5.0/60.0;
 
             $this->fuelCapacity = $this->gensetMod->getFuelCapacity() ?? 100.0;
+            $this->fuelPrice    = $this->gensetMod->getFuelPrice() ?? 575.0;
         }
 
         return $this;
