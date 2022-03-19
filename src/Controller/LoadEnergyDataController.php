@@ -3,13 +3,18 @@
 namespace App\Controller;
 
 use DateTime;
+use DateTimeImmutable;
 use App\Entity\GensetData;
+use App\Entity\AlarmReporting;
 use App\Entity\LoadEnergyData;
+use App\Message\UserNotificationMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 //use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class LoadEnergyDataController extends ApplicationController
@@ -270,7 +275,7 @@ class LoadEnergyDataController extends ApplicationController
                 $gridMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_0']);
                 $gensetMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_1']);
                 $loadSiteMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_2']);
-
+                
                 $gridData = new LoadEnergyData();
                 $loadSiteData = new LoadEnergyData();
                 $GensetData = new GensetData();
@@ -292,7 +297,7 @@ class LoadEnergyDataController extends ApplicationController
                     $gridData->setDateTime($date);
                     $loadSiteData->setDateTime($date);
                     $GensetData->setDateTime($date);
-
+                    
                     if ($smartMod->getNbPhases() === 1) {
                         if (array_key_exists("Cosfi", $paramJSON)) {
                             if (count($paramJSON['Cosfi']) >= 3) {
@@ -738,7 +743,8 @@ class LoadEnergyDataController extends ApplicationController
                 $gridMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_0']);
                 $gensetMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_1']);
                 $loadSiteMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_2']);
-
+                $loadId = $loadSiteMod !== null ? $loadSiteMod->getId() : 0;
+                
                 $gridData = new LoadEnergyData();
                 $loadSiteData = new LoadEnergyData();
                 $GensetData = new GensetData();
@@ -761,6 +767,20 @@ class LoadEnergyDataController extends ApplicationController
                     $loadSiteData->setDateTime($date);
                     $GensetData->setDateTime($date);
 
+                    $oldPRecord = $manager->createQuery("SELECT d.pmoy AS Pmoy
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm 
+                                                WHERE d.dateTime =  (SELECT max(d1.dateTime) FROM App\Entity\LoadEnergyData d1 JOIN d1.smartMod sm1 WHERE sm1.id = :smartModId)
+                                                AND sm.id = :smartModId                   
+                                                ")
+                    ->setParameters(array(
+                        'smartModId'   => $loadId
+                    ))
+                    ->getResult();
+
+                    $oldPmoy = null;
+                    $oldPmoy = count($oldPRecord) > 0 ? $oldPRecord[0]['Pmoy'] : null;
+                    
                     if ($smartMod->getNbPhases() === 1) {
                         if (array_key_exists("Cosfi", $paramJSON)) {
                             if (count($paramJSON['Cosfi']) >= 3) {
@@ -789,6 +809,14 @@ class LoadEnergyDataController extends ApplicationController
                                 $gridData->setPmoy($paramJSON['P'][0]); // En kWatts
                                 $GensetData->setP($paramJSON['P'][1]); // En kWatts
                                 $loadSiteData->setPmoy($paramJSON['P'][2]); // En kWatts
+                                dd($smartMod->getSite()->getPowerSubscribed());
+                                if($oldPmoy !== null && $smartMod->getSite()->getPowerSubscribed()){
+                                    $Psous = $smartMod->getSite()->getPowerSubscribed();
+                                    if($paramJSON['P'][2] > $Psous && $oldPmoy < $Psous){
+                                        dump($paramJSON['P'][2]);
+                                        dd($oldPmoy);
+                                    }
+                                }
                             }
                         }
                         if (array_key_exists("Pmax", $paramJSON)) {
@@ -877,6 +905,27 @@ class LoadEnergyDataController extends ApplicationController
                                 $gridData->setPmoy($paramJSON['P'][0]); // En kW
                                 $GensetData->setP($paramJSON['P'][1]); // En kW
                                 $loadSiteData->setPmoy($paramJSON['P'][2]); // En kW
+
+                                //dd($smartMod->getSite()->getPowerSubscribed());
+                                if($oldPmoy !== null && $smartMod->getSite()->getPowerSubscribed()){
+                                    $Psous = $smartMod->getSite()->getPowerSubscribed();
+                                    if($paramJSON['P'][2] > $Psous && $oldPmoy < $Psous){
+                                        $PSOV = "PSOV"; // 1
+                                        
+                                        $mess = "{\"code\":\"{$PSOV}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+                                        
+                                        $response = $this->forward(
+                                            'App\Controller\LoadEnergyDataController::sendToAlarmController',
+                                            [
+                                                'mess'   => $mess,
+                                                'modId'  => $loadSiteMod->getModuleId(),
+                                                ]
+                                            );
+                                        // dump($loadSiteMod->getModuleId());
+                                        // dump($paramJSON['P'][2]);
+                                        // dd($oldPmoy);
+                                    }
+                                }
                             }
                         }
                         if (array_key_exists("Pamax", $paramJSON)) {
@@ -1167,5 +1216,90 @@ class LoadEnergyDataController extends ApplicationController
             'modId'    => $modId
 
         ], 403);
+    }
+
+    public function sendToAlarmController($mess, $modId, EntityManagerInterface $manager, HttpClientInterface $client, MessageBusInterface $messageBus)
+    {
+        /*return $this->json([
+            'mess'    => $mess,
+            'modId' => $modId,
+        ], 200);*/
+        $paramJSON = $this->getJSONRequest($mess);
+        // dump($modId);
+        $smartMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $modId]);
+        if ($smartMod) {
+            // dump($smartMod);
+            $alarmCode = $manager->getRepository('App:Alarm')->findOneBy(['code' => $paramJSON['code']]);
+            if ($alarmCode) {
+                //$date = new DateTime('now');
+                $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $paramJSON['date']) !== false ? DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $paramJSON['date']) : new DateTimeImmutable('now');
+                //$date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                $alarmReporting = new AlarmReporting();
+                $alarmReporting->setSmartMod($smartMod)
+                    ->setAlarm($alarmCode)
+                    ->setCreatedAt($date);
+
+
+                if ($smartMod->getSite()) $site = $smartMod->getSite();
+                else {
+                    foreach ($smartMod->getZones() as $zone) {
+                        $site = $zone->getSite();
+                        if ($site) break;
+                    }
+                }
+
+                if ($alarmCode->getType() !== 'FUEL') $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . " ({$site->getEnterprise()->getSocialReason()})" . ' survenu(e) le ' . $date->format('d/m/Y à H:i:s');
+                else if ($alarmCode->getType() === 'FUEL') {
+                    $data = clone $smartMod->getGensetRealTimeData();
+                    $fuelStr = $data->getFuelLevel() != null ? ' avec un niveau de Fuel de ' . $data->getFuelLevel() . '%' : ''; 
+                    if ($alarmCode->getCode() === 'GENR') $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . ' survenu(e) le ' . $date->format('d/m/Y à H:i:s') . $fuelStr;
+                    else if ($alarmCode->getCode() === 'GENST') {
+                        $message = $alarmCode->getLabel() . " du site " . $site->getName() . " survenu le " . $date->format('d/m/Y à H:i:s') . $fuelStr;
+                    } else if ($alarmCode->getCode() === 'SFL50' ) {
+                        $message = $alarmCode->getLabel() . " dans le réservoir du groupe électrogène du site " . $site->getName() . " détecté le " . $date->format('d/m/Y à H:i:s') . ". Nous vous prions de bien vouloir effectuer une opération de ravitaillement. Niveau de Fuel Actuel : " . $data->getFuelLevel() . '%';
+                    }  else if ($alarmCode->getCode() === 'SFL20') {
+                        $message = $alarmCode->getLabel() . " dans le réservoir du groupe électrogène du site " . $site->getName() . " détecté le " . $date->format('d/m/Y à H:i:s') . '. Niveau de Fuel de ' . $data->getFuelLevel() . '%';
+                    } else if ($alarmCode->getCode() === 'GOTL') {
+                        $message = $alarmCode->getLabel() . ' ' . $site->getName() . " depuis le " . $date->format('d/m/Y à H:i:s') . $fuelStr;
+                    } else if ($alarmCode->getCode() === 'GNOTL') {
+                        $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . " survenue le " . $date->format('d/m/Y à H:i:s');
+                    } else if ($alarmCode->getCode() === 'SNPW') {
+                        $message = $alarmCode->getLabel() . $site->getName() . " n'est pas alimenté depuis le " . $date->format('d/m/Y à H:i:s');
+                    } else $message = $alarmCode->getLabel() . ' du site ' . $site->getName() . ' survenu(e) le ' . $date->format('d/m/Y à H:i:s');
+                }
+
+                /*foreach ($site->getContacts() as $contact) {
+                    $messageBus->dispatch(new UserNotificationMessage($contact->getId(), $message, $alarmCode->getMedia(), $alarmCode->getAlerte()));
+                    //$messageBus->dispatch(new UserNotificationMessage($contact->getId(), $message, 'SMS', ''));
+                }*/
+
+                //$adminUsers = [];
+                $Users = $manager->getRepository('App:User')->findAll();
+                foreach ($Users as $user) {
+                    if ($user->getRoles()[0] === 'ROLE_SUPER_ADMIN') {
+                        //$adminUsers[] = $user;
+                        $messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'Email', $alarmCode->getAlerte()));
+                    }
+                }
+                //$messageBus->dispatch(new UserNotificationMessage(1, $message, 'Email', $alarmCode->getAlerte()));
+                //$messageBus->dispatch(new UserNotificationMessage(2, $message, 'Email', $alarmCode->getAlerte()));
+                $manager->persist($alarmReporting);
+                $manager->flush();
+                return $this->json([
+                    'code'    => 200,
+                    'alarmCode'  => "{$alarmCode->getMedia()}",
+                    'date'  => $date->format('d F Y H:i:s')
+                ], 200);
+            }
+            return $this->json([
+                'code'    => 200,
+                'smartMod'  => "{$smartMod->getModuleId()}",
+                //'date'  => $date->format('d F Y H:i:s')
+            ], 200);
+        }
+
+        return $this->json([
+            'code'         => 500,
+        ], 500);
     }
 }
