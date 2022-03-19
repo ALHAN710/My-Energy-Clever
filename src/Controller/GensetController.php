@@ -148,8 +148,9 @@ class GensetController extends ApplicationController
         
         // ######## Récupération des données de consommation et d'approvisionnement de Fuel
         $fuelData = $gensetModService->getConsoFuelData();
-        
-
+        // dump($fuelData);
+        $NPSstats = $gensetModService->getNPSstats();
+        // dump($NPSstats);
         return $this->json([
             'code'         => 200,
             //'startDate'    => $startDate,
@@ -161,9 +162,12 @@ class GensetController extends ApplicationController
             ],
             'dataFL'    => [
                 'date' => $fuelData['dataFL']['date'],
-                'FL'   => $fuelData['dataFL']['FL']
+                'FL'   => $fuelData['dataFL']['FL'],
+                'XAF'  => $fuelData['dataFL']['XAF']
             ],
             'statsDureeFonctionnement' => $fuelData['statsDureeFonctionnement'],
+            'NPSchart' => $NPSstats['NPSchart'],
+            'statsNPS' => $NPSstats['statsNPS'],
             //'Mix2'            => [$S, $P, $Cosfi],
             // 'Load_Level'    => $S,
             // 'S3ph'         => $S3ph,
@@ -214,10 +218,9 @@ class GensetController extends ApplicationController
                         $oldData = clone $smartMod->getGensetRealTimeData();
                     }
 
-
-                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date1']);
-                    //$date = new DateTime('now');
-
+                    if($paramJSON['date1'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date1']);
+                    else $date = new DateTime('now');
+                    // dd($date);
                     /*$dataMod->setL12G($paramJSON['L12G'])
                         ->setL13G($paramJSON['L13G'])
                         ->setL23G($paramJSON['L23G'])
@@ -681,7 +684,10 @@ class GensetController extends ApplicationController
             //$date = new DateTime($paramJSON['date']);
             if (array_key_exists("date", $paramJSON)) {
                 //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
-                $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                else $date = new DateTime('now');
+                // dd($date);
+                // $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
                 //$date = new DateTime('now');
                 // //dump($date);
                 //die();
