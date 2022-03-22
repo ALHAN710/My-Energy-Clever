@@ -98,7 +98,7 @@ class GensetRealTimeData
     private $battVoltage;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
     private $hoursToMaintenance;
 
@@ -354,12 +354,12 @@ class GensetRealTimeData
         return $this;
     }
 
-    public function getHoursToMaintenance(): ?int
+    public function getHoursToMaintenance(): ?float
     {
         return $this->hoursToMaintenance;
     }
 
-    public function setHoursToMaintenance(?int $hoursToMaintenance): self
+    public function setHoursToMaintenance(?float $hoursToMaintenance): self
     {
         $this->hoursToMaintenance = $hoursToMaintenance;
 

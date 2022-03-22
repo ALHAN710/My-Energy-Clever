@@ -428,24 +428,24 @@ class GensetData
         return $this;
     }
 
-    public function getTotalRunningHours(): ?int
+    public function getTotalRunningHours(): ?float
     {
         return $this->totalRunningHours;
     }
 
-    public function setTotalRunningHours(?int $totalRunningHours): self
+    public function setTotalRunningHours(?float $totalRunningHours): self
     {
         $this->totalRunningHours = $totalRunningHours;
 
         return $this;
     }
 
-    public function getTotalEnergy(): ?int
+    public function getTotalEnergy(): ?float
     {
         return $this->totalEnergy;
     }
 
-    public function setTotalEnergy(?int $totalEnergy): self
+    public function setTotalEnergy(?float $totalEnergy): self
     {
         $this->totalEnergy = $totalEnergy;
 
