@@ -6,6 +6,7 @@ use Faker;
 use DateTime;
 use DateInterval;
 use App\Entity\Site;
+use App\Entity\User;
 use DateTimeImmutable;
 use App\Entity\SmartMod;
 use App\Entity\GensetData;
@@ -15,6 +16,7 @@ use App\Service\GensetModService;
 use App\Entity\GensetRealTimeData;
 use App\Service\SiteProDataService;
 use App\Message\UserNotificationMessage;
+use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
 use App\Service\SiteProDataAnalyticService;
@@ -27,6 +29,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 //use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GensetController extends ApplicationController
@@ -42,9 +47,14 @@ class GensetController extends ApplicationController
 
     /**
      * @Route("/installation/{slug<[a-zA-Z0-9-_]+>}/genset/{id<\d+>}", name="genset_home")
-     * 
+     *
      * @IsGranted("ROLE_USER")
-     * 
+     * @param $slug
+     * @param SmartMod $genset
+     * @param EntityManagerInterface $manager
+     * @param GensetModService $gensetModService
+     * @return Response
+     * @throws \Exception
      */
     public function index($slug, SmartMod $genset, EntityManagerInterface $manager, GensetModService $gensetModService): Response
     { //@Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_NOC_SUPERVISOR') and id.getSite().getEnterprise() === user.getEnterprise() )" )
@@ -75,6 +85,110 @@ class GensetController extends ApplicationController
             'overviewData'    => $overViewData,
             'monthDataTable'  => $monthDataTable,
         ]);
+    }
+
+    /**
+     * Fonction test pour le reporting GE
+     * 
+     * @Route("/installation/{slug<[a-zA-Z0-9-_]+>}/genset-report/{id<\d+>}", name="genset_report")
+     * 
+     * @param string $slug
+     * @param SmartMod $genset
+     * @param EntityManagerInterface $manager
+     * @param GensetModService $gensetModService
+     * @return Response
+     */
+    public function weeklyReport($slug, SmartMod $genset, EntityManagerInterface $manager, GensetModService $gensetModService, SiteProDataAnalyticService $siteProAnalytic): Response
+    {
+        $site = $manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
+
+        $date = new DateTime('now');
+        $date->modify('-6 days');
+        $week = $date->format("W");
+        $year = $date->format("Y");
+        // dump("Week Number : $week");
+
+        $dates=$this->getStartAndEndDate($week,$year);
+        // dump($dates);
+
+        $startDate = new DateTime($dates['start_date'] . '00:00:00');
+        $endDate   = new DateTime($dates['end_date'] . '23:59:59');
+        // $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        // $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        dump($startDate);
+        dump($endDate);
+
+        // Example of how to obtain an user:
+        $users = $this->getDoctrine()->getManager()->getRepository(User::class)->findBy(array('enterprise' => $site->getEnterprise()));
+        $user = null;
+        foreach($users as $user_)
+        {
+            if($user_->getRoles()[0] === 'ROLE_ADMIN') {
+                $user = $user_;
+                break;
+            }
+        }
+        $this->loginAction($user);
+
+        /*$gensetModService->setGensetMod($genset)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+
+        $dataReport = $gensetModService->getDashboardData();*/
+
+        $siteProAnalytic->setSite($site)
+                    ->setPower_unit(1)
+                    ->setStartDate($startDate)
+                    ->setEndDate($endDate);
+
+        $dataAnalysis = $siteProAnalytic->getDataAnalysis();
+
+        return $this->render('email/data-analysis-report.html.twig', [
+            'site'            => $site,
+            'genset'          => $genset,
+            'dataAnalysis'    => $dataAnalysis,
+            //'dataReport'      => $dataReport,
+            'dir'             => $this->projectDirectory,
+        ]);
+    }
+
+    public function loginAction($user)
+    {
+        // $user = /*The user needs to be registered */;#
+        // Example of how to obtain an user:
+        // $user = $this->getDoctrine()->getManager()->getRepository(User::class)->findOneBy(array('email' => "alhadoumpascal@gmail.com"));
+        // dump($user);
+
+        // dd($this);
+
+        //Handle getting or creating the user entity likely with a posted form
+        // The third parameter "main" can change according to the name of your firewall in security.yml
+        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $this->get('security.token_storage')->setToken($token);
+
+        // If the firewall name is not main, then the set value would be instead:
+        // $this->get('session')->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
+        $this->get('session')->set('_security_main', serialize($token));
+        
+        // Fire the login event manually
+        // $event = new InteractiveLoginEvent($request, $token);
+        // $this->dispatcher->dispatch("security.interactive_login", $event);
+        // $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+        
+        // dd($this->getUser());
+        /*
+         * Now the user is authenticated !!!! 
+         * Do what you need to do now, like render a view, redirect to route etc.
+         */
+    }
+    
+    function getStartAndEndDate($week, $year) {
+        $dateTime = new DateTime();
+        $dateTime->setISODate($year, $week);
+        $result['start_date'] = $dateTime->format('Y-m-d');
+        $dateTime->modify('+6 days');
+        $result['end_date'] = $dateTime->format('Y-m-d');
+        return $result;
     }
 
     /**
