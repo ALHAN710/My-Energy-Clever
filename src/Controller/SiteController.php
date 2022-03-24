@@ -29,6 +29,8 @@ class SiteController extends ApplicationController
 {
     /**
      * @Route("/", name="site_index", methods={"GET"})
+     * @param SiteRepository $siteRepository
+     * @return Response
      */
     public function index(SiteRepository $siteRepository): Response
     {
@@ -63,6 +65,10 @@ class SiteController extends ApplicationController
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}", name="site_show", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param EntityManagerInterface $manager
+     * @param SiteDashboardDataService $dash
+     * @return Response
      */
     public function show(Site $site, EntityManagerInterface $manager, SiteDashboardDataService $dash): Response
     {
@@ -95,6 +101,10 @@ class SiteController extends ApplicationController
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro", name="site_pro_show", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDataService $siteDash
+     * @return Response
+     * @throws \Exception
      */
     public function show_site_pro(Site $site, SiteProDataService $siteDash): Response
     {
@@ -135,6 +145,10 @@ class SiteController extends ApplicationController
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/historical-analytic", name="historical_analytic_site_pro_show", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDataAnalyticService $siteAnalytic
+     * @return Response
+     * @throws \Exception
      */
     public function show_historical_analytic_site_pro(Site $site, SiteProDataAnalyticService $siteAnalytic): Response
     {
@@ -148,7 +162,8 @@ class SiteController extends ApplicationController
             ->setStartDate($startDate)
             ->setEndDate($endDate);
         $dataAnalysis = $siteAnalytic->getDataAnalysis();
-        // dump($dataAnalysis);
+        // dump($dataAnalysis['TRHchart']);
+        // dump($dataAnalysis['statsDureeFonctionnement']);
         return $this->render('site/historical_analytic.html.twig', [
             'site'            => $site,
             'dataAnalysis'    => $dataAnalysis,
@@ -164,6 +179,9 @@ class SiteController extends ApplicationController
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/data/monitoring", name="site_data_monitoring_show", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteDashboardDataService $siteDash
+     * @return Response
      */
     public function show_site_data_monitoring(Site $site, SiteDashboardDataService $siteDash): Response
     {
@@ -198,6 +216,9 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/edit", name="site_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param Site $site
+     * @return Response
      */
     public function edit(Request $request, Site $site): Response
     {
@@ -218,6 +239,9 @@ class SiteController extends ApplicationController
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}", name="site_delete", methods={"POST"})
+     * @param Request $request
+     * @param Site $site
+     * @return Response
      */
     public function delete(Request $request, Site $site): Response
     {
@@ -281,6 +305,8 @@ class SiteController extends ApplicationController
     /**
      * Permet d'obtenir le budget défini pour le mois en cours du site
      *
+     * @param Site $site
+     * @param EntityManagerInterface $manager
      * @return float
      */
     private function getCurrentBudget(Site $site, EntityManagerInterface $manager): float
@@ -376,9 +402,8 @@ class SiteController extends ApplicationController
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/overview/update", name="site_pro_overview_update_data")
      * @IsGranted("ROLE_USER")
      * @param Site $site
-     * @param SiteProDashboardDataService $overview
+     * @param SiteProDataService $overview
      * @param EntityManagerInterface $manager
-     * @param Request $request
      * @return JsonResponse
      */
     public function updateSiteProOverview(Site $site, SiteProDataService $overview, EntityManagerInterface $manager): JsonResponse
@@ -454,8 +479,7 @@ class SiteController extends ApplicationController
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/histo-graphs/update", name="site_pro_histo_update")
      * @IsGranted("ROLE_USER")
      * @param Site $site
-     * @param SiteProDashboardDataService $histo
-     * @param EntityManagerInterface $manager
+     * @param SiteProDataService $histo
      * @param Request $request
      * @return JsonResponse
      */
@@ -494,7 +518,6 @@ class SiteController extends ApplicationController
      * @IsGranted("ROLE_USER")
      * @param Site $site
      * @param SiteProDataAnalyticService $siteAnalytic
-     * @param EntityManagerInterface $manager
      * @param Request $request
      * @return JsonResponse
      */
