@@ -134,13 +134,16 @@ class SiteProDataAnalyticService
 
     private $siteDashboardDataService;
 
+    private $gensetModService;
+
     private $currentMonthStringDate = '';
 
-    public function __construct(EntityManagerInterface $manager, SiteProDataService $siteProDataService, SiteDashboardDataService $siteDashboardDataService)
+    public function __construct(EntityManagerInterface $manager, SiteProDataService $siteProDataService, SiteDashboardDataService $siteDashboardDataService, GensetModService $gensetModService)
     {
         $this->manager                      = $manager;
         $this->siteProDataService           = $siteProDataService;
         $this->siteDashboardDataService     = $siteDashboardDataService;
+        $this->gensetModService             = $gensetModService;
         $this->currentMonthStringDate       = date('Y-m') . '%';
     }
 
@@ -720,7 +723,7 @@ class SiteProDataAnalyticService
                 'siteId'       => $this->site->getId(),
                 'power_unit'   => $this->power_unit,
             ))
-            ->setMaxResults(2000)
+            //->setMaxResults(2000)
             ->getResult();
         $loadChartDataDate      = [];
         $loadChartDataPmoy      = [];
@@ -823,6 +826,7 @@ class SiteProDataAnalyticService
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
+                                                AND d.cosfimin >= 0.01
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
@@ -831,12 +835,13 @@ class SiteProDataAnalyticService
             ))
             ->setMaxResults(2000)
             ->getResult();
-        //dump($minimaCosfiDataQuery);
+        // dump($minimaCosfiDataQuery);
         $minimaCosfiDate  = [];
         $minimaCosfiData  = [];
         foreach ($minimaCosfiDataQuery as $data) {
             $minimaCosfiDate[]      = $data['jour']->format('Y-m-d H:i:s');
             $minimaCosfiData[]      = floatval(number_format((float) $data['Cosfi'], 2, '.', ''));
+
         }
 
         $minimaCosfiData_ = $minimaCosfiData;
@@ -858,6 +863,7 @@ class SiteProDataAnalyticService
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
                                                 AND d.dateTime BETWEEN :startDate AND :endDate
+                                                AND d.cosfimin >= 0.01
                                                 ORDER BY jour ASC")
             ->setParameters(array(
                 'startDate'    => $lastStartDate->format('Y-m-d H:i:s'),
@@ -904,7 +910,7 @@ class SiteProDataAnalyticService
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId(),
             ))
-            ->setMaxResults(2000)
+            //->setMaxResults(2000)
             ->getResult();
         //dump($minimaCosfiDataQuery);
         $cosfiEnergy = 0.0;
@@ -923,7 +929,7 @@ class SiteProDataAnalyticService
                 'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
                 'siteId'       => $this->site->getId(),
             ))
-            ->setMaxResults(2000)
+            //->setMaxResults(2000)
             ->getResult();
         //dump($minimaCosfiDataQuery);
         $last_cosfiEnergy = 0.0;
@@ -934,7 +940,7 @@ class SiteProDataAnalyticService
 
         // ========= Récupération des données pour les Statistques Production, Mix énergie et Stats =========  
         // Récapitulatif Production
-        $recapProd = $this->siteProDataService->getOverviewData($onlySrc = true);
+        $recapProd  = $this->siteProDataService->getOverviewData($onlySrc = true);
         $amountBill = $this->estimatedBill();
         //dump($recapProd);
 
@@ -1250,6 +1256,9 @@ class SiteProDataAnalyticService
         // dump($dowHighPowerData);
         // dump($Q_highPower);
 
+        // ######## Récupération des données de Durée de Fonctionnement du GE
+        $trhData = $this->gensetModService->getConsoFuelData();
+        dump($trhData);
         return array(
             'recapProd'                => $recapProd,
             'amount-conso-HT'          => floatval(number_format((float) $amountBill, 2, '.', '')),
@@ -1337,7 +1346,13 @@ class SiteProDataAnalyticService
             ],
             'disperConso'   => $Q_conso,
             'disperPic'     => $Q_highPower,
-
+            'powerProfilSupply'  => $this->siteProDataService->getPowerChartDataForDateRange(),
+            'TRHchart'            => [
+                'date'  => $trhData['dayBydayConsoData']['dateConso'],
+                'trh'   =>  $trhData['dayBydayConsoData']['duree']
+            ],
+            'statsDureeFonctionnement' => $trhData['statsDureeFonctionnement'],
+            
         );
     }
 
@@ -1682,6 +1697,11 @@ class SiteProDataAnalyticService
 
         $amount = $gridAmountHT;
 
+        $fuelData = $this->gensetModService->getConsoFuelData();
+        $consoFuelXAF = $fuelData['currentConsoFuel'] * $this->gensetMod->getFuelPrice();
+        //$consoFuelXAF = floatval(number_format($consoFuelXAF, 2, '.', ''));
+        $amount += $consoFuelXAF;
+
         return $amount;
     }
 
@@ -1905,6 +1925,8 @@ class SiteProDataAnalyticService
             if ($smartMod->getModType() === 'GENSET') {
                 $this->setGensetMod($smartMod);
 
+                $this->gensetModService->setGensetMod($smartMod);
+                
                 $config = json_decode($this->gensetMod->getConfiguration(), true);
                 if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
                 else $intervalTime = 5.0/60.0;// dump($intervalTime);
@@ -1993,6 +2015,7 @@ class SiteProDataAnalyticService
     {
         $this->startDate = $startDate;
         $this->siteProDataService->setStartDate($startDate);
+        $this->gensetModService->setStartDate($startDate);
         return $this;
     }
 
@@ -2017,6 +2040,8 @@ class SiteProDataAnalyticService
     {
         $this->endDate = $endDate;
         $this->siteProDataService->setEndDate($endDate);
+        $this->gensetModService->setEndDate($endDate);
+        
         return $this;
     }
 

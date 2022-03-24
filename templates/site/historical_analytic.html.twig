@@ -297,6 +297,168 @@
 
         </div>
 
+        {# Profil puissance par source #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Profil de puissance par Source</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="load-profile-supply"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Diagramme et Stats Durrée de fonctionnement du GE #}
+        <div class="row layout-top-spacing">
+            <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 layout-spacing">
+                <div class="widget widget-chart-three layout-spacing">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Diagramme Durée de fonctionnement </h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="trh-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <h5 class="">Stats Durée de fonctionnement</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                    {# <tr class="text-center">
+                                        <th></th>
+                                        <th></th>
+                                    </tr> #}
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td class="text-right">Total : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-totale">{{dataAnalysis['statsDureeFonctionnement']['totale']}}</span>  
+                                            {# <span id="t-duree-totale-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-totale-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-totale-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-totale-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['meanProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-totale">-</span>
+                                            <span id="t-duree-totale-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-totale-progress-value">1</span>% 
+                                            <svg id="t-duree-totale-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-totale-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Moyenne : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-moy">{{dataAnalysis['statsDureeFonctionnement']['mean']}}</span>  
+                                            {# <span id="t-duree-moy-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-moy-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-moy-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-moy-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['medianProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-moy">-</span>
+                                            <span id="t-duree-moy-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-moy-progress-value">1</span>% 
+                                            <svg id="t-duree-moy-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-moy-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Médiane : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-mediane">{{dataAnalysis['statsDureeFonctionnement']['median']}}</span>  
+                                            {# <span id="t-duree-mediane-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-mediane-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['minProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['minProgress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-mediane-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-mediane-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['minProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-mediane">-</span>
+                                            <span id="t-duree-mediane-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-mediane-progress-value">1</span>% 
+                                            <svg id="t-duree-mediane-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-mediane-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Min : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-min">{{dataAnalysis['statsDureeFonctionnement']['min']}}</span>  
+                                            {# <span id="t-duree-min-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-min-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-min-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-min-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['maxProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-min">-</span>
+                                            <span id="t-duree-min-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-min-progress-value">1</span>% 
+                                            <svg id="t-duree-min-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-min-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Max : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-max">{{dataAnalysis['statsDureeFonctionnement']['max']}}</span>  
+                                            {# <span id="t-duree-max-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-max-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-max-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-max-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['Prang10Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-max">-</span>
+                                            <span id="t-duree-max-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-max-progress-value">1</span>% 
+                                            <svg id="t-duree-max-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-max-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Q1 : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-Q1">{{dataAnalysis['statsDureeFonctionnement']['Q1']}}</span>  
+                                            {# <span id="t-duree-Q1-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q1-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-Q1-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-Q1-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-Q1">-</span>
+                                            <span id="t-duree-Q1-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q1-progress-value">1</span>% 
+                                            <svg id="t-duree-Q1-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-Q1-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Q3 : </td>
+                                        <td class="text-left">
+                                            <span id="t-duree-Q3">{{dataAnalysis['statsDureeFonctionnement']['Q3']}}</span>  
+                                            {# <span id="t-duree-Q3-progress-color" class="text-{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q3-progress-value">{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                            <svg id="t-duree-Q3-progress-up-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-Q3-progress-down-icon" class="{% if dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['statsDureeFonctionnement']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span> #}
+
+                                            {# <span id="t-duree-Q3">-</span>
+                                            <span id="t-duree-Q3-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-duree-Q3-progress-value">1</span>% 
+                                            <svg id="t-duree-Q3-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-duree-Q3-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {# Profil puissance plus et moins conso #}
         <div class="row widget-statistic layout-top-spacing">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
@@ -1521,14 +1683,14 @@
                                 //Valeur de la pénalité et statut du Mauvais Factuer de puissance
                                 $('#t-pen-fp').text(String(result['dataAnalysis']['recapProd']['gridData']['FP']));
                                 if( parseInt(result['dataAnalysis']['recapProd']['gridData']['FP']) > 0.8){
-                                    $('#t-pen-fp-status').text('Oui')
-                                    if($("#t-pen-fp-badge").hasClass("badge-success")) $("#t-pen-fp-badge").toggleClass("badge-success").toggleClass("badge-danger")
-                                    else if(!$("#t-pen-fp-badge").hasClass("badge-danger")) $("#t-pen-fp-badge").addClass("badge-danger")
-                                }
-                                else if( parseInt(result['dataAnalysis']['recapProd']['gridData']['FP']) >= 0){
                                     $('#t-pen-fp-status').text('Non')
                                     if($("#t-pen-fp-badge").hasClass("badge-danger")) $("#t-pen-fp-badge").toggleClass("badge-danger").toggleClass("badge-success")
                                     else if(!$("#t-pen-fp-badge").hasClass("badge-success")) $("#t-pen-fp-badge").addClass("badge-success")
+                                }
+                                else if( parseInt(result['dataAnalysis']['recapProd']['gridData']['FP']) >= 0){
+                                    $('#t-pen-fp-status').text('Oui')
+                                    if($("#t-pen-fp-badge").hasClass("badge-success")) $("#t-pen-fp-badge").toggleClass("badge-success").toggleClass("badge-danger")
+                                    else if(!$("#t-pen-fp-badge").hasClass("badge-danger")) $("#t-pen-fp-badge").addClass("badge-danger")
                                 }
                                 
                                 //++++ Mise à jour du tableau des Statistiques Consommation
@@ -1581,7 +1743,57 @@
                                 //On gère la progression de la consommation d'énergie de la tranche horaire 18h - 00h
                                 progress(prefixSelector='t-conso-18-00-progress-', progValue=result['dataAnalysis']['conso-18-00Progress'], posLogique=false, isTime=false);
 
+                                {# Profil de Puissance par source #}
+                                //MAJ des Profils de puissance du jour le plus consommateur
+                                displayNewData(loadProfilSupplyChart, result['dataAnalysis']['powerProfilSupply']['date'], Object.values(result['dataAnalysis']['powerProfilSupply']['power']), [startDate, endDate], 2, 'day');
+                                loadProfilSupplyChart.toggleSeries('Puissance GRID ')
+                                loadProfilSupplyChart.toggleSeries('Puissance GRID ')
+                                loadProfilSupplyChart.toggleSeries('Puissance GE ')
+                                loadProfilSupplyChart.toggleSeries('Puissance GE ')
                                 
+
+                                {# Diagramme et stats TRH #}
+                                displayNewData(TRHChart, result['dataAnalysis']['TRHchart']['date'], Object.values(result['dataAnalysis']['TRHchart']['trh']), [startDate, endDate], 1, 'day');
+                                TRHChart.toggleSeries('Durée de Fonctionnement ')
+                                TRHChart.toggleSeries('Durée de Fonctionnement ')
+
+                                //Valeur de la durée totale de fonctionnement du GE
+                                $('#t-duree-totale').text(result['dataAnalysis']['statsDureeFonctionnement']['totale']);
+                                {# //On gère la progression de la durée totale de fonctionnement du GE
+                                progress(prefixSelector='t-duree-totale-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['totaleProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée moyenne de fonctionnement du GE
+                                $('#t-duree-moy').text(result['dataAnalysis']['statsDureeFonctionnement']['mean']);
+                                {# //On gère la progression de la durée moyenne de fonctionnement du GE
+                                progress(prefixSelector='t-duree-moy-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['meanProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Médiane de fonctionnement du GE
+                                $('#t-duree-mediane').text(result['dataAnalysis']['statsDureeFonctionnement']['median']);
+                                {# //On gère la progression de la durée Médiane de fonctionnement du GE
+                                progress(prefixSelector='t-duree-mediane-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['medianProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Min de fonctionnement du GE
+                                $('#t-duree-min').text(result['dataAnalysis']['statsDureeFonctionnement']['min']);
+                                {# //On gère la progression de la durée Min de fonctionnement du GE
+                                progress(prefixSelector='t-duree-min-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['minProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Max de fonctionnement du GE
+                                $('#t-duree-max').text(result['dataAnalysis']['statsDureeFonctionnement']['max']);
+                                {# //On gère la progression de la durée Max de fonctionnement du GE
+                                progress(prefixSelector='t-duree-max-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Q1 de fonctionnement du GE
+                                $('#t-duree-Q1').text(result['dataAnalysis']['statsDureeFonctionnement']['Q1']);
+                                {# //On gère la progression de la durée Q1 de fonctionnement du GE
+                                progress(prefixSelector='t-duree-Q1-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                
+                                //Valeur de la durée Q3 de fonctionnement du GE
+                                $('#t-duree-Q3').text(result['dataAnalysis']['statsDureeFonctionnement']['Q3']);
+                                {# //On gère la progression de la durée Q3 de fonctionnement du GE
+                                progress(prefixSelector='t-duree-Q3-progress-', progValue=result['dataAnalysis']['statsDureeFonctionnement']['maxProgress'], posLogique=false, isTime=false); #}
+                                        
+
+
                                 //MAJ des Profils de puissance du jour le plus consommateur
                                 displayNewData(loadProfilDayHighConsoChart, result['dataAnalysis']['powerProfilHighDayConso']['date'], Object.values(result['dataAnalysis']['powerProfilHighDayConso']['data']), [startDate, endDate], 3, 'day');
                                 loadProfilDayHighConsoChart.toggleSeries('Puissance ')
@@ -1899,6 +2111,202 @@
         $(".swal2-confirm").click();
 
     }, 200) #}
+
+    {# load Profil Day High Conso Chart #}
+    var loadProfilSupplyChart_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: [3,3],
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Puissance GRID ',
+            data: {% if dataAnalysis['powerProfilSupply']['power']|length > 0 %}{{ dataAnalysis['powerProfilSupply']['power'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Puissance GE ',
+            data: {% if dataAnalysis['powerProfilSupply']['power']|length > 0 %}{{ dataAnalysis['powerProfilSupply']['power'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['powerProfilSupply']['date'] | json_encode | raw }},                
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kW)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        }
+    }
+
+    var loadProfilSupplyChart = new ApexCharts(
+        document.querySelector("#load-profile-supply"),
+        loadProfilSupplyChart_options
+    );
+
+    loadProfilSupplyChart.render();
+
+    var trh_options = {
+        chart: {
+            fontFamily: 'Nunito, sans-serif',
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: true,
+            }
+        },
+        series: [{
+            name: 'Durée de Fonctionnement ',
+            type: 'column',
+            data: {{ dataAnalysis['TRHchart']['trh'] | json_encode | raw }}
+            {# data: [] #}
+        }],
+        stroke: {
+            curve: 'smooth',
+            width: [4, 4, 2]
+        },
+        /* title: {
+            text: 'Traffic Sources'
+        }, */
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['TRHchart']['date'] | json_encode | raw }},
+            {# categories: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'], #}
+            labels: {
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: [{
+            seriesName: 'Durée de Fonctionnement ',
+            opposite: false,
+            title: {
+                text: 'Durée de Fonctionnement (HH:mm:ss)'
+            },
+            labels: {
+                /**
+                * Allows users to apply a custom formatter function to yaxis labels.
+                *
+                * @param { String } value - The generated value of the y-axis tick
+                * @param { index } index of the tick / currently executing iteration in yaxis labels array
+                */
+                formatter: function(val, index) {
+                    {# return val.toFixed(2); #}
+                    var seconds = parseFloat(val) * 60 * 60;
+                    var hours = Math.floor(seconds / 3600);
+                    var minutes = Math.floor((seconds / 60) % 60);
+                    seconds = seconds % 60;
+                    
+                    if (hours   < 10) {hours   = "0"+hours;}
+                    if (minutes < 10) {minutes = "0"+minutes;}
+                    if (seconds < 10) {seconds = "0"+seconds;}
+                    {# console.log(hours+':'+minutes+':'+seconds) #}
+                    return hours+':'+minutes+':'+parseFloat(seconds).toFixed(0);
+                }
+            }
+        }],
+        tooltip: {
+            theme: "dark",
+            //followCursor: true,
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        {# return y.toFixed(2) + " h" #}
+                        {# var time = parseInt(y, 10); // don't forget the hour param
+                        var hours   = Math.floor(time);
+                        var minutes = Math.floor((time - (hours)) / 60);
+                        var seconds = time - (hours) - (minutes * 60); #}
+
+                        var seconds = y * 60 * 60;
+                        var hours = Math.floor(seconds / 3600);
+                        var minutes = Math.floor((seconds / 60) % 60);
+                        seconds = seconds % 60;
+                        
+                        if (hours   < 10) {hours   = "0"+hours;}
+                        if (minutes < 10) {minutes = "0"+minutes;}
+                        if (seconds < 10) {seconds = "0"+seconds;}
+                        {# console.log(hours+':'+minutes+':'+seconds) #}
+                        return hours+':'+minutes+':'+parseFloat(seconds).toFixed(0);
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                }
+            }
+        },
+
+    }
+    
+    var TRHChart = new ApexCharts(
+        document.querySelector("#trh-chart"),
+        trh_options
+    );
+    TRHChart.render()
 
     {# load Profil Day High Conso Chart #}
     var loadProfilDayHighConsoChart_options = {

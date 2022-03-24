@@ -272,8 +272,27 @@ class GensetModService
         if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
         // dump($length);
 
+        $currentConsoFuel = 0;
+        $currentApproFuel = 0;
+
+        $consoFuelDayByDay = [];
+        $approFuelDayByDay = [];
+
+        $dureeDayByDay  = [];
+        $dataOrderByDay = []; //Tableau des valeurs jour après jour
+
+        $lastConsoFuel = 0;
+        $lastApproFuel = 0;
+        $lastDuree     = 0;
+
+        $day = [];
+        $date   = [];
+        $data   = [];
+        $dataFL = [];
+        $dataFLXAF = [];
+
         // ######## Récupération des données de courbe pour le mois en cours ########
-        //if($this->gensetMod->getSubType() === 'ModBus'){
+        if($this->gensetMod->getSubType() !== 'Inv'){
             $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
                                             FROM App\Entity\GensetData d 
                                             JOIN d.smartMod sm
@@ -289,217 +308,334 @@ class GensetModService
                     'smartModId' => $this->gensetMod->getId()
                 ))
                 ->getResult();
-        //}
-        /*else if($this->gensetMod->getSubType() !== 'ModBus'){
+        
+            /*else if($this->gensetMod->getSubType() !== 'ModBus'){
+                
+                $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, SUM(d.fuelLevel) as FL, COUNT(d.p) as TRH
+                                            FROM App\Entity\GensetData d
+                                            JOIN d.smartMod sm 
+                                            WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                            AND sm.id = :smartModId         
+                                            AND d.fuelLevel IS NOT NULL
+                                            AND d.p > 1
+                                            GROUP BY dat
+                                            ")
+                    ->setParameters(array(
+                        'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                        'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                        'smartModId'   => $this->gensetMod->getId()
+                    ))
+                    ->getResult();
+            }*/
+            // dump($dataQuery);
+            // $FL   = [];
+            // $TRH  = [];
             
-            $dataQuery = $this->manager->createQuery("SELECT d.dateTime as dat, SUM(d.fuelLevel) as FL, COUNT(d.p) as TRH
-                                        FROM App\Entity\GensetData d
-                                        JOIN d.smartMod sm 
-                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId         
-                                        AND d.fuelLevel IS NOT NULL
-                                        AND d.p > 1
-                                        GROUP BY dat
-                                        ")
+            foreach ($dataQuery as $d) {
+                $date[]    = $d['dat']->format('Y-m-d H:i:s');
+                $dataFL[]  = $d['FL'];
+                $dataFLXAF[]  = (($d['FL']* $this->fuelCapacity)/100.0) * $this->fuelPrice;
+                // $TRH[]     = $d['TRH'];
+                $data[$d['dat']->format('Y-m-d H:i:s')] = [
+                    'FL'    => $d['FL'],
+                    'TRH'   => $d['TRH']
+                ];
+                //$Cosfi[]   = number_format((float) $d['cosfi'], 2, '.', '');
+            }
+            // dump($data);
+            $dayRecord = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat
+                                            FROM App\Entity\GensetData d 
+                                            JOIN d.smartMod sm
+                                            WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                            AND sm.id = :smartModId
+                                            GROUP BY dat
+                                            ORDER BY dat ASC
+                                            ")
                 ->setParameters(array(
-                    'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
-                    'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
-                    'smartModId'   => $this->gensetMod->getId()
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'smartModId' => $this->gensetMod->getId(),
                 ))
                 ->getResult();
-        }*/
-        // dump($dataQuery);
-        // $FL   = [];
-        // $TRH  = [];
-        $date   = [];
-        $data   = [];
-        $dataFL = [];
-        $dataFLXAF = [];
 
-        foreach ($dataQuery as $d) {
-            $date[]    = $d['dat']->format('Y-m-d H:i:s');
-            $dataFL[]  = $d['FL'];
-            $dataFLXAF[]  = (($d['FL']* $this->fuelCapacity)/100.0) * $this->fuelPrice;
-            // $TRH[]     = $d['TRH'];
-            $data[$d['dat']->format('Y-m-d H:i:s')] = [
-                'FL'    => $d['FL'],
-                'TRH'   => $d['TRH']
-            ];
-            //$Cosfi[]   = number_format((float) $d['cosfi'], 2, '.', '');
-        }
-        // dump($data);
-        $dayRecord = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat
-                                        FROM App\Entity\GensetData d 
-                                        JOIN d.smartMod sm
-                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
-                                        AND sm.id = :smartModId
-                                        GROUP BY dat
-                                        ORDER BY dat ASC
-                                        ")
-            ->setParameters(array(
-                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
-                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
-                'smartModId' => $this->gensetMod->getId(),
-            ))
-            ->getResult();
-
-        // dump($dayRecord);
-        $day = [];
-        foreach ($dayRecord as $d) {
-            $day[]    = $d['dat'];
-        }
-
-        $dataOrderByDay = []; //Tableau des valeurs jour après jour
-        foreach ($data as $key => $value) {
-            // dump($key);
-            foreach ($day as $index => $val) {
-                //dump($val);
-                if (strpos($key, $val) !== false) { // On vérifie si le la sous-chaîne du jour est contenue dans la date
-                    $dataOrderByDay[$val]['FL'][]  = $value['FL'];
-                    $dataOrderByDay[$val]['TRH'][] = $value['TRH'];
-                }
-            }
-        }
-
-        $currentConsoFuel = 0;
-        $currentApproFuel = 0;
-
-        $consoFuelDayByDay = [];
-        $approFuelDayByDay = [];
-
-        $dureeDayByDay = [];
-
-        foreach ($dataOrderByDay as $key => $value) {
-            $consoFuel_ = 0;
-            $approFuel_ = 0;
-
-            $T_Appro  = [] ; //Tableau des instants d’approvisionnement
-            $T_Appro[0] = 0 ; 
-            $j = 1 ; 
-                        
-            //Données de la courbe de durée de fonctionnement jour après jour
-            if (array_key_exists('TRH', $value)) {
-                if (end($value['TRH']) !== false && reset($value['TRH']) !== false) {
-                    // $dureeDayByDay[$key] = abs(end($value['TRH']) - reset($value['TRH']));
-                    $dureeDayByDay[] = abs(end($value['TRH']) - reset($value['TRH']));
-                }
+            // dump($dayRecord);
+            
+            foreach ($dayRecord as $d) {
+                $day[]    = $d['dat'];
             }
 
-            //Données des courbe de consommation et approvisionnement jour après jour
-            if (array_key_exists('FL', $value)) {
-                $temp = $value['FL']; //Tableau tampon
-                if (count($temp) > 0) {
-                    if($this->gensetMod->getSubType() == 'ModBus'){
-                        for ($i = 0; $i < count($temp) - 1; $i++) {
-                            $diff = abs($temp[$i + 1] - $temp[$i]);
-                            if ($temp[$i + 1] >= $temp[$i]) {
-                                $approFuel_ += $diff;
-                            } else {
-                                $consoFuel_ += $diff;
-                            }
-                            // if ($temp[$i + 1] - 5 >= $temp[$i]) {
-                            //     $approFuel_ += $diff;
-                            // } else if ($temp[$i] - $temp[$i + 1] >= 5 ){
-                                //     $consoFuel_ += $diff;
-                                // }
-                                
-                        }
-                    }else { //if($this->gensetMod->getSubType() !== 'ModBus')
-                        // dump($temp[0]) ;
-                        $N = count($temp);
-                        for ($i=0 ; $i < $N - 3 ; $i ++){ // N est le volume de données sur la fenêtre de temps choisie = size(temp[])
-                            
-                            if  ( ($temp[$i+1]  - $temp[$i]) > 5 && $temp[$i+2] - $temp[$i] > 5 && ($temp[$i+3] - $temp[$i]) > 5  ){ // On compare avec les trois valeurs suivantes pour éviter les valeurs aberrantes 
-                                
-                                $T_Appro[$j] = $i ; // On enregistre tous les instants d’approvisionnement
-                                $j = $j + 1 ; 
-                                $approFuel_ = $approFuel_ + $temp[$i+1] - $temp[$i] ; // On calcul le volume d’approvisionnement
-                            }
-                                    
-                        }
-                        // dump(count($T_Appro));
-                        // dump($j) ; 
-                        if ( count($T_Appro) > 1 ){
-                            
-                            if ( $temp[0]  - $temp[$T_Appro[1]] > 2){
-                                $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$T_Appro[1]] ;
-                            }
-                            if ( count($T_Appro) > 2 ){
-                                for ($i=0 ; $i < count($T_Appro) - 2 ; $i++){ // N est le volume de données sur la fenêtre de temps choisie
-                                    if ( $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] > 2){
-                                        $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] ;
-                                    } 	
-                                
-                                }
-                            }
-                            
-                            if ( $temp[$T_Appro[$j-1]+1]  - $temp[$N-1] > 2){
-                                $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$j-1]+1]   - $temp[$N-1] ;
-                            } 
-                        }
-                        else{
-                            if ( $temp[0]  - $temp[$N-1] > 2){
-                                $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$N-1] ;
-                            } 
-                        }
+            foreach ($data as $key => $value) {
+                // dump($key);
+                foreach ($day as $index => $val) {
+                    //dump($val);
+                    if (strpos($key, $val) !== false) { // On vérifie si le la sous-chaîne du jour est contenue dans la date
+                        $dataOrderByDay[$val]['FL'][]  = $value['FL'];
+                        $dataOrderByDay[$val]['TRH'][] = $value['TRH'];
                     }
                 }
             }
 
-            $currentConsoFuel += $consoFuel_;
-            $currentApproFuel += $approFuel_;
+            // dump($dataOrderByDay);
 
-            // $consoFuelDayByDay[$key] = $consoFuel_;
-            // $approFuelDayByDay[$key] = $approFuel_;
-            $consoFuelDayByDay[] = ($consoFuel_* $this->fuelCapacity)/100.0;
-            $approFuelDayByDay[] = ($approFuel_* $this->fuelCapacity)/100.0;
-        }
+            foreach ($dataOrderByDay as $key => $value) {
+                $consoFuel_ = 0;
+                $approFuel_ = 0;
 
-        $currentConsoFuel = ($currentConsoFuel * $this->fuelCapacity)/100.0;
-        $currentApproFuel = ($currentApproFuel * $this->fuelCapacity)/100.0;
+                $T_Appro  = [] ; //Tableau des instants d’approvisionnement
+                $T_Appro[0] = 0 ; 
+                $j = 1 ; 
+                            
+                //Données de la courbe de durée de fonctionnement jour après jour
+                if (array_key_exists('TRH', $value)) {
+                    if (end($value['TRH']) !== false && reset($value['TRH']) !== false) {
+                        // $dureeDayByDay[$key] = abs(end($value['TRH']) - reset($value['TRH']));
+                        $dureeDay = abs(end($value['TRH']) - reset($value['TRH']));
+                        
+                        // dump($key); 
+                                            
+                        if($dureeDay <= 0.0){
+                            if($this->gensetMod->getSubType() == 'Inv' || $this->gensetMod->getSubType() == 'Inv+FL'){
+                                $dataQuery = $this->manager->createQuery("SELECT SUM(d.p)*:time AS TRH
+                                                        FROM App\Entity\GensetData d
+                                                        JOIN d.smartMod sm 
+                                                        WHERE d.dateTime LIKE :day_
+                                                        AND sm.id = :smartModId         
+                                                        AND d.p > 0.05
+                                                        ")
+                                ->setParameters(array(
+                                    'day_'         => $key . '%',
+                                    'time'         => $this->intervalTime,
+                                    'smartModId'   => $this->gensetMod->getId()
+                                ))
+                                ->getResult();
+                                
+                                // dump($dataQuery);
+                                if(count($dataQuery) > 0){
+                                    
+                                    $dureeDay = floatval($dataQuery[0]['TRH']);
+                                    
+                                    if($dureeDay <= 0.0){
+                                        if($this->gensetMod->getSubType() == 'Inv+FL'){
+                                            
+                                            $dataQuery = $this->manager->createQuery("SELECT MAX(NULLIF(d.totalRunningHours,0)) - MIN(NULLIF(d.totalRunningHours,0)) AS TRH
+                                                                        FROM App\Entity\GensetData d
+                                                                        JOIN d.smartMod sm 
+                                                                        WHERE d.dateTime LIKE :day_
+                                                                        AND sm.id = :smartModId
+                                                                        AND d.totalRunningHours IS NOT NULL
+                                                                        ")
+                                                ->setParameters(array(
+                                                    'day_'    => $key .'%',
+                                                    'smartModId'   => $this->gensetMod->getId()
+                                                ))
+                                                ->getResult();
+                                            
+                                                // dump($dataQuery);
+                                                
+                                            $dureeDay = floatval($dataQuery[0]['TRH']);
+                                            // dump("======== Inv+FL ========"); 
+                                            
+                                        } 
+                                    }
+                                    // else dump("======== Inv ========"); 
+                                            
+                                    
+                                }
+                            }
+                            // else dump("======== Modbus || FL ========"); 
+                        }
+                        // dump($dureeDay); 
+                                            
+                        $dureeDayByDay[] = floatval(number_format((float) $dureeDay, 2, '.', ''));
+                    }
+                }
 
-        // ######## Récupération des données de courbe pour le mois (n - 1) ########
-        $lastData = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
-                                        FROM App\Entity\GensetData d 
-                                        JOIN d.smartMod sm
-                                        WHERE d.dateTime BETWEEN :lastStartDate AND :lastEndDate
-                                        AND sm.id = :smartModId
-                                        ORDER BY dat ASC
-                                        ")
-            ->setParameters(array(
-                //'selDate'      => $dateparam,
-                'lastStartDate' => $lastStartDate->format('Y-m') . '%',
-                'lastEndDate'   => $lastEndDate->format('Y-m-d H:i:s'),
-                'smartModId'    => $this->gensetMod->getId()
-            ))
-            ->getResult();
-        // dump($lastData);
-        $FL   = [];
-        $TRH  = [];
-        foreach ($lastData as $d) {
-            // $date[]    = $d['dat']->format('Y-m-d H:i:s');
-            $FL[]      = $d['FL'];
-            $TRH[]     = $d['TRH'];
-        }
+                //Données des courbe de consommation et approvisionnement jour après jour
+                if (array_key_exists('FL', $value)) {
+                    $temp = $value['FL']; //Tableau tampon
+                    if (count($temp) > 0) {
+                        if($this->gensetMod->getSubType() == 'ModBus'){
+                            for ($i = 0; $i < count($temp) - 1; $i++) {
+                                $diff = abs($temp[$i + 1] - $temp[$i]);
+                                if ($temp[$i + 1] >= $temp[$i]) {
+                                    $approFuel_ += $diff;
+                                } else {
+                                    $consoFuel_ += $diff;
+                                }
+                                // if ($temp[$i + 1] - 5 >= $temp[$i]) {
+                                //     $approFuel_ += $diff;
+                                // } else if ($temp[$i] - $temp[$i + 1] >= 5 ){
+                                    //     $consoFuel_ += $diff;
+                                    // }
+                                    
+                            }
+                        }else { //if($this->gensetMod->getSubType() !== 'ModBus')
+                            // dump($temp[0]) ;
+                            $N = count($temp);
+                            for ($i=0 ; $i < $N - 3 ; $i ++){ // N est le volume de données sur la fenêtre de temps choisie = size(temp[])
+                                
+                                if  ( ($temp[$i+1]  - $temp[$i]) > 5 && $temp[$i+2] - $temp[$i] > 5 && ($temp[$i+3] - $temp[$i]) > 5  ){ // On compare avec les trois valeurs suivantes pour éviter les valeurs aberrantes 
+                                    
+                                    $T_Appro[$j] = $i ; // On enregistre tous les instants d’approvisionnement
+                                    $j = $j + 1 ; 
+                                    $approFuel_ = $approFuel_ + $temp[$i+1] - $temp[$i] ; // On calcul le volume d’approvisionnement
+                                }
+                                        
+                            }
+                            // dump(count($T_Appro));
+                            // dump($j) ; 
+                            if ( count($T_Appro) > 1 ){
+                                
+                                if ( $temp[0]  - $temp[$T_Appro[1]] > 2){
+                                    $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$T_Appro[1]] ;
+                                }
+                                if ( count($T_Appro) > 2 ){
+                                    for ($i=0 ; $i < count($T_Appro) - 2 ; $i++){ // N est le volume de données sur la fenêtre de temps choisie
+                                        if ( $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] > 2){
+                                            $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$i+1]+1]  - $temp[$T_Appro[$i+2]] ;
+                                        } 	
+                                    
+                                    }
+                                }
+                                
+                                if ( $temp[$T_Appro[$j-1]+1]  - $temp[$N-1] > 2){
+                                    $consoFuel_ = $consoFuel_ + $temp[$T_Appro[$j-1]+1]   - $temp[$N-1] ;
+                                } 
+                            }
+                            else{
+                                if ( $temp[0]  - $temp[$N-1] > 2){
+                                    $consoFuel_ = $consoFuel_ + $temp[0]  - $temp[$N-1] ;
+                                } 
+                            }
+                        }
+                    }
+                }
 
-        $lastConsoFuel = 0;
-        $lastApproFuel = 0;
-        $lastDuree  = array_sum($TRH);
+                $currentConsoFuel += $consoFuel_;
+                $currentApproFuel += $approFuel_;
 
-        if (count($FL) > 0) {
-            for ($i = 0; $i < count($FL) - 1; $i++) {
-                $diff = abs($FL[$i + 1] - $FL[$i]);
-                if ($FL[$i + 1] >= $FL[$i]) {
-                    $lastApproFuel += $diff;
-                } else {
-                    $lastConsoFuel += $diff;
+                // $consoFuelDayByDay[$key] = $consoFuel_;
+                // $approFuelDayByDay[$key] = $approFuel_;
+                $consoFuelDayByDay[] = floatval(number_format((float) ($consoFuel_* $this->fuelCapacity)/100.0, 2, '.', ''));
+                $approFuelDayByDay[] = floatval(number_format((float) ($approFuel_* $this->fuelCapacity)/100.0, 2, '.', ''));
+            }
+
+            // dump($dureeDayByDay);
+
+            $currentConsoFuel = ($currentConsoFuel * $this->fuelCapacity)/100.0;
+            $currentApproFuel = ($currentApproFuel * $this->fuelCapacity)/100.0;
+
+            // ######## Récupération des données de courbe pour le mois (n - 1) ########
+            $lastData = $this->manager->createQuery("SELECT d.dateTime as dat, d.fuelLevel as FL, d.totalRunningHours as TRH
+                                            FROM App\Entity\GensetData d 
+                                            JOIN d.smartMod sm
+                                            WHERE d.dateTime BETWEEN :lastStartDate AND :lastEndDate
+                                            AND sm.id = :smartModId
+                                            ORDER BY dat ASC
+                                            ")
+                ->setParameters(array(
+                    //'selDate'      => $dateparam,
+                    'lastStartDate' => $lastStartDate->format('Y-m') . '%',
+                    'lastEndDate'   => $lastEndDate->format('Y-m-d H:i:s'),
+                    'smartModId'    => $this->gensetMod->getId()
+                ))
+                ->getResult();
+            // dump($lastData);
+            $FL   = [];
+            $TRH  = [];
+            foreach ($lastData as $d) {
+                // $date[]    = $d['dat']->format('Y-m-d H:i:s');
+                $FL[]      = $d['FL'];
+                $TRH[]     = $d['TRH'];
+            }
+
+            $lastConsoFuel = 0;
+            $lastApproFuel = 0;
+            $lastDuree  = array_sum($TRH);
+
+            if (count($FL) > 0) {
+                for ($i = 0; $i < count($FL) - 1; $i++) {
+                    $diff = abs($FL[$i + 1] - $FL[$i]);
+                    if ($FL[$i + 1] >= $FL[$i]) {
+                        $lastApproFuel += $diff;
+                    } else {
+                        $lastConsoFuel += $diff;
+                    }
                 }
             }
+
+            $lastConsoFuel = ($lastConsoFuel * $this->fuelCapacity)/100.0;
+            $lastApproFuel = ($lastApproFuel * $this->fuelCapacity)/100.0;
+        }else if($this->gensetMod->getSubType() == 'Inv' || $this->gensetMod->getSubType() == 'Inv+FL'){
+            $dataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, COUNT(d.p) AS NB_Mins
+                                    FROM App\Entity\GensetData d
+                                    JOIN d.smartMod sm 
+                                    WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                    AND sm.id = :smartModId         
+                                    AND d.p > 0.05
+                                    GROUP BY dat
+                                    ORDER BY dat ASC
+                                    ")
+            ->setParameters(array(
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'smartModId'   => $this->gensetMod->getId()
+            ))
+            ->getResult();
+            
+            // dump($dataQuery);
+            if(count($dataQuery) > 0){
+                //if(array_key_exists("NB_Mins", $dataQuery[0])){
+                    $dureeDayByDay = [];
+                    foreach ($dataQuery as $dat) {
+                        // $dureeDayByDay[] = intval($dat['NB_Mins']) * $this->intervalTime;
+                        $dureeDayByDay[] = floatval(number_format((float) intval($dat['NB_Mins']) * $this->intervalTime, 2, '.', ''));
+                        $day[]    = $dat['dat'];
+                    }
+                    // $duree = $data[0]['NB_Mins'] * $this->intervalTime;
+                    if(count($dureeDayByDay) > 0) $duree = array_sum($dureeDayByDay);
+                    
+                    // dump($dureeDayByDay); 
+                    
+                    if($duree <= 0.0){
+                        dump($duree); 
+                        if($this->gensetMod->getSubType() == 'Inv+FL'){
+                            
+                            $dataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, 
+                                                        MAX(NULLIF(d.totalRunningHours,0)) - MIN(NULLIF(d.totalRunningHours,0)) AS TRH
+                                                        FROM App\Entity\GensetData d
+                                                        JOIN d.smartMod sm 
+                                                        WHERE d.dateTime BETWEEN :startDate AND :endDate
+                                                        AND sm.id = :smartModId
+                                                        AND d.totalRunningHours IS NOT NULL
+                                                        GROUP BY dat
+                                                        ORDER BY dat ASC
+                                                        ")
+                                ->setParameters(array(
+                                    'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                                    'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                                    'smartModId'   => $this->gensetMod->getId()
+                                ))
+                                ->getResult();
+                            
+                            dump($dataQuery);
+                            $dureeDayByDay = [];
+                            foreach ($dataQuery as $dat) {
+                                // $dureeDayByDay[] = floatval($dat['TRH']);
+                                $dureeDayByDay[] = floatval(number_format((float) floatval($dat['TRH']), 2, '.', ''));
+                        
+                            }
+                            // dump($dureeDayByDay);
+                            if(count($dureeDayByDay) > 0){
+                                // dump($dureeDayByDay[0]['TRH']);
+                                // $duree = abs(end($dureeDayByDay) - reset($dureeDayByDay));
+                                $duree = array_sum($dureeDayByDay);
+                            }
+                        } 
+                    }
+                //}
+            }
         }
-
-        $lastConsoFuel = ($lastConsoFuel * $this->fuelCapacity)/100.0;
-        $lastApproFuel = ($lastApproFuel * $this->fuelCapacity)/100.0;
-
         // ========== Détermination du temps total de fonctionnement du GE sur la période de date passée en paramètre et le last période correspondant
                     
         $workingTimeQuery = $this->manager->createQuery("SELECT COUNT(DISTINCT d.dateTime)/:time AS WT
@@ -538,14 +674,15 @@ class GensetModService
         if(count($dureeDayByDay) > 0) $duree = array_sum($dureeDayByDay);
         // dump($dureeDayByDay);        
         // if($this->gensetMod->getSubType() !== 'ModBus' || !strpos($this->gensetMod->getSubType(), 'FL') !== false){
-        /*if($this->gensetMod->getSubType() !== 'ModBus' || $this->gensetMod->getSubType() !== 'FL'){
+        //if($this->gensetMod->getSubType() !== 'ModBus' || $this->gensetMod->getSubType() !== 'FL'){
+        /*if($duree <= 0.0){
             if($this->gensetMod->getSubType() == 'Inv' || $this->gensetMod->getSubType() == 'Inv+FL'){
                 $dataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, COUNT(d.p) AS NB_Mins
                                         FROM App\Entity\GensetData d
                                         JOIN d.smartMod sm 
                                         WHERE d.dateTime BETWEEN :startDate AND :endDate
                                         AND sm.id = :smartModId         
-                                        AND d.p > 1
+                                        AND d.p > 0.05
                                         GROUP BY dat
                                         ORDER BY dat ASC
                                         ")
@@ -561,23 +698,26 @@ class GensetModService
                     //if(array_key_exists("NB_Mins", $dataQuery[0])){
                         $dureeDayByDay = [];
                         foreach ($dataQuery as $dat) {
-                            $dureeDayByDay[] = floatval($dat['NB_Mins'])* $this->intervalTime;
+                            $dureeDayByDay[] = intval($dat['NB_Mins']) * $this->intervalTime;
                         }
                         // $duree = $data[0]['NB_Mins'] * $this->intervalTime;
                         if(count($dureeDayByDay) > 0) $duree = array_sum($dureeDayByDay);
                         
-                        dump($dureeDayByDay); 
-
-                        if($duree <= 0){
+                        // dump($dureeDayByDay); 
+                        
+                        if($duree <= 0.0){
+                            dump($duree); 
                             if($this->gensetMod->getSubType() == 'Inv+FL'){
                                 
-                                $dataQuery = $this->manager->createQuery("SELECT d.totalRunningHours AS TRH
+                                $dataQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) as dat, 
+                                                            MAX(NULLIF(d.totalRunningHours,0)) - MIN(NULLIF(d.totalRunningHours,0)) AS TRH
                                                             FROM App\Entity\GensetData d
                                                             JOIN d.smartMod sm 
                                                             WHERE d.dateTime BETWEEN :startDate AND :endDate
                                                             AND sm.id = :smartModId
                                                             AND d.totalRunningHours IS NOT NULL
-                                                            ORDER BY TRH ASC
+                                                            GROUP BY dat
+                                                            ORDER BY dat ASC
                                                             ")
                                     ->setParameters(array(
                                         'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
@@ -586,7 +726,7 @@ class GensetModService
                                     ))
                                     ->getResult();
                                 
-                                // dump($dataQuery);
+                                dump($dataQuery);
                                 $dureeDayByDay = [];
                                 foreach ($dataQuery as $dat) {
                                     $dureeDayByDay[] = floatval($dat['TRH']);
@@ -594,7 +734,8 @@ class GensetModService
                                 // dump($dureeDayByDay);
                                 if(count($dureeDayByDay) > 0){
                                     // dump($dureeDayByDay[0]['TRH']);
-                                    $duree = end($dureeDayByDay) - reset($dureeDayByDay);
+                                    // $duree = abs(end($dureeDayByDay) - reset($dureeDayByDay));
+                                    $duree = array_sum($dureeDayByDay);
                                 }
                             } 
                         }
@@ -602,8 +743,7 @@ class GensetModService
                 }
             }
         }*/
-
-        
+                
         $currentConsoFuelProgress = ($lastConsoFuel > 0) ? ($lastConsoFuel - $lastConsoFuel) / $lastConsoFuel : 'INF';
         $currentApproFuelProgress = ($lastApproFuel > 0) ? ($currentApproFuel - $lastApproFuel) / $lastApproFuel : 'INF';
         $dureeProgress            = ($lastDuree > 0) ? ($duree - $lastDuree) / $lastDuree : 'INF';
@@ -611,6 +751,9 @@ class GensetModService
         $TUG         = $totalWorkingHours > 0 ? ($duree / $totalWorkingHours)*100 : 0;
         $lastTUG     = $lastTotalWorkingHours > 0 ? ($lastDuree / $lastTotalWorkingHours)*100 : 0;
         $TUGProgress = ($lastTUG > 0) ? ($TUG - $lastTUG) / $lastTUG : 'INF';
+        
+        // dump($this->hoursandmins(2.4996)); 
+        
         $duree       = $this->hoursandmins($duree);
 
         //Données de la courbe de durée de fonctionnement jour après jour
@@ -622,9 +765,12 @@ class GensetModService
         $dureeQ1       = -0.0;
         $dureeQ3       = -0.0;
 
+        // dump($duree); 
+        // dump($dureeDayByDay); 
         $dureeDayByDayFilter = [];
         if (count($dureeDayByDay) > 0) {
             $dureeDayByDayFilter = array_filter($dureeDayByDay); //Filtrage du tableau pour supprimer les valeurs nulles
+            // dump($dureeDayByDayFilter); 
             if (count($dureeDayByDayFilter) > 0) {
                 sort($dureeDayByDayFilter);
                 $n = count($dureeDayByDayFilter) - 1;
@@ -854,6 +1000,8 @@ class GensetModService
             }
         }
 
+        // dump($dataOrderByMonth);
+
         // $currentConsoFuel = 0;
         // $currentApproFuel = 0;
 
@@ -949,6 +1097,59 @@ class GensetModService
                 if (end($value['TRH']) !== false && reset($value['TRH']) !== false) {
                     $dureeMonth = abs(end($value['TRH']) - reset($value['TRH']));
                     // $dureeMonthByMonth[] = abs(end($value['TRH']) - reset($value['TRH']));
+                    
+                    dump($key); 
+                                        
+                    if($dureeMonth <= 0.0){
+                        if($this->gensetMod->getSubType() == 'Inv' || $this->gensetMod->getSubType() == 'Inv+FL'){
+                            $dataQuery = $this->manager->createQuery("SELECT SUM(d.p)*:time AS TRH
+                                                    FROM App\Entity\GensetData d
+                                                    JOIN d.smartMod sm 
+                                                    WHERE d.dateTime LIKE :month_
+                                                    AND sm.id = :smartModId         
+                                                    AND d.p > 0.05
+                                                    ")
+                            ->setParameters(array(
+                                'month_'       => $key . '%',
+                                'time'         => $this->intervalTime,
+                                'smartModId'   => $this->gensetMod->getId()
+                            ))
+                            ->getResult();
+                            
+                            // dump($dataQuery);
+                            if(count($dataQuery) > 0){
+                                
+                                $dureeMonth = floatval($dataQuery[0]['TRH']);
+                                
+                                if($dureeMonth <= 0.0){
+                                    if($this->gensetMod->getSubType() == 'Inv+FL'){
+                                        
+                                        $dataQuery = $this->manager->createQuery("SELECT MAX(NULLIF(d.totalRunningHours,0)) - MIN(NULLIF(d.totalRunningHours,0)) AS TRH
+                                                                    FROM App\Entity\GensetData d
+                                                                    JOIN d.smartMod sm 
+                                                                    WHERE d.dateTime LIKE :month_
+                                                                    AND sm.id = :smartModId
+                                                                    AND d.totalRunningHours IS NOT NULL
+                                                                    ")
+                                            ->setParameters(array(
+                                                'month_'       => $key .'%',
+                                                'smartModId'   => $this->gensetMod->getId()
+                                            ))
+                                            ->getResult();
+                                        
+                                            // dump($dataQuery);
+                                            
+                                        $dureeMonth = floatval($dataQuery[0]['TRH']);
+                                        dump("======== Inv+FL ========"); 
+                                        
+                                    } 
+                                }else dump("======== Inv ========"); 
+                                        
+                                
+                            }
+                        }else dump("======== Modbus || FL ========"); 
+                    }
+                    dump($dureeMonth);
                 }
             }
 
@@ -1696,7 +1897,7 @@ class GensetModService
         $TEPdata = [];
         $totalTEP = 0.0;
 
-        if($this->gensetMod->getSubType() === 'ModBus'){ //Si le module GENSET est de type Modbus 
+        if($this->gensetMod->getSubType() === 'ModBus' ){ //Si le module GENSET est de type Modbus 
             $TEPdata = $this->manager->createQuery("SELECT MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm 
@@ -1939,9 +2140,14 @@ class GensetModService
         if ($time < 0) {
             return '-:-:-';
         }
-        $hours = floor($time);
+        /*$hours = floor($time);
         $minutes = floor(($time - $hours) / 60);
-        $seconds = $time - ($hours) - ($minutes * 60);
+        $seconds = $time - ($hours) - ($minutes * 60);*/
+
+        $seconds = $time * 60 * 60;
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds / 60) % 60);
+        $seconds = $seconds % 60;
         return sprintf($format, $hours, $minutes, $seconds);
     }
 
