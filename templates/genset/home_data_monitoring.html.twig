@@ -1251,11 +1251,16 @@
                                 //console.log(y)
                                 if (typeof y !== "undefined") {
                                     {# return y.toFixed(2) + " h" #}
-                                    var time = parseInt(y, 10); // don't forget the hour param
+                                    {# var time = parseInt(y, 10); // don't forget the hour param
                                     var hours   = Math.floor(time);
                                     var minutes = Math.floor((time - (hours)) / 60);
-                                    var seconds = time - (hours) - (minutes * 60);
+                                    var seconds = time - (hours) - (minutes * 60); #}
 
+                                    var seconds = y * 60 * 60;
+                                    var hours = Math.floor(seconds / 3600);
+                                    var minutes = Math.floor((seconds / 60) % 60);
+                                    seconds = seconds % 60;
+                                    
                                     if (hours   < 10) {hours   = "0"+hours;}
                                     if (minutes < 10) {minutes = "0"+minutes;}
                                     if (seconds < 10) {seconds = "0"+seconds;}
@@ -2097,19 +2102,64 @@
             opposite: true,
             seriesName: 'Durée de fonctionnement',
             title: {
-                text: 'Durée de fonctionnement (Heures)'
+                text: 'Durée de fonctionnement (HH:mm:ss)'
+            },
+            labels: {
+                /**
+                * Allows users to apply a custom formatter function to yaxis labels.
+                *
+                * @param { String } value - The generated value of the y-axis tick
+                * @param { index } index of the tick / currently executing iteration in yaxis labels array
+                */
+                formatter: function(val, index) {
+                    {# return val.toFixed(2); #}
+                    var seconds = val * 60 * 60;
+                    var hours = Math.floor(seconds / 3600);
+                    var minutes = Math.floor((seconds / 60) % 60);
+                    seconds = seconds % 60;
+                    
+                    if (hours   < 10) {hours   = "0"+hours;}
+                    if (minutes < 10) {minutes = "0"+minutes;}
+                    if (seconds < 10) {seconds = "0"+seconds;}
+                    {# console.log(hours+':'+minutes+':'+seconds) #}
+                    return hours+':'+minutes+':'+parseFloat(seconds).toFixed(0);
+                }
             }
         }],
         tooltip: {
             theme: "dark",
             //followCursor: true,
             y: {
-                formatter: function (y) {
-                    //console.log(y)
-                    if (typeof y !== "undefined") {
-                        return y.toFixed(2) + ""
+                formatter: function (value, s) {
+                    var seriesIndex = s.seriesIndex;
+                    {# console.log(seriesIndex) #}
+                    if (typeof value !== "undefined") {
+                        {# switch(seriesIndex){
+                            case 0:
+                                return value.toFixed(2) + " L"
+                                break;
+                            case 1:
+                                return value.toFixed(2) + " L"
+                                break;
+                            case 2:
+                                break;
+                        } #}
+                        if(seriesIndex < 2) return value.toFixed(2) + " L"
+                        else if(seriesIndex === 2){
+                            var seconds = value * 60 * 60;
+                            var hours = Math.floor(seconds / 3600);
+                            var minutes = Math.floor((seconds / 60) % 60);
+                            seconds = seconds % 60;
+                            
+                            if (hours   < 10) {hours   = "0"+hours;}
+                            if (minutes < 10) {minutes = "0"+minutes;}
+                            if (seconds < 10) {seconds = "0"+seconds;}
+                            {# console.log(hours+':'+minutes+':'+seconds) #}
+                            return hours+':'+minutes+':'+parseFloat(seconds).toFixed(0);
+                            
+                        }
                     }
-                    return y;
+                    return value;
                 }
             },
             x: {
@@ -2120,7 +2170,8 @@
         },
 
     }
-    
+    {# console.log("======== Options ========")
+    console.log(mixed_duree_conso_options) #}
     var MixedConsoChart = new ApexCharts(
         document.querySelector("#mixed-duree-conso"),
         mixed_duree_conso_options
