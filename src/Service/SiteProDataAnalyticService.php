@@ -1258,7 +1258,7 @@ class SiteProDataAnalyticService
 
         // ######## Récupération des données de Durée de Fonctionnement du GE
         $trhData = $this->gensetModService->getConsoFuelData();
-        dump($trhData);
+        // dump($trhData);
         return array(
             'recapProd'                => $recapProd,
             'amount-conso-HT'          => floatval(number_format((float) $amountBill, 2, '.', '')),

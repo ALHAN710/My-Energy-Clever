@@ -1098,7 +1098,7 @@ class GensetModService
                     $dureeMonth = abs(end($value['TRH']) - reset($value['TRH']));
                     // $dureeMonthByMonth[] = abs(end($value['TRH']) - reset($value['TRH']));
                     
-                    dump($key); 
+                    // dump($key); 
                                         
                     if($dureeMonth <= 0.0){
                         if($this->gensetMod->getSubType() == 'Inv' || $this->gensetMod->getSubType() == 'Inv+FL'){
@@ -1140,16 +1140,18 @@ class GensetModService
                                             // dump($dataQuery);
                                             
                                         $dureeMonth = floatval($dataQuery[0]['TRH']);
-                                        dump("======== Inv+FL ========"); 
+                                        // dump("======== Inv+FL ========"); 
                                         
                                     } 
-                                }else dump("======== Inv ========"); 
+                                }
+                                // else dump("======== Inv ========"); 
                                         
                                 
                             }
-                        }else dump("======== Modbus || FL ========"); 
+                        }
+                        // else dump("======== Modbus || FL ========"); 
                     }
-                    dump($dureeMonth);
+                    // dump($dureeMonth);
                 }
             }
 
