@@ -115,8 +115,8 @@ class GensetController extends ApplicationController
         $endDate   = new DateTime($dates['end_date'] . '23:59:59');
         // $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
         // $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
-        dump($startDate);
-        dump($endDate);
+        // dump($startDate);
+        // dump($endDate);
 
         // Example of how to obtain an user:
         $users = $this->getDoctrine()->getManager()->getRepository(User::class)->findBy(array('enterprise' => $site->getEnterprise()));
