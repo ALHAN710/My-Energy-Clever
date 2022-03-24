@@ -489,6 +489,138 @@ class SiteProDataService
         );
     }
 
+    public function getPowerChartDataForDateRange()
+    {
+        $date       = [];
+        $GridkW     = [];
+        $GensetkW   = [];
+        $SolarkW    = [];
+        $BattkW     = [];
+        $dayGridkW     = [];
+        $dayGensetkW   = [];
+        $daySolarkW    = [];
+        $dayBattkW     = [];
+
+        $period = new DatePeriod(
+            new DateTime($this->startDate->format('Y-m-d')),
+            new DateInterval('P1D'),
+            new DateTime($this->endDate->format('Y-m-d'))
+        );
+
+        foreach ($period as $key => $value) {
+            //dump($value->format('Y-m-d'));
+            $date[]     = $value->format('Y-m-d');
+            $dayGridkW[$value->format('Y-m-d')]   = 0.0;
+            $dayGensetkW[$value->format('Y-m-d')] = 0.0;
+            $daySolarkW[$value->format('Y-m-d')]  = 0.0;
+            $dayBattkW[$value->format('Y-m-d')]   = 0.0;
+        }
+
+        $date[]     = $this->endDate->format('Y-m-d');
+        $dayGridkW[$this->endDate->format('Y-m-d')]   = 0.0;
+        $dayGensetkW[$this->endDate->format('Y-m-d')] = 0.0;
+        $daySolarkW[$this->endDate->format('Y-m-d')]  = 0.0;
+        $dayBattkW[$this->endDate->format('Y-m-d')]   = 0.0;
+
+        // ========= Détermination de la longueur de la datetime =========
+        $length = 10; //Si endDate > startDate => regoupement des données par jour de la fenêtre de date
+        if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) {
+            $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
+            $date        = [];
+            $dayGridkW     = [];
+            $dayGensetkW   = [];
+            $daySolarkW    = [];
+            $dayBattkW     = [];
+            for ($h = 0; $h < 24; $h++) {
+                $strHour = $h < 10 ? '0' . $h : $h;
+                $date[]     = $this->endDate->format('Y-m-d') . ' ' . $strHour;
+                $dayGridkW[$this->endDate->format('Y-m-d') . ' ' . $strHour]   = 0.0;
+                $dayGensetkW[$this->endDate->format('Y-m-d') . ' ' . $strHour] = 0.0;
+                $daySolarkW[$this->endDate->format('Y-m-d') . ' ' . $strHour]  = 0.0;
+                $dayBattkW[$this->endDate->format('Y-m-d') . ' ' . $strHour]   = 0.0;
+            }
+        }
+
+        $powerDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, d.pmoy AS kW
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
+                                            AND d.dateTime BETWEEN :startDate AND :endDate
+                                            ORDER BY dt ASC")
+            ->setParameters(array(
+                'length_'    => $length,
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'     => $this->site->getId()
+            ))
+            ->getResult();
+        // dump($powerDataQuery);
+
+        foreach ($powerDataQuery as $d) {
+            // $date[]     = $d['dt'];
+            $dayGridkW[$d['dt']] = floatval(number_format((float) $d['kW'], 2, '.', ''));
+            // $dayGensetkW[$d['dt']] = 0.0;
+            // $daySolarkW[$d['dt']]  = 0.0;
+            // $dayBattkW[$d['dt']]   = 0.0;
+        }
+        foreach ($dayGridkW as $key => $value) {
+            $GridkW[] = $value;
+
+            $SolarkW[] = 0.0;
+            $BattkW[]  = 0.0;
+        }
+
+        $powerDataQuery = [];
+        if($this->gensetMod->getSubType() === 'ModBus' || strpos($this->gensetMod->getSubType(), 'Inv') !== false){//Si le module GENSET est de type Modbus 
+            $powerDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, d.p AS kW
+                                                FROM App\Entity\GensetData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                ORDER BY dt ASC")
+                ->setParameters(array(
+                    'length_'    => $length,
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'siteId'     => $this->site->getId()
+                ))
+                ->getResult();
+        }
+        /*else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter 
+            $powerDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,:length_) AS dt, d.p AS kW
+                                                FROM App\Entity\GensetData d
+                                                JOIN d.smartMod sm
+                                                WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GENSET')
+                                                AND d.dateTime BETWEEN :startDate AND :endDate
+                                                GROUP BY dt
+                                                ORDER BY dt ASC")
+                ->setParameters(array(
+                    'length_'    => $length,
+                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                    'siteId'     => $this->site->getId()
+                ))
+                ->getResult();
+        }*/
+        
+        //dump($powerDataQuery);
+        foreach ($powerDataQuery as $d) {
+            //$date[]     = $d['dt'];
+            //$GridkW[]  = floatval(number_format((float) $d['kW'], 2, '.', ''));
+            $dayGensetkW[$d['dt']]  = floatval(number_format((float) $d['kW'], 2, '.', ''));
+            
+        }
+
+        foreach ($dayGensetkW as $key => $value) {
+            $GensetkW[] = $value;
+        }
+
+        return array(
+            "date"   => $date,
+            "power"  => [$GridkW, $GensetkW, $SolarkW, $BattkW],
+        );
+    }
+
     public function getVariation()
     {
         if ($this->site->getSubscription() === 'MT') { //Pour les Sites abonnés en MT
