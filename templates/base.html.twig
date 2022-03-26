@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% block head %}
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -24,6 +25,9 @@
     <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
 
 </head>
+    
+{% endblock %}
+
 <body class="alt-menu sidebar-noneoverflow">
     {% block loader %}
     <!-- BEGIN LOADER -->
@@ -32,8 +36,10 @@
     </div></div></div>
     <!--  END LOADER -->
     {% endblock %}
-
-    {% include 'partials/topMenu.html.twig' %}
+    
+    {% block topMenu %}
+        {% include 'partials/topMenu.html.twig' %}
+    {% endblock %}
 
     <!--  BEGIN MAIN CONTAINER  -->
     <div class="main-container sidebar-closed sbar-open" id="container">
@@ -42,7 +48,9 @@
         <div class="cs-overlay"></div>
         <div class="search-overlay"></div>
 
-        {% include 'partials/leftSide.html.twig' %}
+        {% block leftSideMenu %}
+            {% include 'partials/leftSide.html.twig' %}
+        {% endblock %}
         
         <!--  BEGIN CONTENT AREA  -->
         <div id="content" class="main-content">
@@ -59,6 +67,7 @@
     </div>
     <!-- END MAIN CONTAINER -->
 
+    {% block js %}
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="/js/libs/jquery-3.1.1.min.js"></script>
     <script src="/bootstrap/js/popper.min.js"></script>
@@ -72,6 +81,8 @@
     </script>
     <script src="/js/custom.js"></script>
     <script src="/js/scrollspyNav.js"></script>
+        
+    {% endblock %}
     
     <!-- END GLOBAL MANDATORY SCRIPTS -->
     {% block javascripts %}{% endblock %}
