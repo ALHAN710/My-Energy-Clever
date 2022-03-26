@@ -384,7 +384,7 @@
         </div>
 
         {# Histogramme journalier conso et pic de puissance #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: always;">
+        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
             {# Histogramme journalier de consommation #}
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
                 <div class="widget widget-chart-three">
@@ -410,6 +410,23 @@
 
                     <div class="widget-content">
                         <div id="histo-high-power"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Courbe de charge #}
+        <div class="row widget-statistic layout-top-spacing" style="page-break-after: always;">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Courbe de charge</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="load-chart"></div>
                     </div>
                 </div>
             </div>
@@ -945,23 +962,6 @@
                     </div>
                 </div>
                 
-            </div>
-        </div>
-
-        {# Courbe de charge #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
-            <div class="col-12 layout-spacing">
-                <div class="widget widget-chart-three">
-                    <div class="widget-heading">
-                        <div class="">
-                            <h5 class="">Courbe de charge</h5>
-                        </div>
-                    </div>
-
-                    <div class="widget-content">
-                        <div id="load-chart"></div>
-                    </div>
-                </div>
             </div>
         </div>
 
