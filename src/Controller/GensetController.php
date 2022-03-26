@@ -146,6 +146,8 @@ class GensetController extends ApplicationController
         return $this->render('email/data-analysis-report.html.twig', [
             'site'            => $site,
             'genset'          => $genset,
+            'startDate'       => $startDate,
+            'endDate'         => $endDate,
             'dataAnalysis'    => $dataAnalysis,
             //'dataReport'      => $dataReport,
             'dir'             => $this->projectDirectory,

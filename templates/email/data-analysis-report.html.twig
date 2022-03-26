@@ -95,10 +95,10 @@
 
 {% block body %}
     <div class="border-top-tab">
-        <div class="row ml-auto mr-auto d-print-none mt-2">
+        {# <div class="row ml-auto mr-auto d-print-none mt-2">
             <a href="javascript:window.print()"  class="btn btn-info text-light waves-effect mr-2"><i class="fa fa-print"></i></a>
         </div>
-        {# <div class="statbox widget box layout-spacing layout-top-spacing d-print-none">
+        <div class="statbox widget box layout-spacing layout-top-spacing d-print-none">
             <div class="widget-header">                                 
                 <div class="row">
                     <div class="col-xl-12 col-md-12 col-sm-12 col-12 d-inline-block">
@@ -112,9 +112,22 @@
                 </div>
             </div>
         </div> #}
+        {# En-tête #}
+        <div class="row d-flex flex-row justify-content-between layout-top-spacing" style="page-break-after: auto;">
+            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo-CLETech.png" alt="Logo Clever Tech"></div>
+            <div class="h2 mt-5 font-weight-bold">Rapport d’activité Hebdomadaire Groupe Electrogène</div>
+            <div class="mr-5 mt-5"><img width="80px" height="80px" src="/img/uploads/logo/logo.png" alt="Logo Client Entreprise"></div>
+        </div>
 
+        <div class="row d-flex justify-content-center mt-0 layout-top-spacing ">
+            <div class="row bg-light-info px-2 h5 d-flex flex-column font-weight-bold">
+                <p>Nom du Site : {{ site.name }}</p>
+                <p>Nom du : {{ genset.name }}</p>
+                <p>Du : {{ startDate|date('d/m/Y') }} Au : {{ endDate|date('d/m/Y') }}</p>
+            </div>
+        </div>
         {# Récapitulatif #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
+        <div class="row widget-statistic layout-top-spacing mt-3" style="page-break-after: auto;">
 
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
                 <div class="widget widget-chart-three">
@@ -371,7 +384,7 @@
         </div>
 
         {# Histogramme journalier conso et pic de puissance #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: always;">
+        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
             {# Histogramme journalier de consommation #}
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
                 <div class="widget widget-chart-three">
@@ -403,7 +416,7 @@
         </div>
 
         {# Dispersion des conso et pics de puissance #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: always;">
+        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
                 <div class="widget widget-chart-three layout-spacing">
                     <div class="widget-heading">
@@ -780,7 +793,7 @@
         </div>
         
         {# Mix et Répartition Energie #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: always;">
+        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
                 <div class="widget widget-chart-three d-flex justify-center">
                     <div class="widget-heading">
@@ -953,7 +966,7 @@
         </div>
 
         {# Monotone de puissance #}
-        <div class="row widget-statistic layout-top-spacing" style="page-break-after: always;">
+        <div class="row widget-statistic layout-top-spacing" style="page-break-after: auto;">
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12 layout-spacing">
                 <div class="widget widget-chart-three">
                     <div class="widget-heading">
