@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use DateTime;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Notifier\Message\SmsMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class ApplicationController extends AbstractController
 {
@@ -134,5 +136,45 @@ class ApplicationController extends AbstractController
         $texter->send($sms);
 
         // ...
+    }
+
+    public function loginAction($user)
+    {
+        // $user = /*The user needs to be registered */;#
+        // Example of how to obtain an user:
+        // $user = $this->getDoctrine()->getManager()->getRepository(User::class)->findOneBy(array('email' => "alhadoumpascal@gmail.com"));
+        // dump($user);
+
+        // dd($this);
+
+        //Handle getting or creating the user entity likely with a posted form
+        // The third parameter "main" can change according to the name of your firewall in security.yml
+        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $this->get('security.token_storage')->setToken($token);
+
+        // If the firewall name is not main, then the set value would be instead:
+        // $this->get('session')->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
+        $this->get('session')->set('_security_main', serialize($token));
+
+        // Fire the login event manually
+        // $event = new InteractiveLoginEvent($request, $token);
+        // $this->dispatcher->dispatch("security.interactive_login", $event);
+        // $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+
+        // dd($this->getUser());
+        /*
+         * Now the user is authenticated !!!!
+         * Do what you need to do now, like render a view, redirect to route etc.
+         */
+    }
+
+    function getStartAndEndDate($week, $year): array
+    {
+        $dateTime = new DateTime();
+        $dateTime->setISODate($year, $week);
+        $result['start_date'] = $dateTime->format('Y-m-d');
+        $dateTime->modify('+6 days');
+        $result['end_date'] = $dateTime->format('Y-m-d');
+        return $result;
     }
 }
