@@ -1,0 +1,301 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{site.name}} | Accueil{% endblock %}
+
+{% block head %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>My Energy CLEVER | {{site.name}} | Report </title>
+    <link rel="icon" type="image/x-icon" href="/img/logoCLETech.ico"/>
+    <link href="/css/loader.css" rel="stylesheet" type="text/css" />
+    <script src="/js/loader.js"></script>
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
+    {% block bootstrap %}
+    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    {% endblock %}
+    <link href="/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="/css/plugins.css" rel="stylesheet" type="text/css" />
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+    {# <link href="plugins/apex/apexcharts.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/dashboard/dash_1.css" rel="stylesheet" type="text/css" /> #}
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+    {% block stylesheets %}
+    
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+    <link href="/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+    <link href="/plugins/animate/animate.css" rel="stylesheet" type="text/css">
+    <script src="/plugins/sweetalerts/promise-polyfill.js"></script>
+    <link href="/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css">
+    <link href="/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css">
+    <link href="/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css">
+    <link href="/plugins/apex/apexcharts.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/css/widgets/modules-widgets.css">  
+    <link rel="stylesheet" type="text/css" href="/plugins/table/datatable/datatables.css">
+    <link rel="stylesheet" type="text/css" href="/plugins/table/datatable/dt-global_style.css">
+    <link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <link href="/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+    <!-- Sweet Alert -->
+    <link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+
+    <style>
+        table { page-break-inside:auto }
+        div   { page-break-inside:avoid; } /* This is the key */
+        thead { display:table-header-group }
+        tfoot { display:table-footer-group }
+    </style>
+
+    {% endblock %}
+
+</head>
+    
+{% endblock %}
+
+{% block loader %}{% endblock %}
+
+{% block topMenu %}{% endblock %}
+
+{% block leftSideMenu %}{% endblock %}
+
+{% block body %}
+    <div class="border-top-tab">
+         <div class="row ml-auto mr-auto d-print-none mt-2">
+            <a href="javascript:window.print()"  class="btn btn-info text-light waves-effect mr-2"><i class="fa fa-print"></i></a>
+        </div>
+        {#<div class="statbox widget box layout-spacing layout-top-spacing d-print-none">
+            <div class="widget-header">
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12 d-inline-block">
+                        <h5>Historique de données</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-content widget-content-area">
+                <div class="form-group mb-0">
+                    <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
+                </div>
+            </div>#}
+        </div>
+        {# En-tête #}
+        <div class="row d-flex flex-row justify-content-between layout-top-spacing" style="page-break-after: auto;">
+            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo-CLETech.png" alt="Logo Clever Tech"></div>
+            <div class="h4 mt-5 font-weight-bold">Rapport d’activité Hebdomadaire Groupe Electrogène</div>
+            <div class="mr-5 mt-5"><img width="80px" height="80px" src="/img/uploads/logo/logo.png" alt="Logo Client Entreprise"></div>
+        </div>
+
+        <div class="row d-flex justify-content-center mt-0 layout-top-spacing ">
+            <div class="row bg-light-info px-2 h5 d-flex flex-column font-weight-bold">
+                <p>Nom du Site : {{ site.name }}</p>
+                <p>Nom du GE : {{ genset.name }}</p>
+                <p>Du : {{ startDate|date('d/m/Y') }} Au : {{ endDate|date('d/m/Y') }}</p>
+            </div>
+        </div>
+        {# Tableau historique et Stats #}
+        <div class="row widget-statistic layout-top-spacing mt-3" style="page-break-after: always;">
+
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <h5 class="">Tableau historique</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                <tr class="text-center">
+                                    <th></th>
+                                    <th style="text-transform: none;">Conso (L)</th>
+                                    <th style="text-transform: none;">Appro (L)</th>
+                                    <th style="text-transform: none;">Durée</th>
+                                    <th style="text-transform: none;">Démarrages</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center">
+{#                                {% set dayArray = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %}#}
+                                {% for day, data in dataReport[0]['dayData'] %}
+                                    <tr>
+                                        <td class="text-left">{{day}}</td>
+                                        <td>
+                                            <span id="t-conso-{{day|lower}}">{{ data['consoFuel'] }}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-appro-{{day|lower}}">{{ data['approFuel'] }}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-duree-{{day|lower}}">{{ data['TRH'] }}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-demarrage-{{day|lower}}">{{ data['NPS'] }}</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing" >
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <h5 class="">Statistiques</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                <tr class="text-center">
+                                    <th></th>
+                                    <th style="text-transform: none;">Conso (L)</th>
+                                    <th style="text-transform: none;">Appro (L)</th>
+                                    <th style="text-transform: none;">Durée</th>
+                                    <th style="text-transform: none;">Démarrages</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                {% set paramArray = ['conso','appro','nps','trh'] %}
+                                {% set statArray = ['total','moyenne','médiane','min','max'] %}
+                                {% for stat in statArray %}
+                                    <tr>
+                                        <td class="text-left">{{ stat|capitalize }} : </td>
+                                        {% for param in paramArray %}
+                                        <td>
+                                            <span id="t-{{ param }}-{{ stat }}">{{ dataReport[0]['stats'][stat][param]}}</span>
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# style="page-break-after: always; margin-top: 40px;" #}
+        </div>
+
+        {#        {{ dump(events.getValues) }}#}
+        {% if events|length > 0 %}
+            {# Journal des évènements #}
+            <div class="row widget-statistic layout-top-spacing mt-3" style="page-break-after: auto;">
+
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    <div class="widget widget-chart-three">
+                        <div class="widget-heading">
+                            <h5 class="">Journal des évènements</h5>
+                        </div>
+                        <div class="widget-content">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    {# <caption>List of all users</caption> #}
+                                    <thead >
+                                    <tr class="text-center">
+    {#                                    <th></th>
+                                        <th style="text-transform: none;">Conso (L)</th>
+                                        <th style="text-transform: none;">Appro (L)</th>
+                                        <th style="text-transform: none;">Durée</th>
+                                        <th style="text-transform: none;">Démarrages</th>#}
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    {% for event in events %}
+                                        <tr>
+                                            <td class="">{{event.createdAt|date('l d M Y H:i:s')}}</td>
+                                            <td>
+                                                {{ event.alarm.label }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="/bootstrap/js/popper.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        $(document).ready(function() {
+            App.init();
+        });
+    </script>
+    <script src="/js/custom.js"></script>
+    <script src="/js/scrollspyNav.js"></script>
+        
+{% endblock %}
+
+{% block javascripts %}
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+<script src="/js/scrollspyNav.js"></script>
+<script src="/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script src="/plugins/apex/apexcharts.min.js"></script>
+<script src="/js/widgets/modules-widgets.js"></script>
+
+<script src="/plugins/moment/moment.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> #}
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<!-- Chart JS -->
+<script src="/plugins/chartjs/chart.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js" integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> #}
+
+<script src="/plugins/justgage/justgage.js"></script>
+<script src="/plugins/justgage/raphael-2.1.4.min.js"></script>
+        
+
+<script src="/plugins/highlight/highlight.pack.js"></script>
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script> #}
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+
+<script src="/plugins/datatables/jszip.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> #}
+
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script> #}
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+
+<script src="/plugins/apex/apexcharts.min.js"></script>
+{# <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> #}
+
+{# <script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script> #}
+<!-- Responsive examples -->
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+
+{% endblock %}
