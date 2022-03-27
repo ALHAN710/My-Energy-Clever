@@ -839,7 +839,7 @@ class GensetModService
         if ($this->endDate->format('Y-m-d') == $this->startDate->format('Y-m-d')) $length = 13; //Si endDate == startDate => regoupement des données par heure du jour choisi
         // dump($length);
 
-        $date   = [];
+        $date          = [];
         $NPSDayByDay   = [];
         
         $NPSDayByDayRecordQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,10) AS dat, MAX(NULLIF(d.nbPerformedStartUps,0)) - MIN(NULLIF(d.nbPerformedStartUps,0)) AS NPS
@@ -902,15 +902,6 @@ class GensetModService
                 $dQ = $NPSQ3 - $NPSQ1;
             }
         }
-        
-        $NPSTotal   = $NPSTotal;
-        $NPSMoyenne = $NPSMoyenne;
-        $NPSMediane = $NPSMediane;
-        $NPSMin     = $NPSMin;
-        $NPSMax     = $NPSMax;
-        $NPSQ1      = $NPSQ1;
-        $NPSQ3      = $NPSQ3;
-        // dump($dureeDayByDayFilter);
 
         return array(
             'NPSchart' => [
@@ -928,6 +919,232 @@ class GensetModService
             ]
         );
     } 
+
+    public function dataReport()
+    {
+        $fuelData = $this->getConsoFuelData();
+/*
+        'currentConsoFuel'            => $fuelData['currentConsoFuel'],
+        'currentConsoFuelXAF'         => $consoFuelXAF,
+        'currentConsoFuelProgress'    => $fuelData['currentConsoFuelProgress'],
+        'currentApproFuel'            => $fuelData['currentApproFuel'],
+        'currentApproFuelProgress'    => $fuelData['currentApproFuelProgress'],
+        'TUG'                         => $fuelData['TUG'],
+        'TUGProgress'                 => $fuelData['TUGProgress'],
+        'dureeFonctionnement'         => $fuelData['dureeFonctionnement'],
+        'dureeFonctionnementProgress' => $fuelData['dureeFonctionnementProgress'],
+        'dayBydayConsoData' => [
+            'dateConso'   => $fuelData['dayBydayConsoData']['dateConso'],
+            "consoFuel"   => $fuelData['dayBydayConsoData']['consoFuel'],
+            "approFuel"   => $fuelData['dayBydayConsoData']['approFuel'],
+            "duree"       => $fuelData['dayBydayConsoData']['duree']
+        ],
+        'statsDureeFonctionnement' => $fuelData['statsDureeFonctionnement'],
+
+            'dataFL'    => [
+        'date'  => $date,
+        'FL'    => $dataFL,
+        'XAF'   => $dataFLXAF
+    ],
+
+    */
+        $npsStats = $this->getNPSstats();
+/*
+ 'NPSchart' => [
+                'date' => $date,
+                'NPS'  => $NPSDayByDay
+            ],
+ */
+//        $consoTotale  = '-';
+        $consoMin     = '-';
+        $consoMoyenne = '-';
+        $consoMediane = '-';
+        $consoMax     = '-';
+
+//        $approTotale  = '-';
+        $approMin     = '-';
+        $approMoyenne = '-';
+        $approMediane = '-';
+        $approMax     = '-';
+
+        if (count($fuelData['dayBydayConsoData']['consoFuel']) > 0) {
+            $consoFilter = array_filter($fuelData['dayBydayConsoData']['consoFuel']); //Filtrage du tableau pour supprimer les valeurs nulles
+            // dump($consoFilter);
+            if (count($consoFilter) > 0) {
+                sort($consoFilter);
+                $n = count($consoFilter) - 1;
+//                $consoTotale = array_sum($consoFilter);
+                $consoMin = min($consoFilter);
+                $consoMoyenne = $this->mmmrv($consoFilter, 'mean');
+                $consoMediane = $this->mmmrv($consoFilter, 'median');
+                $consoMax = max($consoFilter);
+            }
+        }
+
+        if (count($fuelData['dayBydayConsoData']['approFuel']) > 0) {
+            $approFilter = array_filter($fuelData['dayBydayConsoData']['approFuel']); //Filtrage du tableau pour supprimer les valeurs nulles
+            // dump($approFilter);
+            if (count($approFilter) > 0) {
+                sort($approFilter);
+                $n = count($approFilter) - 1;
+//                $approTotale = array_sum($approFilter);
+                $approMin = min($approFilter);
+                $approMoyenne = $this->mmmrv($approFilter, 'mean');
+                $approMediane = $this->mmmrv($approFilter, 'median');
+                $approMax = max($approFilter);
+            }
+        }
+
+        $Stats = [
+            'total' => [
+                'conso' => $fuelData['currentConsoFuel'],
+                'appro' => $fuelData['currentApproFuel'],
+                'trh'   => $fuelData['dureeFonctionnement'],
+                'nps'   => $npsStats['statsNPS']['total'],
+            ],
+            'moyenne' => [
+                'conso' => $consoMoyenne,
+                'appro' => $approMoyenne,
+                'trh'   => $fuelData['statsDureeFonctionnement']['mean'],
+                'nps'   => $npsStats['statsNPS']['mean'],
+            ],
+            'médiane' => [
+                'conso' => $consoMediane,
+                'appro' => $approMediane,
+                'trh'   => $fuelData['statsDureeFonctionnement']['median'],
+                'nps'   => $npsStats['statsNPS']['median'],
+            ],
+            'min' => [
+                'conso' => $consoMin,
+                'appro' => $approMin,
+                'trh'   => $fuelData['statsDureeFonctionnement']['min'],
+                'nps'   => $npsStats['statsNPS']['min'],
+            ],
+            'max' => [
+                'conso' => $consoMax,
+                'appro' => $approMax,
+                'trh'   => $fuelData['statsDureeFonctionnement']['max'],
+                'nps'   => $npsStats['statsNPS']['max'],
+            ],
+        ];
+
+        $dayData = [
+            'Lundi'   => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+            'Mardi'   => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+            'Mercredi'      => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+            'Jeudi'     => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+            'Vendredi'       => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+            'Samedi'      => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+            'Dimanche'   => [
+                'consoFuel' => "-",
+                'approFuel' => "-",
+                'TRH'       => "-",
+                'NPS'       => "-",
+            ],
+        ];
+//        $day = [];
+//        dump($fuelData['dayBydayConsoData']);
+        if (count($fuelData['dayBydayConsoData']) > 0) {
+//            $day[]    = $fuelData['dayBydayConsoData']['dateConso'];
+
+            foreach ($fuelData['dayBydayConsoData']['dateConso'] as $index => $value) {
+                $consoFuel = $fuelData['dayBydayConsoData']['consoFuel'][$index];
+                $approFuel = $fuelData['dayBydayConsoData']['approFuel'][$index];
+//                dd($fuelData['dayBydayConsoData']['duree']);
+                $duree     = $this->hoursandmins($fuelData['dayBydayConsoData']['duree'][$index]);
+                $nps       = $npsStats['NPSchart']['NPS'][$index];
+
+                switch (date('w', strtotime($value))) {
+                    case 1:
+                        $dayData['Lundi']['consoFuel'] = $consoFuel;
+                        $dayData['Lundi']['approFuel'] = $approFuel;
+                        $dayData['Lundi']['TRH']       = $duree;
+                        $dayData['Lundi']['NPS']       = $nps;
+
+                        break;
+                    case 2:
+                        $dayData['Mardi']['consoFuel'] = $consoFuel;
+                        $dayData['Mardi']['approFuel'] = $approFuel;
+                        $dayData['Mardi']['TRH']       = $duree;
+                        $dayData['Mardi']['NPS']       = $nps;
+
+                        break;
+                    case 3:
+                        $dayData['Mercredi']['consoFuel'] = $consoFuel;
+                        $dayData['Mercredi']['approFuel'] = $approFuel;
+                        $dayData['Mercredi']['TRH']       = $duree;
+                        $dayData['Mercredi']['NPS']       = $nps;
+
+                        break;
+                    case 4:
+                        $dayData['Jeudi']['consoFuel'] = $consoFuel;
+                        $dayData['Jeudi']['approFuel'] = $approFuel;
+                        $dayData['Jeudi']['TRH']       = $duree;
+                        $dayData['Jeudi']['NPS']       = $nps;
+
+                        break;
+                    case 5:
+                        $dayData['Vendredi']['consoFuel'] = $consoFuel;
+                        $dayData['Vendredi']['approFuel'] = $approFuel;
+                        $dayData['Vendredi']['TRH']       = $duree;
+                        $dayData['Vendredi']['NPS']       = $nps;
+
+                        break;
+                    case 6:
+                        $dayData['Samedi']['consoFuel'] = $consoFuel;
+                        $dayData['Samedi']['approFuel'] = $approFuel;
+                        $dayData['Samedi']['TRH']       = $duree;
+                        $dayData['Samedi']['NPS']       = $nps;
+
+                        break;
+                    case 0:
+                        $dayData['Dimanche']['consoFuel'] = $consoFuel;
+                        $dayData['Dimanche']['approFuel'] = $approFuel;
+                        $dayData['Dimanche']['TRH']       = $duree;
+                        $dayData['Dimanche']['NPS']       = $nps;
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return array([
+            'dayData' => $dayData,
+            'stats'   => $Stats
+        ]);
+
+    }
 
     public function getDataForMonthDataTable()
     {

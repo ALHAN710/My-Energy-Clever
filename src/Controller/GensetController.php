@@ -37,11 +37,15 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 class GensetController extends ApplicationController
 {
     private $projectDirectory;
+
     private $manager;
 
-    public function __construct(EntityManagerInterface $manager, string $projectDirectory)
+    private $gensetModService;
+
+    public function __construct(EntityManagerInterface $manager, string $projectDirectory, GensetModService $_gensetModService)
     {
         $this->manager = $manager;
+        $this->gensetModService = $_gensetModService;
         $this->projectDirectory = $projectDirectory;
     }
 
@@ -52,11 +56,10 @@ class GensetController extends ApplicationController
      * @param $slug
      * @param SmartMod $genset
      * @param EntityManagerInterface $manager
-     * @param GensetModService $gensetModService
      * @return Response
      * @throws \Exception
      */
-    public function index($slug, SmartMod $genset, EntityManagerInterface $manager, GensetModService $gensetModService): Response
+    public function index($slug, SmartMod $genset): Response
     { //@Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_NOC_SUPERVISOR') and id.getSite().getEnterprise() === user.getEnterprise() )" )
         // dump($slug);
         // dump($genset);
@@ -66,18 +69,18 @@ class GensetController extends ApplicationController
         // $startDate = new DateTime(date("2022-02-01", strtotime(date('2022-02-d'))) . '00:00:00');
         // $endDate   = new DateTime(date("2022-02-t", strtotime(date('2022-02-d'))) . '23:59:59');
 
-        $site = $manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
+        $site = $this->manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
         // dump($site);
-        $gensetModService->setGensetMod($genset)
+        $this->gensetModService->setGensetMod($genset)
             ->setStartDate($startDate)
             ->setEndDate($endDate);
 
-        $overViewData = $gensetModService->getDashboardData();
+        $overViewData = $this->gensetModService->getDashboardData();
         // dump($overViewData);
         // $siteDash->setSite($site)
         //     ->setPower_unit(1000);
 
-        $monthDataTable = $gensetModService->getDataForMonthDataTable();
+        $monthDataTable = $this->gensetModService->getDataForMonthDataTable();
 
         return $this->render('genset/home_data_monitoring.html.twig', [
             'site'            => $site,
@@ -89,18 +92,17 @@ class GensetController extends ApplicationController
 
     /**
      * Fonction test pour le reporting GE
-     * 
+     *
      * @Route("/installation/{slug<[a-zA-Z0-9-_]+>}/genset-report/{id<\d+>}", name="genset_report")
-     * 
+     *
      * @param string $slug
      * @param SmartMod $genset
      * @param EntityManagerInterface $manager
-     * @param GensetModService $gensetModService
      * @return Response
      */
-    public function weeklyReport($slug, SmartMod $genset, EntityManagerInterface $manager, GensetModService $gensetModService, SiteProDataAnalyticService $siteProAnalytic): Response
+    public function weeklyReport($slug, SmartMod $genset): Response
     {
-        $site = $manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
+        $site = $this->manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
 
         $date = new DateTime('now');
         $date->modify('-6 days');
@@ -108,7 +110,7 @@ class GensetController extends ApplicationController
         $year = $date->format("Y");
         // dump("Week Number : $week");
 
-        $dates=$this->getStartAndEndDate($week,$year);
+        $dates = $this->getStartAndEndDate($week,$year);
         // dump($dates);
 
         $startDate = new DateTime($dates['start_date'] . '00:00:00');
@@ -130,67 +132,24 @@ class GensetController extends ApplicationController
         }
         $this->loginAction($user);
 
-        /*$gensetModService->setGensetMod($genset)
+        $this->gensetModService->setGensetMod($genset)
             ->setStartDate($startDate)
             ->setEndDate($endDate);
 
-        $dataReport = $gensetModService->getDashboardData();*/
-
-        $siteProAnalytic->setSite($site)
-                    ->setPower_unit(1)
-                    ->setStartDate($startDate)
-                    ->setEndDate($endDate);
-
-        $dataAnalysis = $siteProAnalytic->getDataAnalysis();
-
-        return $this->render('email/data-analysis-report.html.twig', [
+        $dataReport = $this->gensetModService->dataReport();
+        dump($dataReport);
+        $events = $genset->getAlarmReportings();
+//        dd($events->getValues());
+        return $this->render('email/ge-weekly-report.html.twig', [
             'site'            => $site,
             'genset'          => $genset,
+            'events'          => $events,
             'startDate'       => $startDate,
             'endDate'         => $endDate,
-            'dataAnalysis'    => $dataAnalysis,
-            //'dataReport'      => $dataReport,
+//            'dataAnalysis'    => $dataAnalysis,
+            'dataReport'      => $dataReport,
             'dir'             => $this->projectDirectory,
         ]);
-    }
-
-    public function loginAction($user)
-    {
-        // $user = /*The user needs to be registered */;#
-        // Example of how to obtain an user:
-        // $user = $this->getDoctrine()->getManager()->getRepository(User::class)->findOneBy(array('email' => "alhadoumpascal@gmail.com"));
-        // dump($user);
-
-        // dd($this);
-
-        //Handle getting or creating the user entity likely with a posted form
-        // The third parameter "main" can change according to the name of your firewall in security.yml
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
-        $this->get('security.token_storage')->setToken($token);
-
-        // If the firewall name is not main, then the set value would be instead:
-        // $this->get('session')->set('_security_XXXFIREWALLNAMEXXX', serialize($token));
-        $this->get('session')->set('_security_main', serialize($token));
-        
-        // Fire the login event manually
-        // $event = new InteractiveLoginEvent($request, $token);
-        // $this->dispatcher->dispatch("security.interactive_login", $event);
-        // $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
-        
-        // dd($this->getUser());
-        /*
-         * Now the user is authenticated !!!! 
-         * Do what you need to do now, like render a view, redirect to route etc.
-         */
-    }
-    
-    function getStartAndEndDate($week, $year) {
-        $dateTime = new DateTime();
-        $dateTime->setISODate($year, $week);
-        $result['start_date'] = $dateTime->format('Y-m-d');
-        $dateTime->modify('+6 days');
-        $result['end_date'] = $dateTime->format('Y-m-d');
-        return $result;
     }
 
     /**
@@ -203,7 +162,7 @@ class GensetController extends ApplicationController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function updateDisplayGensetRealTimeData(SmartMod $genset, EntityManagerInterface $manager, Request $request, GensetModService $gensetModService): Response
+    public function updateDisplayGensetRealTimeData(SmartMod $genset, EntityManagerInterface $manager, Request $request): Response
     {
         //@Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_NOC_SUPERVISOR') and id.getSite().getEnterprise() === user.getEnterprise() )" )
 
@@ -219,11 +178,11 @@ class GensetController extends ApplicationController
         // dump($startDate);
         // dump($endDate);
         
-        $gensetModService->setGensetMod($genset)
+        $this->gensetModService->setGensetMod($genset)
         ->setStartDate($startDate)
         ->setEndDate($endDate);
         
-        $overViewData = $gensetModService->getDashboardData();
+        $overViewData = $this->gensetModService->getDashboardData();
         // dump($overViewData);
         
         return $this->json([
@@ -243,7 +202,7 @@ class GensetController extends ApplicationController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function updateGensetGraphs(SmartMod $smartMod, EntityManagerInterface $manager, Request $request, GensetModService $gensetModService): Response
+    public function updateGensetGraphs(SmartMod $smartMod, EntityManagerInterface $manager, Request $request): Response
     {
         // @IsGranted("USER")
         //@Security( "is_granted('ROLE_SUPER_ADMIN') or ( is_granted('ROLE_NOC_SUPERVISOR') and smartMod.getSite().getEnterprise() === user.getEnterprise() )" )
@@ -258,14 +217,14 @@ class GensetController extends ApplicationController
         //$endDate = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['endDate']); // Ex : %2020-03-20%
         $endDate = new DateTime($paramJSON['endDate']); // Ex : %2020-03-20%
 
-        $gensetModService->setGensetMod($smartMod)
+        $this->gensetModService->setGensetMod($smartMod)
             ->setStartDate($startDate)
             ->setEndDate($endDate);
         
         // ######## Récupération des données de consommation et d'approvisionnement de Fuel
-        $fuelData = $gensetModService->getConsoFuelData();
+        $fuelData = $this->gensetModService->getConsoFuelData();
         // dump($fuelData);
-        $NPSstats = $gensetModService->getNPSstats();
+        $NPSstats = $this->gensetModService->getNPSstats();
         // dump($NPSstats);
         return $this->json([
             'code'         => 200,
