@@ -162,9 +162,9 @@ class GEWeeklyReportCommand extends Command
         
 Cher(e) Client(e),
 
-Ci-joint le rapport d'activité de la semaine du" . $startDate->format('d/m/Y') . " Au " . $endDate->format('d/m/Y') . " du groupe électrogène du site " . $site->getName() . "
+Ci-joint le rapport d'activité de la semaine allant du " . $startDate->format('d/m/Y') . " Au " . $endDate->format('d/m/Y') . " du groupe électrogène du site " . $site->getName() . "
 
-
+Cordialement,
 L'équipe My Energy CLEVER";
                         /*foreach ($site->getEnterprise()->getUsers() as $user) {
                             if ($user->getRoles()[0] === 'ROLE_ADMIN') {
