@@ -105,7 +105,7 @@ class GensetController extends ApplicationController
         $site = $this->manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
 
         $date = new DateTime('now');
-        $date->modify('-6 days');
+        $date->modify('-7 days');
         $week = $date->format("W");
         $year = $date->format("Y");
         // dump("Week Number : $week");
@@ -137,7 +137,7 @@ class GensetController extends ApplicationController
             ->setEndDate($endDate);
 
         $dataReport = $this->gensetModService->dataReport();
-//        dump($dataReport);
+        dump($dataReport);
         $events = $genset->getAlarmReportings();
 //        dd($events->getValues());
         return $this->render('email/ge-weekly-report.html.twig', [

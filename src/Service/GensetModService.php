@@ -923,38 +923,9 @@ class GensetModService
     public function dataReport()
     {
         $fuelData = $this->getConsoFuelData();
-/*
-        'currentConsoFuel'            => $fuelData['currentConsoFuel'],
-        'currentConsoFuelXAF'         => $consoFuelXAF,
-        'currentConsoFuelProgress'    => $fuelData['currentConsoFuelProgress'],
-        'currentApproFuel'            => $fuelData['currentApproFuel'],
-        'currentApproFuelProgress'    => $fuelData['currentApproFuelProgress'],
-        'TUG'                         => $fuelData['TUG'],
-        'TUGProgress'                 => $fuelData['TUGProgress'],
-        'dureeFonctionnement'         => $fuelData['dureeFonctionnement'],
-        'dureeFonctionnementProgress' => $fuelData['dureeFonctionnementProgress'],
-        'dayBydayConsoData' => [
-            'dateConso'   => $fuelData['dayBydayConsoData']['dateConso'],
-            "consoFuel"   => $fuelData['dayBydayConsoData']['consoFuel'],
-            "approFuel"   => $fuelData['dayBydayConsoData']['approFuel'],
-            "duree"       => $fuelData['dayBydayConsoData']['duree']
-        ],
-        'statsDureeFonctionnement' => $fuelData['statsDureeFonctionnement'],
 
-            'dataFL'    => [
-        'date'  => $date,
-        'FL'    => $dataFL,
-        'XAF'   => $dataFLXAF
-    ],
-
-    */
         $npsStats = $this->getNPSstats();
-/*
- 'NPSchart' => [
-                'date' => $date,
-                'NPS'  => $NPSDayByDay
-            ],
- */
+
 //        $consoTotale  = '-';
         $consoMin     = '-';
         $consoMoyenne = '-';
@@ -1139,7 +1110,17 @@ class GensetModService
                 }
             }
         }
+        $consoFuelXAF = $fuelData['currentConsoFuel'] * $this->gensetMod->getFuelPrice();
+        $consoFuelXAF = floatval(number_format($consoFuelXAF, 2, '.', ''));
+        $approFuelXAF = $fuelData['currentApproFuel'] * $this->gensetMod->getFuelPrice();
+        $approFuelXAF = floatval(number_format($consoFuelXAF, 2, '.', ''));
         return array([
+            'consoFuel'            => $fuelData['currentConsoFuel'],
+            'consoFuelXAF'         => $consoFuelXAF,
+            'approFuel'            => $fuelData['currentApproFuel'],
+            'approFuelXAF'         => $approFuelXAF,
+            'dureeFonctionnement'  => $fuelData['dureeFonctionnement'],
+
             'dayData' => $dayData,
             'stats'   => $Stats
         ]);

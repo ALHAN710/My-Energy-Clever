@@ -81,13 +81,16 @@
                 <div class="form-group mb-0">
                     <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
                 </div>
-            </div>#}
-        </div>
+            </div>
+        </div>#}
+
         {# En-tête #}
         <div class="row d-flex flex-row justify-content-between layout-top-spacing" style="page-break-after: auto;">
-            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo-CLETech.png" alt="Logo Clever Tech"></div>
+{#            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo-CLETech.png" alt="Logo Clever Tech"></div>#}
+            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo_validé_Plan_de_travail_1.png" alt="Logo Clever Tech"></div>
             <div class="h4 mt-5 font-weight-bold">Rapport d’activité Hebdomadaire Groupe Electrogène</div>
-            <div class="mr-5 mt-5"><img width="80px" height="80px" src="/img/uploads/logo/logo.png" alt="Logo Client Entreprise"></div>
+            <div class="mr-5 mt-5"><img width="{{ site.enterprise.logo != null  ? '150px' : '80px' }}" height="{{ site.enterprise.logo != null  ? '100px' : '80px' }}" src="{{ site.enterprise.logo != null  ? '/img/uploads/logo/' ~ site.enterprise.logo : '/img/uploads/logo/logo.png' }}" alt="Logo Client Entreprise"></div>
+{#            <div class="mr-5 mt-5"><img width="80px" height="80px" src="/img/uploads/logo/logo.png" alt="Logo Client Entreprise"></div>#}
         </div>
 
         <div class="row d-flex justify-content-center mt-0 layout-top-spacing ">
@@ -97,8 +100,88 @@
                 <p>Du : {{ startDate|date('d/m/Y') }} Au : {{ endDate|date('d/m/Y') }}</p>
             </div>
         </div>
+
+        <div class="row widget-statistic layout-top-spacing">
+
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+                <div class="widget widget-one_hybrid widget-followers">
+                    <div class="widget-heading">
+                        {#<div class="w-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>#}
+                        <h4 class="text-center">Consommation Fuel</h4>
+                        <p class="w-value text-center"><span id="conso-fuel-value">{{ dataReport[0]['consoFuel'] }}</span> L</p>
+                        <p class="w-value text-center"><span id="conso-fuel-xaf-value">{{ dataReport[0]['consoFuelXAF'] }}</span> XAF</p>
+
+                    </div>
+                    <div class="widget-content">
+                        <div class="w-chart">
+{#                            <div id="w-conso-fuel"></div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="widget widget-one_hybrid widget-engagement" >
+                    <div class="widget-heading">
+                        {#<div class="w-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>#}
+                        <h4 class="text-center">Approvisionnement Fuel</h4>
+                        <p class="w-value text-center"><span id="approv-fuel-value">{{ dataReport[0]['approFuel'] }}</span> L</p>
+                        <p class="w-value text-center"><span id="approv-fuel-value">{{ dataReport[0]['approFuelXAF'] }}</span> XAF </p>
+
+                    </div>
+                    <div class="widget-content">
+                        <div class="w-chart">
+{#                            <div id="w-appro-fuel"></div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+                <div class="widget widget-one_hybrid widget-referral">
+                    <div class="widget-heading">
+                        {#<div class="w-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cloud"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                        </div>#}
+
+                        <h4 class="text-center">Durée de fonctionnement</h4>
+                        <p class="w-value text-center"><span id="duree-fonct-value">{{ dataReport[0]['dureeFonctionnement'] }}</span></p>
+                        <p class="w-value text-center"><br></p>
+                    </div>
+                    <div class="widget-content">
+                        <div class="w-chart">
+{#                            <div id="w-df"></div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="widget widget-one_hybrid widget-engagement" style="background-color:#fff;">
+                    <div class="widget-heading">
+                        {#<div class="w-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>#}
+                        <h4 class="text-center">Nombre de démarrage</h4>
+                        <p class="w-value text-center"><span id="nb-demarrage">{{ dataReport[0]['stats']['total']['nps']}}</span></p>
+                        <p class="w-value text-center"><br></p>
+
+                    </div>
+                    <div class="widget-content">
+                        <div class="w-chart">
+                            {#<div id="w-appro-fuel"></div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {# Tableau historique et Stats #}
-        <div class="row widget-statistic layout-top-spacing mt-3" style="page-break-after: always;">
+        <div class="row widget-statistic layout-top-spacing mt-3" style="page-break-after: auto;">
 
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
                 <div class="widget widget-chart-three">
@@ -163,7 +246,7 @@
                                 </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                {% set paramArray = ['conso','appro','nps','trh'] %}
+                                {% set paramArray = ['conso','appro','trh','nps'] %}
                                 {% set statArray = ['total','moyenne','médiane','min','max'] %}
                                 {% for stat in statArray %}
                                     <tr>
