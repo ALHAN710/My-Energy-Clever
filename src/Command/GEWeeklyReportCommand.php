@@ -166,7 +166,7 @@ Ci-joint le rapport d'activité de la semaine allant du " . $startDate->format('
 
 Cordialement,
 L'équipe My Energy CLEVER";
-                        /*foreach ($site->getEnterprise()->getUsers() as $user) {
+                        foreach ($site->getEnterprise()->getUsers() as $user) {
                             if ($user->getRoles()[0] === 'ROLE_ADMIN') {
                                 $to = $user->getEmail();
                                 $email = (new Email())
@@ -189,7 +189,7 @@ L'équipe My Energy CLEVER";
                                 $this->mailer->send($email);
                             }
                             //$messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'SMS', ''));
-                        }*/
+                        }
 
                         //$adminUsers = [];
                         $Users = $this->manager->getRepository('App:User')->findAll();
