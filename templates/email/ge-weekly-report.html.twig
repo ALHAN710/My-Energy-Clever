@@ -45,13 +45,28 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
 
-    <style>
+    {#<style>
         table { page-break-inside:auto }
         div   { page-break-inside:avoid; } /* This is the key */
-        thead { display:table-header-group }
-        tfoot { display:table-footer-group }
-    </style>
+        /*thead { display:table-header-group }
+        tfoot { display:table-footer-group }*/
+    </style>#}
+        <style>
+            table {
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            thead {
+                display: table-header-group;
+            }
+            tfoot {
+                display: table-footer-group;
+            }
 
+        </style>
     {% endblock %}
 
 </head>
@@ -87,29 +102,29 @@
         {# En-tête #}
         <div class="row d-flex flex-row justify-content-between layout-top-spacing" style="page-break-after: auto;">
 {#            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo-CLETech.png" alt="Logo Clever Tech"></div>#}
-            <div class="ml-3 mt-0"><img width="200px" height="180px" src="/img/logo_validé_Plan_de_travail_1.png" alt="Logo Clever Tech"></div>
+            <div class="ml-3 mt-0"><img width="180px" height="160px" src="/img/logo_validé_Plan_de_travail_1.png" alt="Logo Clever Tech"></div>
             <div class="h4 mt-5 font-weight-bold">Rapport d’activité Hebdomadaire Groupe Electrogène</div>
-            <div class="mr-5 mt-5"><img width="{{ site.enterprise.logo != null  ? '150px' : '80px' }}" height="{{ site.enterprise.logo != null  ? '100px' : '80px' }}" src="{{ site.enterprise.logo != null  ? '/img/uploads/logo/' ~ site.enterprise.logo : '/img/uploads/logo/logo.png' }}" alt="Logo Client Entreprise"></div>
+            <div class="mr-5 mt-5"><img width="{{ site.enterprise.logo != null  ? '130px' : '80px' }}" height="{{ site.enterprise.logo != null  ? '100px' : '80px' }}" src="{{ site.enterprise.logo != null  ? '/img/uploads/logo/' ~ site.enterprise.logo : '/img/uploads/logo/logo.png' }}" alt="Logo Client Entreprise"></div>
 {#            <div class="mr-5 mt-5"><img width="80px" height="80px" src="/img/uploads/logo/logo.png" alt="Logo Client Entreprise"></div>#}
         </div>
 
         <div class="row d-flex justify-content-center mt-0 layout-top-spacing ">
             <div class="row bg-light-info px-2 h5 d-flex flex-column font-weight-bold">
                 <p>Nom du Site : {{ site.name }}</p>
-                <p>Nom du GE : {{ genset.name }}</p>
+                <p>Module : {{ genset.name }}</p>
                 <p>Du : {{ startDate|date('d/m/Y') }} Au : {{ endDate|date('d/m/Y') }}</p>
             </div>
         </div>
 
         <div class="row widget-statistic layout-top-spacing">
 
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 layout-spacing">
                 <div class="widget widget-one_hybrid widget-followers">
                     <div class="widget-heading">
                         {#<div class="w-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                         </div>#}
-                        <h4 class="text-center">Consommation Fuel</h4>
+                        <h4 class="text-center">Consommation de Fuel</h4>
                         <p class="w-value text-center"><span id="conso-fuel-value">{{ dataReport[0]['consoFuel'] }}</span> L</p>
                         <p class="w-value text-center"><span id="conso-fuel-xaf-value">{{ dataReport[0]['consoFuelXAF'] }}</span> XAF</p>
 
@@ -122,7 +137,7 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12">
                 <div class="widget widget-one_hybrid widget-engagement" >
                     <div class="widget-heading">
                         {#<div class="w-icon">
@@ -141,7 +156,7 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 layout-spacing">
                 <div class="widget widget-one_hybrid widget-referral">
                     <div class="widget-heading">
                         {#<div class="w-icon">
@@ -160,7 +175,7 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12">
                 <div class="widget widget-one_hybrid widget-engagement" style="background-color:#fff;">
                     <div class="widget-heading">
                         {#<div class="w-icon">
@@ -278,30 +293,117 @@
                             <h5 class="">Journal des évènements</h5>
                         </div>
                         <div class="widget-content">
-                            <div class="table-responsive">
+                            <div class="table-responsive" {% if events|length > 6  %}style="page-break-after: always;"{% endif %}>
                                 <table class="table">
                                     {# <caption>List of all users</caption> #}
                                     <thead >
-                                    <tr class="text-center">
-    {#                                    <th></th>
-                                        <th style="text-transform: none;">Conso (L)</th>
-                                        <th style="text-transform: none;">Appro (L)</th>
-                                        <th style="text-transform: none;">Durée</th>
-                                        <th style="text-transform: none;">Démarrages</th>#}
-                                    </tr>
+                                        <tr class="text-center">
+                                            {#    <th></th>#}
+                                            <th style="text-transform: none;">Date</th>
+                                            <th style="text-transform: none;">Evènements</th>
+                                            {#<th style="text-transform: none;">Durée</th>
+                                            <th style="text-transform: none;">Démarrages</th>#}
+                                        </tr>
                                     </thead>
                                     <tbody class="text-center">
+                                    {% set n = 0 %}
                                     {% for event in events %}
-                                        <tr>
+                                        {% if loop.index <= 6 %}
+                                        <tr >
                                             <td class="">{{event.createdAt|date('l d M Y H:i:s')}}</td>
                                             <td>
                                                 {{ event.alarm.label }}
                                             </td>
                                         </tr>
+                                        {#{% if loop.index == 7 or n == 30 %}style="page-break-after: always;">#}
+                                        {% set n = n + 1 %}
+                                        {% endif %}
                                     {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
+                            {% set n = 0 %}
+                            {% set len = events|length %}
+                            {% set NbArray = len//30 %}
+                            {% for nbDiv in 1..NbArray %}
+                                <div class="table-responsive" style="page-break-after: always;margin-top: 20px">
+                                    <table class="table">
+                                        {# <caption>List of all users</caption> #}
+                                        <thead >
+                                        <tr class="text-center">
+                                            {#    <th></th>#}
+                                            <th style="text-transform: none;">Date</th>
+                                            <th style="text-transform: none;">Evènements</th>
+                                            {#<th style="text-transform: none;">Durée</th>
+                                            <th style="text-transform: none;">Démarrages</th>#}
+                                        </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                        {#  {% set n = 0 %}#}
+                                        {% if nbDiv == 1 %}
+                                            {% for event in events %}
+                                                {% if loop.index > 6 and loop.index <= nbDiv*30 %}
+                                                    <tr >
+                                                        <td class="">{{event.createdAt|date('l d M Y H:i:s')}}</td>
+                                                        <td>
+                                                            {{ event.alarm.label }}
+                                                        </td>
+                                                    </tr>
+                                                    {#{% if loop.index == 7 or n == 30 %}style="page-break-after: always;">#}
+
+                                                {% endif %}
+                                            {% endfor %}
+
+                                        {% else %}
+                                            {% for event in events %}
+                                                {% if loop.index > nbDiv and loop.index <= nbDiv*30 %}
+                                                    <tr >
+                                                        <td class="">{{event.createdAt|date('l d M Y H:i:s')}}</td>
+                                                        <td>
+                                                            {{ event.alarm.label }}
+                                                        </td>
+                                                    </tr>
+                                                    {#{% if loop.index == 7 or n == 30 %}style="page-break-after: always;">#}
+                                                    {% set n = n + 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% set n = nbDiv %}
+                            {% endfor %}
+                            {% if len % 30 > 0 %}
+                                <div class="table-responsive" style="page-break-after: auto;margin-top: 20px">
+                                    <table class="table">
+                                        {# <caption>List of all users</caption> #}
+                                        <thead >
+                                        <tr class="text-center">
+                                            {#    <th></th>#}
+                                            <th style="text-transform: none;">Date</th>
+                                            <th style="text-transform: none;">Evènements</th>
+                                            {#<th style="text-transform: none;">Durée</th>
+                                            <th style="text-transform: none;">Démarrages</th>#}
+                                        </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                        {#  {% set n = 0 %}#}
+                                        {% for event in events %}
+                                            {% if loop.index > n*30 and loop.index <= len %}
+                                                <tr >
+                                                    <td class="">{{event.createdAt|date('l d M Y H:i:s')}}</td>
+                                                    <td>
+                                                        {{ event.alarm.label }}
+                                                    </td>
+                                                </tr>
+                                                {#{% if loop.index == 7 or n == 30 %}style="page-break-after: always;">#}
+
+                                            {% endif %}
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
