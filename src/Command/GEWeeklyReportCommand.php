@@ -131,14 +131,14 @@ class GEWeeklyReportCommand extends Command
 //                Convert URL to PDF (load PDF in browser window and specify a file name)
                 $options = [
                     "landscape" => true,
-                    "delay" => 5000
+                    "delay" => 8000
                 ];
 
                 $result = $apiClient->chromeUrlToPdf($url, $inline = false, $filename = $fileName, $options = $options);
 //                $result = $apiClient->chromeUrlToPdf('https://localhost:8000/installation/neptune-oil-dt-6/genset-report/10', $inline = false, $filename = $fileName, $options = $options);
                 $file = $result->getFile();
 //                dump($result);
-                dump($file);
+//                dump($file);
                 // Initialize a file URL to the variable
 //                $url = "https://storage.googleapis.com/a2p-v2-storage/1fb9f8f7-b5ee-40a5-a88e-a8b9782f3b69";
                 $url = $file;
@@ -166,7 +166,7 @@ Ci-joint le rapport d'activité de la semaine allant du " . $startDate->format('
 
 Cordialement,
 L'équipe My Energy CLEVER";
-                        /*foreach ($site->getEnterprise()->getUsers() as $user) {
+                        foreach ($site->getEnterprise()->getUsers() as $user) {
                             if ($user->getRoles()[0] === 'ROLE_ADMIN') {
                                 $to = $user->getEmail();
                                 $email = (new Email())
@@ -189,7 +189,7 @@ L'équipe My Energy CLEVER";
                                 $this->mailer->send($email);
                             }
                             //$messageBus->dispatch(new UserNotificationMessage($user->getId(), $message, 'SMS', ''));
-                        }*/
+                        }
 
                         //$adminUsers = [];
                         $Users = $this->manager->getRepository('App:User')->findAll();
