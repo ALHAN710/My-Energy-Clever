@@ -4,8 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8642667ef4d82c629c80a4b804e48104",
+    "content-hash": "6d82f66ef1e453bbf86e51dcf99706d3",
     "packages": [
+        {
+            "name": "api2pdf/api2pdf.php",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Api2Pdf/api2pdf.php.git",
+                "reference": "563623e3eede5679c5590981bf00a66a23ca2478"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Api2Pdf/api2pdf.php/zipball/563623e3eede5679c5590981bf00a66a23ca2478",
+                "reference": "563623e3eede5679c5590981bf00a66a23ca2478",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Api2Pdf\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "This client library is a wrapper for the Api2Pdf.com REST API. See full REST api documentation at https://www.api2pdf.com/documentation/v2. Api2Pdf is a powerful API that supports HTML to PDF, URL to PDF, HTML to Image, URL to Image, Thumbnail / image preview of an Office file, Office files (Word to PDF), HTML to Docx, HTML to excel, PDF to HTML, merge PDFs together, add bookmarks to PDFs, add passwords to PDFs",
+            "homepage": "https://www.api2pdf.com",
+            "support": {
+                "issues": "https://github.com/Api2Pdf/api2pdf.php/issues",
+                "source": "https://github.com/api2pdf/api2pdf.php"
+            },
+            "time": "2021-10-27T00:59:06+00:00"
+        },
         {
             "name": "beberlei/doctrineextensions",
             "version": "v1.3.0",
@@ -10636,5 +10672,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }

@@ -1,4 +1,13 @@
 {
+    "api2pdf/api2pdf.php": {
+        "version": "0.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "0.0",
+            "ref": ""
+        }
+    },
     "beberlei/doctrineextensions": {
         "version": "v1.3.0"
     },
