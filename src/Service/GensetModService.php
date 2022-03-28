@@ -1113,7 +1113,7 @@ class GensetModService
         $consoFuelXAF = $fuelData['currentConsoFuel'] * $this->gensetMod->getFuelPrice();
         $consoFuelXAF = floatval(number_format($consoFuelXAF, 2, '.', ''));
         $approFuelXAF = $fuelData['currentApproFuel'] * $this->gensetMod->getFuelPrice();
-        $approFuelXAF = floatval(number_format($consoFuelXAF, 2, '.', ''));
+        $approFuelXAF = floatval(number_format($approFuelXAF, 2, '.', ''));
         return array([
             'consoFuel'            => $fuelData['currentConsoFuel'],
             'consoFuelXAF'         => $consoFuelXAF,
