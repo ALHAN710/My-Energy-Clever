@@ -137,7 +137,7 @@ class GensetController extends ApplicationController
             ->setEndDate($endDate);
 
         $dataReport = $this->gensetModService->dataReport();
-        dump($dataReport);
+//        dump($dataReport);
         $events = $genset->getAlarmReportings();
 //        dd($events->getValues());
         return $this->render('email/ge-weekly-report.html.twig', [
