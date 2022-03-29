@@ -8,6 +8,7 @@ use App\Entity\GensetData;
 use App\Entity\AlarmReporting;
 use App\Entity\LoadEnergyData;
 use App\Message\UserNotificationMessage;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\ApplicationController;
 use Symfony\Component\HttpFoundation\Request;
@@ -757,7 +758,7 @@ class LoadEnergyDataController extends ApplicationController
                     //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
 //                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
                     if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    else $date = new DateTime('now');
+                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
 
                     //Test si un enregistrement correspond à cette date pour ce module
                     /*$data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
@@ -1199,7 +1200,7 @@ class LoadEnergyDataController extends ApplicationController
                         $loadSiteData->setSmartMod($loadSiteMod);
                         $manager->persist($loadSiteData);
                     }
-                    $manager->flush();
+//                    $manager->flush();
                 }
 
                 return $this->json([
