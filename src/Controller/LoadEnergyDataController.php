@@ -1200,7 +1200,7 @@ class LoadEnergyDataController extends ApplicationController
                         $loadSiteData->setSmartMod($loadSiteMod);
                         $manager->persist($loadSiteData);
                     }
-//                    $manager->flush();
+                    $manager->flush();
                 }
 
                 return $this->json([
