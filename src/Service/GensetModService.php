@@ -2218,7 +2218,11 @@ class GensetModService
         // ######## Récupération des données temps réel du module Genset
         $gensetRealTimeData = $this->manager->getRepository(GensetRealTimeData::class)->findOneBy(['smartMod' => $this->gensetMod->getId()]) ?? new GensetRealTimeData();
         //dump($gensetRealTimeData);
-        $last_update = $gensetRealTimeData->getDateTime() ? $gensetRealTimeData->getDateTime()->format('d M Y H:i:s') : '-';
+        $last_update = $gensetRealTimeData->getDateTime() ?? new DateTime('now');
+        $target = new DateTime('now');
+        $interval = $last_update->diff($target);
+//        dump(intval($interval->format('%r%h')));
+        $last_update = intval($interval->format('%r%d')) >= 1 ? $target->format('d M Y H:i:s') : $gensetRealTimeData->getDateTime()->format('d M Y H:i:s');
         return array(
             'Power'   => $gensetRealTimeData->getP() ?? 0,
             'last_update' => $last_update,
