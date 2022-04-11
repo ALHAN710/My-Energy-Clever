@@ -129,6 +129,14 @@ class EnterpriseDashboardDataService
             $this->currentGasEmission += $temp['currentGasEmission'];
 
             $loadData = $this->siteDashService->getLoadChartDataForCurrentMonth();
+
+            $last_update = $this->siteDashService->getLastDatetimeData() !== '' ? new DateTime($this->siteDashService->getLastDatetimeData()) : new DateTime('now');
+//            dump($last_update);
+            $target = new DateTime('now');
+            $interval = $last_update->diff($target);
+//        dump(intval($interval->format('%r%h')));
+            $last_update = intval($interval->format('%r%d')) >= 1 ? $target : $last_update;
+//            dump($last_update);
             $siteCurrentMonthParams['' . $site->getSlug()] = [
                 // 'Power'                    => $this->siteDashService->getLastkWForCurrentMonth(),
                 'Power'                    => number_format((float) $loadData['Pnow'], 2, '.', ' '),
@@ -138,7 +146,7 @@ class EnterpriseDashboardDataService
                 //'currentConsoXAF'          => number_format((float) $temp['currentConsoXAF'], 2, '.', ' '),
                 'currentGasEmission'       => number_format((float) $temp['currentGasEmission'], 2, '.', ''),
                 'currentPF'                => number_format((float) $temp['currentPF'], 2, '.', ' '),
-                'lastDatetimeData'         => $this->siteDashService->getLastDatetimeData(),
+                'lastDatetimeData'         => $last_update->format('Y-m-d H:i:s'),
             ];
         }
 
