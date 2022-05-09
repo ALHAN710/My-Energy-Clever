@@ -1,0 +1,2438 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{site.name}} | Accueil{% endblock %}
+
+{% block stylesheets %}
+ 
+<!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+<link href="/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+<link href="/plugins/animate/animate.css" rel="stylesheet" type="text/css">
+<script src="/plugins/sweetalerts/promise-polyfill.js"></script>
+<link href="/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css">
+<link href="/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css">
+<link href="/css/components/tabs-accordian/custom-tabs.css" rel="stylesheet" type="text/css">
+<link href="/plugins/apex/apexcharts.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/css/widgets/modules-widgets.css">  
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/datatables.css">
+<link rel="stylesheet" type="text/css" href="/plugins/table/datatable/dt-global_style.css">
+<link href="/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" />
+<link href="/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+<!-- Sweet Alert -->
+<link href="/plugins/sweet-alert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+
+{% endblock %}
+
+{% block body %}
+    <div class="border-top-tab">
+        <div class="row ml-auto mr-auto d-print-none">
+            <a href="javascript:window.print()"  class="btn btn-info text-light waves-effect mr-2"><i class="fa fa-print"></i></a>
+        </div>
+        <div class="statbox widget box layout-spacing layout-top-spacing d-print-none">
+            <div class="widget-header">                                 
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12 d-inline-block">
+                        <h5>Historique de données</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-content widget-content-area">
+                {# <p>Date time picker is powered by <span class="text-primary">flatpickr.js</span> that gives the ability to user to select date or time.</p> #}
+                <div class="form-group mb-0">
+                    <input id="daterange" value="2020-10-07" class="form-control flatpickr flatpickr-input active" type="text" placeholder="Select Date..">
+                </div>
+            </div>
+        </div>
+
+        {# Récapitulatif #}
+        <div class="row widget-statistic layout-top-spacing">
+
+            {#<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <h5 class="">Statistiques Production</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+
+                                <thead >
+                                    <tr class="text-center">
+                                        <th></th>
+                                        <th style="text-transform: none;">Grid</th>
+                                        <th style="text-transform: none;">Genset</th>
+                                        <th style="text-transform: none;">Solar</th>
+                                        <th style="text-transform: none;">Battery</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td class="text-left">Énergie Active (kWh)</td>
+                                        <td><span id="t-grid-kWh">{{dataAnalysis['recapProd']['gridData']['totalKWh']|number_format(2, '.', ' ')}}</span></td>
+                                        <td><span id="t-genset-kWh">{{dataAnalysis['recapProd']['gensetData']['currentTEP']|number_format(2, '.', ' ')}}</span></td>
+                                        <td><span id="t-solar-kWh">-</span></td>
+                                        <td><span id="t-battery-kWh">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Contribution</td>
+                                        <td><span id="t-grid-contrib">{{dataAnalysis['recapProd']['gridData']['contrib']|number_format(2, '.', ' ')}}</span>%</td>
+                                        <td><span id="t-genset-contrib">{{dataAnalysis['recapProd']['gensetData']['contriGensetKWh']|number_format(2, '.', ' ')}}</span>%</td>
+                                        <td><span id="t-solar-contrib">-</span></td>
+                                        <td><span id="t-battery-contrib">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Énergie Réactive (kVARh)</td>
+                                        <td><span id="t-grid-kVARh">{{dataAnalysis['recapProd']['gridData']['totalER']|number_format(2, '.', ' ')}}</span></td>
+                                        <td><span id="t-genset-kVARh">-</span></td>
+                                        <td><span id="t-solar-kVARh">-</span></td>
+                                        <td><span id="t-battery-kVARh">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Facteur de Puissance</td>
+                                        <td><span id="t-grid-fp">{{dataAnalysis['recapProd']['gridData']['FP']|number_format(2, '.', ' ')}}</span></td>
+                                        <td><span id="t-genset-fp">-</span></td>
+                                        <td><span id="t-solar-fp">-</span></td>
+                                        <td><span id="t-battery-fp">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right">Facture Énergie Estimée HT(XAF) :</td> 
+                                        <td colspan="2" class="text-center"><span id="t-amount-conso-HT">{{dataAnalysis['amount-conso-HT']}}</span> F CFA</td> 
+
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right">Émission de Gaz à Effet de Serre (kgC0<sub>2eq</sub>) :</td> 
+                                        <td colspan="2" class="text-center"><span id="t-kgCO2eq">{{dataAnalysis['recapProd']['kgCO2']|number_format(2, '.', ' ')}}</span></td> 
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right">Consommation de carburant (L) :</td> 
+                                        <td colspan="2" class="text-center"><span id="t-genset-conso-fuel">{{dataAnalysis['recapProd']['gensetData']['currentConsoFuel']|number_format(2, '.', ' ')}}</span></td> 
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right">Durée de fonctionnement G.E (hh:mm) :</td> 
+                                        <td colspan="2" class="text-center"><span id="t-genset-duree-fonctionnement">{{dataAnalysis['recapProd']['gensetData']['dureeFonctionnement']}}</span></td> 
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-primary h6">Seuil</td>
+                                        <td class="text-primary h6">Valeur</td>
+                                        <td class="text-primary h6">Pénalité</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>Dépassement</td>
+                                        <td>10</td>
+                                        <td id="t-pen-depassement">{{dataAnalysis['recapProd']['gridData']['NbDepassement']}}</td>
+                                        <td><span id="t-pen-depassement-badge" class="badge badge-{% if dataAnalysis['recapProd']['gridData']['NbDepassement'] <= 10 %}success{% else %}danger{% endif %}"><span id="t-pen-depassement-status">{% if dataAnalysis['recapProd']['gridData']['NbDepassement'] <= 10 %}Non{% else %}Oui{% endif %}</span></span></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>Mauvais FP</td>
+                                        <td>0.8</td>
+                                        <td id="t-pen-fp">{{dataAnalysis['recapProd']['gridData']['FP']|number_format(2, '.', ' ')}}</td>
+                                        <td><span id="t-pen-fp-badge" class="badge badge-{% if dataAnalysis['recapProd']['gridData']['FP'] >= 0.8 %}success{% else %}danger{% endif %}"><span id="t-pen-fp-status">{% if dataAnalysis['recapProd']['gridData']['FP'] >= 0.8 %}Non{% else %}Oui{% endif %}</span></span></td>
+
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>#}
+
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <h5 class="">Statistiques Consommation</h5>
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead>
+                                    {# <tr>
+                                        <th class="text-center">#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th class="">Status</th>
+                                        <th>Register</th>
+                                    </tr> #}
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td class="text-center">Conso Total (kWh)</td>
+                                        <td class="text-primary">
+                                            <span id="t-consoTotal">{{dataAnalysis['consoTotal']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-consoTotal-progress-color" class="text-{% if dataAnalysis['consoTotalProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoTotal-progress-value">{% if dataAnalysis['consoTotalProgress'] >= 0 or dataAnalysis['consoTotalProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['consoTotalProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['consoTotalProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['consoTotalProgress']}}{% endif %}</span>% 
+                                            <svg id="t-consoTotal-progress-up-icon" class="{% if dataAnalysis['consoTotalProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-consoTotal-progress-down-icon" class="{% if dataAnalysis['consoTotalProgress'] > 0 or dataAnalysis['consoTotalProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Conso Moy (kWh/jr)</td>
+                                        <td class="text-primary">
+                                            <span id="t-consoMoy">{{dataAnalysis['consoMoy']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-consoMoy-progress-color" class="text-{% if dataAnalysis['consoMoyProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoMoy-progress-value">{% if dataAnalysis['consoMoyProgress'] >= 0 or dataAnalysis['consoMoyProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['consoMoyProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['consoMoyProgress']}}{% endif %}</span>% 
+                                            <svg id="t-consoMoy-progress-up-icon" class="{% if dataAnalysis['consoMoyProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-consoMoy-progress-down-icon" class="{% if dataAnalysis['consoMoyProgress'] > 0 or dataAnalysis['consoMoyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Variation</td>
+                                        <td class="text-primary">
+                                            <span id="t-consoVariation">{{dataAnalysis['consoVariation']|number_format(2, '.', ' ')}}</span> %
+                                            <span id="t-consoVariation-progress-color" class="text-{% if dataAnalysis['consoVariationProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-consoVariation-progress-value">{% if dataAnalysis['consoVariationProgress'] >= 0 or dataAnalysis['consoVariationProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['consoVariationProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['consoVariationProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['consoVariationProgress']}}{% endif %}</span>% 
+                                            <svg id="t-consoVariation-progress-up-icon" class="{% if dataAnalysis['consoVariationProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-consoVariation-progress-down-icon" class="{% if dataAnalysis['consoVariationProgress'] > 0 or dataAnalysis['consoVariationProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">+Forte Conso</td>
+                                        <td class="text-primary">
+                                            <span id="t-kWhMax">{{dataAnalysis['+forteConso']}}</span>
+                                            <span id="t-kWhMax-progress-color" class="text-{% if dataAnalysis['+forteConsoProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-kWhMax-progress-value">{% if dataAnalysis['+forteConsoProgress'] >= 0 or dataAnalysis['+forteConsoProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['+forteConsoProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['+forteConsoProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['+forteConsoProgress']}}{% endif %}</span>% 
+                                            <svg id="t-kWhMax-progress-up-icon" class="{% if dataAnalysis['+forteConsoProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-kWhMax-progress-down-icon" class="{% if dataAnalysis['+forteConsoProgress'] > 0 or dataAnalysis['+forteConsoProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">+Faible Conso</td>
+                                        <td class="text-primary">
+                                            <span id="t-kWhMin">{{dataAnalysis['+faibleConso']}}</span>
+                                            <span id="t-kWhMin-progress-color" class="text-{% if dataAnalysis['+faibleConsoProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-kWhMin-progress-value">{% if dataAnalysis['+faibleConsoProgress'] >= 0 or dataAnalysis['+faibleConsoProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['+faibleConsoProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['+faibleConsoProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['+faibleConsoProgress']}}{% endif %}</span>% 
+                                            <svg id="t-kWhMin-progress-up-icon" class="{% if dataAnalysis['+faibleConsoProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-kWhMin-progress-down-icon" class="{% if dataAnalysis['+faibleConsoProgress'] > 0 or dataAnalysis['+faibleConsoProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Pic de puissance</td>
+                                        <td class="text-primary">
+                                            <span id="t-Pmax">{{dataAnalysis['Pic']}}</span>
+                                            <span id="t-Pmax-progress-color" class="text-{% if dataAnalysis['PicProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-Pmax-progress-value">{% if dataAnalysis['PicProgress'] >= 0 or dataAnalysis['PicProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['PicProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['PicProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['PicProgress']}}{% endif %}</span>% 
+                                            <svg id="t-Pmax-progress-up-icon" class="{% if dataAnalysis['PicProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-Pmax-progress-down-icon" class="{% if dataAnalysis['PicProgress'] > 0 or dataAnalysis['PicProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Talon de puissance</td>
+                                        <td class="text-primary">
+                                            <span id="t-talon">{{dataAnalysis['Talon']}}</span>
+                                            <span id="t-talon-progress-color" class="text-{% if dataAnalysis['TalonProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-talon-progress-value">{% if dataAnalysis['TalonProgress'] >= 0 or dataAnalysis['TalonProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['TalonProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['TalonProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['TalonProgress']}}{% endif %}</span>% 
+                                            <svg id="t-talon-progress-up-icon" class="{% if dataAnalysis['TalonProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-talon-progress-down-icon" class="{% if dataAnalysis['TalonProgress'] > 0 or dataAnalysis['TalonProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Conso 00-08h (kWh)</td>
+                                        <td class="text-primary">
+                                            <span id="t-conso-00-08">{{dataAnalysis['conso-00-08']|number_format(2, '.', ' ')}}</span> 
+                                            <span id="t-conso-00-08-progress-color" class="text-{% if dataAnalysis['conso-00-08Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-00-08-progress-value">{% if dataAnalysis['conso-00-08Progress'] >= 0 or dataAnalysis['conso-00-08Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['conso-00-08Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['conso-00-08Progress']}}{% endif %}</span>% 
+                                            <svg id="t-conso-00-08-progress-up-icon" class="{% if dataAnalysis['conso-00-08Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-conso-00-08-progress-down-icon" class="{% if dataAnalysis['conso-00-08Progress'] > 0 or dataAnalysis['conso-00-08Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Conso 08-18h (kWh)</td>
+                                        <td class="text-primary">
+                                            <span id="t-conso-08-18">{{dataAnalysis['conso-08-18']|number_format(2, '.', ' ')}}</span> 
+                                            <span id="t-conso-08-18-progress-color" class="text-{% if dataAnalysis['conso-08-18Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-08-18-progress-value">{% if dataAnalysis['conso-08-18Progress'] >= 0 or dataAnalysis['conso-08-18Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['consoMoyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['conso-08-18Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['conso-08-18Progress']}}{% endif %}</span>% 
+                                            <svg id="t-conso-08-18-progress-up-icon" class="{% if dataAnalysis['conso-08-18Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-conso-08-18-progress-down-icon" class="{% if dataAnalysis['conso-08-18Progress'] > 0 or dataAnalysis['conso-08-18Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">Conso 18-00h (kWh)</td>
+                                        <td class="text-primary">
+                                            <span id="t-conso-18-00">{{dataAnalysis['conso-18-00']|number_format(2, '.', ' ')}}</span> 
+                                            <span id="t-conso-18-00-progress-color" class="text-{% if dataAnalysis['conso-18-00Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-conso-18-00-progress-value">{% if dataAnalysis['conso-18-00Progress'] >= 0 or dataAnalysis['conso-18-00Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['conso-18-00Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['conso-18-00Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['conso-18-00Progress']}}{% endif %}</span>% 
+                                            <svg id="t-conso-18-00-progress-up-icon" class="{% if dataAnalysis['conso-18-00Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-conso-18-00-progress-down-icon" class="{% if dataAnalysis['conso-18-00Progress'] > 0 or dataAnalysis['conso-18-00Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+
+        </div>
+
+        {# Profil puissance plus et moins conso #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Profil de puissance du jour le plus consommateur</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="load-profile-day-High-conso"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Profil de puissance du jour le moins consommateur</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="load-profile-day-Low-conso"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Histogramme journalier conso et pic de puissance #}
+        <div class="row widget-statistic layout-top-spacing">
+            {# Histogramme journalier de consommation #}
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Histogramme de consommation</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="histo-conso"></div>
+                    </div>
+                </div>
+            </div>
+            {# Histogramme pic de puissance #}
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Histogramme Pic de Puissance</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="histo-high-power"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Dispersion des conso et pics de puissance #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three layout-spacing">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Dispersion des Consommations</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="dispers-conso-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three layout-spacing">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Dispersion des Pics de Puissance</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="dispers-high-power-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        {# <h5 class="">Récap Grid</h5> #}
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                    <tr class="text-center">
+                                        <th></th>
+                                        <th style="text-transform: none;">Q1(kWh)</th>
+                                        <th style="text-transform: none;">Q2(kWh)</th>
+                                        <th style="text-transform: none;">Q3(kWh)</th>
+                                        <th style="text-transform: none;">dQ(kWh)</th>
+                                        <th style="text-transform: none;">c.var(%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    {% set dayArray = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %} 
+                                    {% for day in dayArray %}
+                                    <tr>
+                                        <td class="text-left">{{day}}</td>
+                                        <td>
+                                            <span id="t-conso-{{day}}-Q1">{% if dataAnalysis['disperConso'][day]|length > 0 %}{{ dataAnalysis['disperConso'][day][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-{{day}}-Q2">{% if dataAnalysis['disperConso'][day]|length > 0 %}{{ dataAnalysis['disperConso'][day][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-{{day}}-Q3">{% if dataAnalysis['disperConso'][day]|length > 0 %}{{ dataAnalysis['disperConso'][day][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-{{day}}-dQ">{% if dataAnalysis['disperConso'][day]|length > 0 %}{{ dataAnalysis['disperConso'][day][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-{{day}}-var">{% if dataAnalysis['disperConso'][day]|length > 0 %}{{ dataAnalysis['disperConso'][day][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {# <tr>
+                                        <td class="text-left">Lundi</td>
+                                        <td>
+                                            <span id="t-conso-lundi-Q1">{% if dataAnalysis['disperConso']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Lun']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-lundi-Q2">{% if dataAnalysis['disperConso']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Lun']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-lundi-Q3">{% if dataAnalysis['disperConso']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Lun']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-lundi-dQ">{% if dataAnalysis['disperConso']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Lun']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-lundi-var">{% if dataAnalysis['disperConso']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Lun']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Mardi</td>
+                                        <td>
+                                            <span id="t-conso-mardi-Q1">{% if dataAnalysis['disperConso']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mar']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mardi-Q2">{% if dataAnalysis['disperConso']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mar']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mardi-Q3">{% if dataAnalysis['disperConso']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mar']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mardi-dQ">{% if dataAnalysis['disperConso']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mar']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mardi-var">{% if dataAnalysis['disperConso']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mar']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Mercredi</td>
+                                        <td>
+                                            <span id="t-conso-mercredi-Q1">{% if dataAnalysis['disperConso']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mer']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mercredi-Q2">{% if dataAnalysis['disperConso']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mer']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mercredi-Q3">{% if dataAnalysis['disperConso']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mer']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mercredi-dQ">{% if dataAnalysis['disperConso']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mer']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-mercredi-var">{% if dataAnalysis['disperConso']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Mer']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Jeudi</td>
+                                        <td>
+                                            <span id="t-conso-jeudi-Q1">{% if dataAnalysis['disperConso']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Jeu']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-jeudi-Q2">{% if dataAnalysis['disperConso']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Jeu']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-jeudi-Q3">{% if dataAnalysis['disperConso']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Jeu']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-jeudi-dQ">{% if dataAnalysis['disperConso']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Jeu']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-jeudi-var">{% if dataAnalysis['disperConso']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Jeu']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Vendredi</td>
+                                        <td>
+                                            <span id="t-conso-vendredi-Q1">{% if dataAnalysis['disperConso']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Ven']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-vendredi-Q2">{% if dataAnalysis['disperConso']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Ven']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-vendredi-Q3">{% if dataAnalysis['disperConso']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Ven']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-vendredi-dQ">{% if dataAnalysis['disperConso']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Ven']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-vendredi-var">{% if dataAnalysis['disperConso']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Ven']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Samedi</td>
+                                        <td>
+                                            <span id="t-conso-samedi-Q1">{% if dataAnalysis['disperConso']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Sam']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-samedi-Q2">{% if dataAnalysis['disperConso']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Sam']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-samedi-Q3">{% if dataAnalysis['disperConso']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Sam']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-samedi-dQ">{% if dataAnalysis['disperConso']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Sam']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-samedi-var">{% if dataAnalysis['disperConso']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Sam']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Dimanche</td>
+                                        <td>
+                                            <span id="t-conso-dimanche-Q1">{% if dataAnalysis['disperConso']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Dim']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-dimanche-Q2">{% if dataAnalysis['disperConso']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Dim']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-dimanche-Q3">{% if dataAnalysis['disperConso']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Dim']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-dimanche-dQ">{% if dataAnalysis['disperConso']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Dim']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-conso-dimanche-var">{% if dataAnalysis['disperConso']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperConso']['Dim']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr> #}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        {# <h5 class="">Récap Grid</h5> #}
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                    <tr class="text-center">
+                                        <th></th>
+                                        <th style="text-transform: none;">Q1(kW)</th>
+                                        <th style="text-transform: none;">Q2(kW)</th>
+                                        <th style="text-transform: none;">Q3(kW)</th>
+                                        <th style="text-transform: none;">dQ(kW)</th>
+                                        <th style="text-transform: none;">c.var(%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    {% for day in dayArray %}
+                                    <tr>
+                                        <td class="text-left">{{day}}</td>
+                                        <td>
+                                            <span id="t-pic-{{day}}-Q1">{% if dataAnalysis['disperPic'][day]|length > 0 %}{{ dataAnalysis['disperPic'][day][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-{{day}}-Q2">{% if dataAnalysis['disperPic'][day]|length > 0 %}{{ dataAnalysis['disperPic'][day][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-{{day}}-Q3">{% if dataAnalysis['disperPic'][day]|length > 0 %}{{ dataAnalysis['disperPic'][day][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-{{day}}-dQ">{% if dataAnalysis['disperPic'][day]|length > 0 %}{{ dataAnalysis['disperPic'][day][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-{{day}}-var">{% if dataAnalysis['disperPic'][day]|length > 0 %}{{ dataAnalysis['disperPic'][day][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {# <tr>
+                                        <td class="text-left">Lundi</td>
+                                        <td>
+                                            <span id="t-pic-lundi-Q1">{% if dataAnalysis['disperPic']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Lun']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-lundi-Q2">{% if dataAnalysis['disperPic']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Lun']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-lundi-Q3">{% if dataAnalysis['disperPic']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Lun']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-lundi-dQ">{% if dataAnalysis['disperPic']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Lun']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-lundi-var">{% if dataAnalysis['disperPic']['Lun']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Lun']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Mardi</td>
+                                        <td>
+                                            <span id="t-pic-mardi-Q1">{% if dataAnalysis['disperPic']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mar']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mardi-Q2">{% if dataAnalysis['disperPic']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mar']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mardi-Q3">{% if dataAnalysis['disperPic']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mar']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mardi-dQ">{% if dataAnalysis['disperPic']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mar']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mardi-var">{% if dataAnalysis['disperPic']['Mar']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mar']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Mercredi</td>
+                                        <td>
+                                            <span id="t-pic-mercredi-Q1">{% if dataAnalysis['disperPic']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mer']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mercredi-Q2">{% if dataAnalysis['disperPic']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mer']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mercredi-Q3">{% if dataAnalysis['disperPic']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mer']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mercredi-dQ">{% if dataAnalysis['disperPic']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mer']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-mercredi-var">{% if dataAnalysis['disperPic']['Mer']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Mer']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Jeudi</td>
+                                        <td>
+                                            <span id="t-pic-jeudi-Q1">{% if dataAnalysis['disperPic']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Jeu']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-jeudi-Q2">{% if dataAnalysis['disperPic']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Jeu']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-jeudi-Q3">{% if dataAnalysis['disperPic']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Jeu']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-jeudi-dQ">{% if dataAnalysis['disperPic']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Jeu']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-jeudi-var">{% if dataAnalysis['disperPic']['Jeu']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Jeu']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Vendredi</td>
+                                        <td>
+                                            <span id="t-pic-vendredi-Q1">{% if dataAnalysis['disperPic']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Ven']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-vendredi-Q2">{% if dataAnalysis['disperPic']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Ven']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-vendredi-Q3">{% if dataAnalysis['disperPic']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Ven']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-vendredi-dQ">{% if dataAnalysis['disperPic']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Ven']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-vendredi-var">{% if dataAnalysis['disperPic']['Ven']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Ven']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Samedi</td>
+                                        <td>
+                                            <span id="t-pic-samedi-Q1">{% if dataAnalysis['disperPic']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Sam']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-samedi-Q2">{% if dataAnalysis['disperPic']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Sam']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-samedi-Q3">{% if dataAnalysis['disperPic']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Sam']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-samedi-dQ">{% if dataAnalysis['disperPic']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Sam']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-samedi-var">{% if dataAnalysis['disperPic']['Sam']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Sam']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-left">Dimanche</td>
+                                        <td>
+                                            <span id="t-pic-dimanche-Q1">{% if dataAnalysis['disperPic']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Dim']['stats'][0]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-dimanche-Q2">{% if dataAnalysis['disperPic']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Dim']['stats'][1]}}{% else %}-{% endif %}</span> 
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-dimanche-Q3">{% if dataAnalysis['disperPic']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Dim']['stats'][2]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-dimanche-dQ">{% if dataAnalysis['disperPic']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Dim']['stats'][3]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                        <td>
+                                            <span id="t-pic-dimanche-var">{% if dataAnalysis['disperPic']['Dim']['stats']|length > 0 %}{{ dataAnalysis['disperPic']['Dim']['stats'][4]}}{% else %}-{% endif %}</span>
+                                        </td>
+                                    </tr> #}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Courbe de charge #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Courbe de charge</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="load-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Monotone de puissance #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Monotone de Puissance</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="power-monotone"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        {# <h5 class="">Récap Grid</h5> #}
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                    {# <tr class="text-center">
+                                        <th></th>
+                                        <th></th>
+                                    </tr> #}
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td class="text-right">Puissance Moy (kW) : </td>
+                                        <td class="text-left">
+                                            <span id="t-power-moy-kW">{{dataAnalysis['monotonePower']['stats']['mean']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-power-moy-kW-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['meanProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-moy-kW-progress-value">{% if dataAnalysis['monotonePower']['stats']['meanProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['meanProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['meanProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['meanProgress']}}{% endif %}</span>% 
+                                            <svg id="t-power-moy-kW-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['meanProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-moy-kW-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['meanProgress'] > 0 or dataAnalysis['monotonePower']['stats']['meanProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+
+                                            {# <span id="t-power-moy-kW">27</span>
+                                            <span id="t-power-moy-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-moy-kW-progress-value">1</span>% 
+                                            <svg id="t-power-moy-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-moy-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Puissance Médiane (kW) : </td>
+                                        <td class="text-left">
+                                            <span id="t-power-medi-kW">{{dataAnalysis['monotonePower']['stats']['median']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-power-medi-kW-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['medianProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-medi-kW-progress-value">{% if dataAnalysis['monotonePower']['stats']['medianProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['medianProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['medianProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['medianProgress']}}{% endif %}</span>% 
+                                            <svg id="t-power-medi-kW-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['medianProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-medi-kW-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['medianProgress'] > 0 or dataAnalysis['monotonePower']['stats']['medianProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+
+                                            {# <span id="t-power-medi-kW">27</span>
+                                            <span id="t-power-medi-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-medi-kW-progress-value">1</span>% 
+                                            <svg id="t-power-medi-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-medi-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Puissance Min (kW) : </td>
+                                        <td class="text-left">
+                                            <span id="t-power-min-kW">{{dataAnalysis['monotonePower']['stats']['min']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-power-min-kW-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['minProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-min-kW-progress-value">{% if dataAnalysis['monotonePower']['stats']['minProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['minProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['minProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['minProgress']}}{% endif %}</span>% 
+                                            <svg id="t-power-min-kW-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['minProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-min-kW-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['minProgress'] > 0 or dataAnalysis['monotonePower']['stats']['minProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+
+                                            {# <span id="t-power-min-kW">27</span>
+                                            <span id="t-power-min-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-min-kW-progress-value">1</span>% 
+                                            <svg id="t-power-min-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-min-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Puissance Max (kW) : </td>
+                                        <td class="text-left">
+                                            <span id="t-power-max-kW">{{dataAnalysis['monotonePower']['stats']['max']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-power-max-kW-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['maxProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-max-kW-progress-value">{% if dataAnalysis['monotonePower']['stats']['maxProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['maxProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['maxProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['maxProgress']}}{% endif %}</span>% 
+                                            <svg id="t-power-max-kW-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['maxProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-max-kW-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['maxProgress'] > 0 or dataAnalysis['monotonePower']['stats']['maxProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+
+                                            {# <span id="t-power-max-kW">27</span>
+                                            <span id="t-power-max-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-max-kW-progress-value">1</span>% 
+                                            <svg id="t-power-max-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-max-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Puissance rang 10 (kW) : </td>
+                                        <td class="text-left">
+                                            <span id="t-power-rang10-kW">{{dataAnalysis['monotonePower']['stats']['Prang10']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-power-rang10-kW-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-rang10-kW-progress-value">{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] >= 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['Prang10Progress']}}{% endif %}</span>% 
+                                            <svg id="t-power-rang10-kW-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-rang10-kW-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['Prang10Progress'] > 0 or dataAnalysis['monotonePower']['stats']['Prang10Progress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+
+                                            {# <span id="t-power-max-kW">27</span>
+                                            <span id="t-power-max-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-max-kW-progress-value">1</span>% 
+                                            <svg id="t-power-max-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-max-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Nombre de dépassement : </td>
+                                        <td class="text-left">
+                                            <span id="t-power-nbDepassement-kW">{{dataAnalysis['monotonePower']['stats']['nbDepassement']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-power-nbDepassement-kW-progress-color" class="text-{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-nbDepassement-kW-progress-value">{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] >= 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['monotonePower']['stats']['nbDepassementProgress']}}{% endif %}</span>% 
+                                            <svg id="t-power-nbDepassement-kW-progress-up-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-nbDepassement-kW-progress-down-icon" class="{% if dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] > 0 or dataAnalysis['monotonePower']['stats']['nbDepassementProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+
+                                            {# <span id="t-power-max-kW">27</span>
+                                            <span id="t-power-max-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-power-max-kW-progress-value">1</span>% 
+                                            <svg id="t-power-max-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-power-max-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Courbe Minima de cosPhi #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Courbe Minima de cosPhi</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="minima-cosfi"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        {# <h5 class="">Récap Grid</h5> #}
+                    </div>
+                    <div class="widget-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {# <caption>List of all users</caption> #}
+                                <thead >
+                                    {# <tr class="text-center">
+                                        <th></th>
+                                        <th></th>
+                                    </tr> #}
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td class="text-right">CosPhi Moy : </td>
+                                        <td class="text-left">
+                                            <span id="t-cosfi-moy">{{dataAnalysis['minimaCosfi']['stats']['mean']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-cosfi-moy-progress-color" class="text-{% if dataAnalysis['minimaCosfi']['stats']['meanProgress'] > 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-moy-progress-value">{% if dataAnalysis['minimaCosfi']['stats']['meanProgress'] >= 0 or dataAnalysis['minimaCosfi']['stats']['meanProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['minimaCosfi']['stats']['meanProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['minimaCosfi']['stats']['meanProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['minimaCosfi']['stats']['meanProgress']}}{% endif %}</span>% 
+                                            <svg id="t-cosfi-moy-progress-up-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['meanProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-moy-progress-down-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['meanProgress'] > 0 or dataAnalysis['minimaCosfi']['stats']['meanProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                            {# <span id="t-cosfi-moy-kW">27</span>
+                                            <span id="t-cosfi-moy-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-moy-kW-progress-value">1</span>% 
+                                            <svg id="t-cosfi-moy-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-moy-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">CosPhi Médian : </td>
+                                        <td class="text-left">
+                                            <span id="t-cosfi-medi">{{dataAnalysis['minimaCosfi']['stats']['median']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-cosfi-medi-progress-color" class="text-{% if dataAnalysis['minimaCosfi']['stats']['medianProgress'] > 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-medi-progress-value">{% if dataAnalysis['minimaCosfi']['stats']['medianProgress'] >= 0 or dataAnalysis['minimaCosfi']['stats']['medianProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['minimaCosfi']['stats']['medianProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['minimaCosfi']['stats']['medianProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['minimaCosfi']['stats']['medianProgress']}}{% endif %}</span>% 
+                                            <svg id="t-cosfi-medi-progress-up-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['medianProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-medi-progress-down-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['medianProgress'] > 0 or dataAnalysis['minimaCosfi']['stats']['medianProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                            {# <span id="t-cosfi-medi-kW">27</span>
+                                            <span id="t-cosfi-medi-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-medi-kW-progress-value">1</span>% 
+                                            <svg id="t-cosfi-medi-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-medi-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">CosPhi Min : </td>
+                                        <td class="text-left">
+                                            <span id="t-cosfi-min">{{dataAnalysis['minimaCosfi']['stats']['min']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-cosfi-min-progress-color" class="text-{% if dataAnalysis['minimaCosfi']['stats']['minProgress'] > 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-min-progress-value">{% if dataAnalysis['minimaCosfi']['stats']['minProgress'] >= 0 or dataAnalysis['minimaCosfi']['stats']['minProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['minimaCosfi']['stats']['minProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['minimaCosfi']['stats']['minProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['minimaCosfi']['stats']['minProgress']}}{% endif %}</span>% 
+                                            <svg id="t-cosfi-min-progress-up-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['minProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-min-progress-down-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['minProgress'] > 0 or dataAnalysis['minimaCosfi']['stats']['minProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                            {# <span id="t-cosfi-min-kW">27</span>
+                                            <span id="t-cosfi-min-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-min-kW-progress-value">1</span>% 
+                                            <svg id="t-cosfi-min-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-min-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">CosPhi Max : </td>
+                                        <td class="text-left">
+                                            <span id="t-cosfi-max">{{dataAnalysis['minimaCosfi']['stats']['max']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-cosfi-max-progress-color" class="text-{% if dataAnalysis['minimaCosfi']['stats']['maxProgress'] > 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-max-progress-value">{% if dataAnalysis['minimaCosfi']['stats']['maxProgress'] >= 0 or dataAnalysis['minimaCosfi']['stats']['maxProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['minimaCosfi']['stats']['maxProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['minimaCosfi']['stats']['maxProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['minimaCosfi']['stats']['maxProgress']}}{% endif %}</span>% 
+                                            <svg id="t-cosfi-max-progress-up-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['maxProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-max-progress-down-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['maxProgress'] > 0 or dataAnalysis['minimaCosfi']['stats']['maxProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                            {# <span id="t-cosfi-max-kW">27</span>
+                                            <span id="t-cosfi-max-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-max-kW-progress-value">1</span>% 
+                                            <svg id="t-cosfi-max-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-max-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">CosPhi énergie : </td>
+                                        <td class="text-left">
+                                            <span id="t-cosfi">{{dataAnalysis['minimaCosfi']['stats']['cosfiEnergy']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-cosfi-progress-color" class="text-{% if dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] > 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-progress-value">{% if dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] >= 0 or dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress']}}{% endif %}</span>% 
+                                            <svg id="t-cosfi-progress-up-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-progress-down-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] > 0 or dataAnalysis['minimaCosfi']['stats']['cosfiEnergyProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                            {# <span id="t-cosfi-max-kW">27</span>
+                                            <span id="t-cosfi-max-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-max-kW-progress-value">1</span>% 
+                                            <svg id="t-cosfi-max-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-max-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">Nombre d'insuffisance : </td>
+                                        <td class="text-left">
+                                            <span id="t-nbInsuffisance">{{dataAnalysis['minimaCosfi']['stats']['nbInsuffisance']|number_format(2, '.', ' ')}}</span>  
+                                            <span id="t-nbInsuffisance-progress-color" class="text-{% if dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-nbInsuffisance-progress-value">{% if dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] >= 0 or dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] == 'INF'  %}+{% endif %}{% if dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress']|number_format(2, '.', ' ')}}{% else %}{{dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress']}}{% endif %}</span>% 
+                                            <svg id="t-nbInsuffisance-progress-up-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-nbInsuffisance-progress-down-icon" class="{% if dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] > 0 or dataAnalysis['minimaCosfi']['stats']['nbInsuffisanceProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                            </span>
+                                            {# <span id="t-cosfi-max-kW">27</span>
+                                            <span id="t-cosfi-max-kW-progress-color" class="text-success" style="font-size:10px;letter-spacing: 0px;margin-bottom: 0;"><span id="t-cosfi-max-kW-progress-value">1</span>% 
+                                            <svg id="t-cosfi-max-kW-progress-up-icon" class="" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                            <svg id="t-cosfi-max-kW-progress-down-icon" class="d-none" style="vertical-align: baseline;width: 10px;height: 10px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg> #}
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+<script src="/js/scrollspyNav.js"></script>
+<script src="/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script src="/plugins/apex/apexcharts.min.js"></script>
+<script src="/js/widgets/modules-widgets.js"></script>
+
+<script src="/plugins/moment/moment.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script> #}
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/plugins/sweet-alert2/sweetalert2.min.js"></script>
+
+<!-- Chart JS -->
+<script src="/plugins/chartjs/chart.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js" integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> #}
+
+<script src="/plugins/justgage/justgage.js"></script>
+<script src="/plugins/justgage/raphael-2.1.4.min.js"></script>
+        
+
+<script src="/plugins/highlight/highlight.pack.js"></script>
+{# BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script> #}
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables/dataTables.buttons.min.js"></script>
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+<script src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables/buttons.bootstrap4.min.js"></script>
+
+<script src="/plugins/datatables/jszip.min.js"></script>
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> #}
+
+{# <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script> #}
+<script src="/plugins/datatables/pdfmake.min.js"></script>
+<script src="/plugins/datatables/vfs_fonts.js"></script>
+<script src="/plugins/datatables/buttons.html5.min.js"></script>
+<script src="/plugins/datatables/buttons.print.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+{# <script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.colVis.min.js"></script> #}
+<!-- Responsive examples -->
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+{# <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script> #}
+
+<!-- Script de gestion du sélecteur de date -->
+<script>
+    var _url = "{{ path('site_pro_historical_analytic_update', {'slug':site.slug}) }}";
+    
+    {# var start = moment().subtract(1, 'days'); #}
+    {# var end = moment(); #}
+    var start = moment().startOf('month');
+    var end = moment().endOf('month');
+
+    function cb(start, end) {
+        $('#daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('#daterange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        maxSpan: {
+            "days": 31
+        },
+        maxDate: moment().endOf('month'),
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    var drp = $('#daterange').data('daterangepicker');
+    console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+    var startDate = drp.startDate.format('YYYY-MM-DD');
+    var endDate = drp.endDate.format('YYYY-MM-DD');   
+
+    $('#daterange').on('apply.daterangepicker', function (ev, picker) {
+        //console.log(picker.startDate.format('YYYY-MM-DD'));
+        //console.log(picker.endDate.format('YYYY-MM-DD'));
+    
+        startDate = picker.startDate.format('YYYY-MM-DD');
+        endDate = picker.endDate.format('YYYY-MM-DD');
+        
+        console.log('startDate = ' + startDate);
+        console.log('endDate = ' + endDate);
+        updateHistoGraphs();
+        // block of code that runs when the click event triggers
+
+    });
+
+    function progress(prefixSelector, progValue, posLogique, isTime) {
+        
+        var id = '#' + prefixSelector;
+        var progressSelectorValue = $(id + 'value');
+        var progressSelectorColor = $(id + 'color');
+        var upSelectorIcon   = $(id+ 'up-icon');
+        var downSelectorIcon = $(id+ 'down-icon');
+        var greenColor = 'text-success';
+        var redColor = 'text-danger';
+        
+        if (!isTime) {//On teste s'il s'agit d'une progression numérique 
+            var val = progValue !== 'INF' ? String(parseFloat(progValue).toFixed(2)) : progValue;
+            progressSelectorValue.html(progValue === null ? 0 : (progValue > 0 || progValue === 'INF') ? ('+' + val) : val);
+        }
+        else {//s'il s'agit d'une progression de date
+            var diff = new Date(Math.abs(progValue));
+            var $dat = new moment(diff).subtract(timeZoneOffset, 'hours');
+            var str = $dat.format('HH:mm:ss').toString()
+            progressSelectorValue.html(progValue === null ? 0 : progValue > 0 ? '+' + str : '-' + str);
+        }
+
+        if (posLogique) {// Logique positive
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+                /*if (selectorIcon.hasClass(oldClass)) {
+                    // it has class
+                } else {
+                    // it doesn't have specified class
+                }*/
+            }
+            else {//Si la valeur de progression est négative
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+            }
+        }
+        else {// Logique négative
+            if (progValue > 0 || progValue === 'INF') {//Si la valeur de progression est positive
+                
+                //On met la valeur et l'îcone en rouge
+                progressSelectorColor.removeClass(greenColor).addClass(redColor);
+                
+                //On affiche l'îcone svg arrow-up
+                upSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-down
+                downSelectorIcon.addClass('d-none');
+
+            }
+            else {//Si la valeur de progression est négative
+                
+                //On met la valeur et l'îcone en vert
+                progressSelectorColor.removeClass(redColor).addClass(greenColor);
+                
+                //On affiche l'îcone svg arrow-down
+                downSelectorIcon.removeClass('d-none');
+
+                //On masque l'îcone svg arrow-up
+                upSelectorIcon.addClass('d-none');
+                
+            }
+        }
+    }
+
+    function displayNewData(chart, label, data, dateopt, multiple, xscale){
+        //chart.data.labels = [];
+        chart.updateOptions({
+            xaxis: {
+                categories: []
+            },
+        });
+        chart.updateOptions({
+            xaxis: {
+                categories: label
+            },
+        });
+        //chart.opts.labels = label;
+        /* chart.updateOptions({
+            labels: label
+            
+        }); */
+        if(multiple > 1){
+            var i = 0;
+            chart.opts.series.forEach((dataset) => {
+                if( i < multiple){
+                    dataset.data = [];
+                    console.log(dataset.name);
+                    console.log(dataset.data);
+                    dataset.data = data[i];
+                    console.log(data[i]);
+                    console.log(dataset.data);
+                    i++;
+                }
+            });
+        }
+        else if(multiple == 1){
+            chart.updateSeries([{
+                data: []
+            }]);
+        
+            chart.updateSeries([{
+                data: data
+            }]);
+        }
+
+        /*if(xscale === 'day'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        //text: moment(dateopt).format('DD MMMM').toString(),
+                        text: moment(dateopt[0]).format('DD MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('DD MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }
+        else if( xscale === 'month'){
+            chart.updateOptions({
+                xaxis: {
+                    title: {
+                        text: moment(dateopt[0]).format('MMMM YYYY').toString() + ' - ' + moment(dateopt[1]).format('MMMM YYYY').toString(),
+                    }
+                },
+            });
+        }*/
+        //console.log(chart.options.scales.xAxes[0].scaleLabel.labelString);
+        //preloaderChart(id, false);
+        //chart.render();
+    }            
+
+    function updateDonutChart(chart, label, data) {
+        chart.updateOptions({labels: label});
+        chart.updateSeries(newDataSeries(chart, data));
+    }
+    
+    function newDataSeries(chart, data) {
+        var i = 0;
+        return chart.w.globals.series.map(function () {
+            return data[i++];
+        });
+    }
+
+    function myFunction(item, index, arr) {
+        arr[index] = JSON.parse(item);
+    }
+
+    function updateHistoGraphs(){
+        
+        $data = JSON.stringify({
+            //"selectedDate": $dat, // tabGridId,
+            "startDate": startDate + ' 00:00:00', // tabGridId,
+            "endDate": endDate + '23:59:59', // tabFuelId,
+        });
+        
+        swal.queue([{
+            title: 'Les graphes seront actualisés pour la période :',
+            confirmButtonText: 'Confirmer',
+            cancelButtonText: 'Annuler',
+            text: 'Du ' + startDate + ' Au ' + endDate,
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            //confirmButtonClass: 'btn btn-primary',
+            //cancelButtonClass: 'btn btn-danger ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) { 
+                    
+                    $.ajax({
+                        type: "POST", // method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url, // /Target function that will be return result
+                        data: $data, // parameter pass data is parameter name param is value
+                        dataType: "json",
+                        timeout: 120000, // 64241
+                        success: function (result) {
+                            // $('.fa-sync').removeClass('fa-spin');
+                            console.log(result);
+                            
+                            swal({
+                                type: 'success', 
+                                title: 'Les données et graphes ont été mis à jour !',
+                                // html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 1500);
+
+                            if( Object.keys(result).length > 0 ){
+                                {# console.log(result); #}
+
+                                //Valeur de la pénalité et statut du Nombre de Dépassement de la puissance souscrite
+                                /*$('#t-pen-depassement').text(String(result['dataAnalysis']['recapProd']['gridData']['NbDepassement']));
+                                if( parseInt(result['dataAnalysis']['recapProd']['gridData']['NbDepassement']) > 10){
+                                    $('#t-pen-depassement-status').text('Oui')
+                                    if($("#t-pen-depassement-badge").hasClass("badge-success")) $("#t-pen-depassement-badge").toggleClass("badge-success").toggleClass("badge-danger")
+                                    else if(!$("#t-pen-depassement-badge").hasClass("badge-danger")) $("#t-pen-depassement-badge").addClass("badge-danger")
+                                }
+                                else if( parseInt(result['dataAnalysis']['recapProd']['gridData']['NbDepassement']) >= 0){
+                                    $('#t-pen-depassement-status').text('Non')
+                                    if($("#t-pen-depassement-badge").hasClass("badge-danger")) $("#t-pen-depassement-badge").toggleClass("badge-danger").toggleClass("badge-success")
+                                    else if(!$("#t-pen-depassement-badge").hasClass("badge-success")) $("#t-pen-depassement-badge").addClass("badge-success")
+                                }
+
+                                //Valeur de la pénalité et statut du Mauvais Factuer de puissance
+                                $('#t-pen-fp').text(String(result['dataAnalysis']['recapProd']['gridData']['FP']));
+                                if( parseInt(result['dataAnalysis']['recapProd']['gridData']['FP']) > 0.8){
+                                    $('#t-pen-fp-status').text('Non')
+                                    if($("#t-pen-fp-badge").hasClass("badge-danger")) $("#t-pen-fp-badge").toggleClass("badge-danger").toggleClass("badge-success")
+                                    else if(!$("#t-pen-fp-badge").hasClass("badge-success")) $("#t-pen-fp-badge").addClass("badge-success")
+                                }
+                                else if( parseInt(result['dataAnalysis']['recapProd']['gridData']['FP']) >= 0){
+                                    $('#t-pen-fp-status').text('Oui')
+                                    if($("#t-pen-fp-badge").hasClass("badge-success")) $("#t-pen-fp-badge").toggleClass("badge-success").toggleClass("badge-danger")
+                                    else if(!$("#t-pen-fp-badge").hasClass("badge-danger")) $("#t-pen-fp-badge").addClass("badge-danger")
+                                }*/
+                                
+                                //++++ Mise à jour du tableau des Statistiques Consommation
+                                //Valeur de la consommation totale d'énergie
+                                $('#t-consoTotal').text(parseFloat(result['dataAnalysis']['consoTotal']).toFixed(2));
+                                //On gère la progression de la consommation totale d'énergie
+                                progress(prefixSelector='t-consoTotal-progress-', progValue=result['dataAnalysis']['consoTotalProgress'], posLogique=false, isTime=false);
+                                //Valeur moyenne journalière de la consommation d'énergie
+                                $('#t-consoMoy').text(parseFloat(result['dataAnalysis']['consoMoy']).toFixed(2));
+                                //On gère la progression de la moyenne journalière consommation d'énergie
+                                progress(prefixSelector='t-consoMoy-progress-', progValue=result['dataAnalysis']['consoMoyProgress'], posLogique=false, isTime=false);
+                                
+                                //Valeur de la variation autour de la valeur moyenne (écart-type) des consommations d'énergie
+                                $('#t-consoVariation').text(parseFloat(result['dataAnalysis']['consoVariation']).toFixed(2));
+                                //On gère la progression de la variation autour de la valeur moyenne (écart-type) des consommations d'énergie
+                                progress(prefixSelector='t-consoVariation-progress-', progValue=result['dataAnalysis']['consoVariationProgress'], posLogique=false, isTime=false);
+                                
+                                //Informations (valeur + date) sur la plus forte consommation d'énergie
+                                $('#t-kWhMax').text(result['dataAnalysis']['+forteConso']);
+                                //On gère la progression de la plus forte consommation d'énergie
+                                progress(prefixSelector='t-kWhMax-progress-', progValue=result['dataAnalysis']['+forteConsoProgress'], posLogique=false, isTime=false);
+                                
+                                //Informations (valeur + date) sur la plus faible consommation d'énergie
+                                $('#t-kWhMin').text(result['dataAnalysis']['+faibleConso']);
+                                //On gère la progression de la plus faible consommation d'énergie
+                                progress(prefixSelector='t-kWhMin-progress-', progValue=result['dataAnalysis']['+faibleConsoProgress'], posLogique=false, isTime=false);
+                                
+                                //Informations (valeur + date) sur le Pic de puissance 
+                                $('#t-Pmax').text(result['dataAnalysis']['Pic']);
+                                //On gère la progression du Pic de puissance 
+                                progress(prefixSelector='t-Pmax-progress-', progValue=result['dataAnalysis']['PicProgress'], posLogique=false, isTime=false);
+                                
+                                //Informations (valeur + date) sur le Talon de puissance 
+                                $('#t-talon').text(result['dataAnalysis']['Talon']);
+                                //On gère la progression du Talon de puissance
+                                progress(prefixSelector='t-talon-progress-', progValue=result['dataAnalysis']['TalonProgress'], posLogique=false, isTime=false);
+                                
+                                //Consommation d'énergie en kWh sur la tranche horaire 00-06h du mois en cours
+                                $('#t-conso-00-08').text(parseFloat(result['dataAnalysis']['conso-00-08']).toFixed(2));
+                                //On gère la progression de la consommation d'énergie de la tranche horaire 00h - 08h
+                                progress(prefixSelector='t-conso-00-08-progress-', progValue=result['dataAnalysis']['conso-00-08Progress'], posLogique=false, isTime=false);
+                                
+                                //Consommation d'énergie en kWh sur la tranche horaire 08-18h du mois en cours
+                                $('#t-conso-08-18').text(parseFloat(result['dataAnalysis']['conso-08-18']).toFixed(2));
+                                //On gère la progression de la consommation d'énergie de la tranche horaire 08h - 18h
+                                progress(prefixSelector='t-conso-08-18-progress-', progValue=result['dataAnalysis']['conso-08-18Progress'], posLogique=false, isTime=false);
+                                
+                                //Consommation d'énergie en kWh sur la tranche horaire 18-00h du mois en cours
+                                $('#t-conso-18-00').text(parseFloat(result['dataAnalysis']['conso-18-00']).toFixed(2));
+                                //On gère la progression de la consommation d'énergie de la tranche horaire 18h - 00h
+                                progress(prefixSelector='t-conso-18-00-progress-', progValue=result['dataAnalysis']['conso-18-00Progress'], posLogique=false, isTime=false);
+
+                                //MAJ des Profils de puissance du jour le plus consommateur
+                                displayNewData(loadProfilDayHighConsoChart, result['dataAnalysis']['powerProfilHighDayConso']['date'], Object.values(result['dataAnalysis']['powerProfilHighDayConso']['data']), [startDate, endDate], 3, 'day');
+                                loadProfilDayHighConsoChart.toggleSeries('Puissance ')
+                                loadProfilDayHighConsoChart.toggleSeries('Puissance ')
+                                loadProfilDayHighConsoChart.toggleSeries('Puissance N-1 ')
+                                loadProfilDayHighConsoChart.toggleSeries('Puissance N-1 ')
+                                loadProfilDayHighConsoChart.toggleSeries('Puissance souscrite ')
+                                loadProfilDayHighConsoChart.toggleSeries('Puissance souscrite ')
+                                
+                                //MAJ des Profils de puissance du jour le moins consommateur
+                                displayNewData(loadProfilDayLowConsoChart, result['dataAnalysis']['powerProfilLowDayConso']['date'], Object.values(result['dataAnalysis']['powerProfilLowDayConso']['data']), [startDate, endDate], 3, 'day');
+                                loadProfilDayLowConsoChart.toggleSeries('Puissance ')
+                                loadProfilDayLowConsoChart.toggleSeries('Puissance ')
+                                loadProfilDayLowConsoChart.toggleSeries('Puissance N-1 ')
+                                loadProfilDayLowConsoChart.toggleSeries('Puissance N-1 ')
+                                loadProfilDayLowConsoChart.toggleSeries('Puissance souscrite ')
+                                loadProfilDayLowConsoChart.toggleSeries('Puissance souscrite ')
+                                
+                                //MAJ des Histogrammes de Consommation d'énergie active
+                                displayNewData(HistoConsoChart, result['dataAnalysis']['histoConso']['date'], Object.values(result['dataAnalysis']['histoConso']['data']), [startDate, endDate], 2, 'day');
+                                HistoConsoChart.toggleSeries('Conso ')
+                                HistoConsoChart.toggleSeries('Conso ')
+                                HistoConsoChart.toggleSeries('Conso N-1 ')
+                                HistoConsoChart.toggleSeries('Conso N-1 ')
+
+                                //MAJ des Histogrammes de Pic de puissance
+                                displayNewData(HistoHighPowerChart, result['dataAnalysis']['histoHighPower']['date'], Object.values(result['dataAnalysis']['histoHighPower']['data']), [startDate, endDate], 3, 'day');
+                                HistoHighPowerChart.toggleSeries('Puissance ')
+                                HistoHighPowerChart.toggleSeries('Puissance ')
+                                HistoHighPowerChart.toggleSeries('Puissance N-1 ')
+                                HistoHighPowerChart.toggleSeries('Puissance N-1 ')
+                                HistoHighPowerChart.toggleSeries('Puissance souscrite ')
+                                HistoHighPowerChart.toggleSeries('Puissance souscrite ')
+                                
+                                day = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']
+                                //MAJ des dispersions de Consommation
+                                result['dataAnalysis']['disperConso']['chart'].forEach(myFunction)
+                                {# console.log(Object.values(result['dataAnalysis']['disperPic']['chart'])) #}
+                                DisperConsochart.updateSeries([{
+                                    data: []
+                                }]);
+                                DisperConsochart.updateSeries([{
+                                    name: 'box',
+                                    type: 'boxPlot',
+                                    data: Object.values(result['dataAnalysis']['disperConso']['chart']) 
+                                    
+                                }]);
+                                DisperConsochart.toggleSeries('box')
+                                DisperConsochart.toggleSeries('box')
+                                
+                                for(var i = 0; i < 7; i++){
+                                    if(result['dataAnalysis']['disperConso'][day[i]].length > 0){
+                                        //Quartile 1
+                                        $('#t-conso-' + day[i] + '-Q1').text(parseFloat(result['dataAnalysis']['disperConso'][day[i]][0]).toFixed(2));
+                                        //Quartile 2
+                                        $('#t-conso-' + day[i] + '-Q2').text(parseFloat(result['dataAnalysis']['disperConso'][day[i]][1]).toFixed(2));
+                                        //Quartile 3
+                                        $('#t-conso-' + day[i] + '-Q3').text(parseFloat(result['dataAnalysis']['disperConso'][day[i]][2]).toFixed(2));
+                                        //Inter Quartile = Q3 - Q1
+                                        $('#t-conso-' + day[i] + '-dQ').text(parseFloat(result['dataAnalysis']['disperConso'][day[i]][3]).toFixed(2));
+                                        //Coef de Variation
+                                        $('#t-conso-' + day[i] + '-var').text(parseFloat(result['dataAnalysis']['disperConso'][day[i]][4]).toFixed(2));
+
+                                    }
+                                    else{
+                                        //Quartile 1
+                                        $('#t-conso-' + day[i] + '-Q1').text('-');
+                                        //Quartile 2
+                                        $('#t-conso-' + day[i] + '-Q2').text('-');
+                                        //Quartile 3
+                                        $('#t-conso-' + day[i] + '-Q3').text('-');
+                                        //Inter Quartile = Q3 - Q1
+                                        $('#t-conso-' + day[i] + '-dQ').text('-');
+                                        //Coef de Variation
+                                        $('#t-conso-' + day[i] + '-var').text('-');
+
+                                    }
+
+                                }
+                                
+                                //MAJ des dispersions de Pic de Puissance
+                                result['dataAnalysis']['disperPic']['chart'].forEach(myFunction)
+                                {# console.log(Object.values(result['dataAnalysis']['disperPic']['chart'])) #}
+                                DisperHighPowerchart.updateSeries([{
+                                    data: []
+                                }]);
+                                DisperHighPowerchart.updateSeries([{
+                                    name: 'box',
+                                    type: 'boxPlot',
+                                    data: Object.values(result['dataAnalysis']['disperPic']['chart']) 
+                                    
+                                }]);
+                                DisperHighPowerchart.toggleSeries('box')
+                                DisperHighPowerchart.toggleSeries('box')
+                                
+                                for(var i = 0; i < 7; i++){
+                                    if(result['dataAnalysis']['disperPic'][day[i]].length > 0){
+                                        //Quartile 1
+                                        $('#t-pic-' + day[i] + '-Q1').text(parseFloat(result['dataAnalysis']['disperPic'][day[i]][0]).toFixed(2));
+                                        //Quartile 2
+                                        $('#t-pic-' + day[i] + '-Q2').text(parseFloat(result['dataAnalysis']['disperPic'][day[i]][1]).toFixed(2));
+                                        //Quartile 3
+                                        $('#t-pic-' + day[i] + '-Q3').text(parseFloat(result['dataAnalysis']['disperPic'][day[i]][2]).toFixed(2));
+                                        //Inter Quartile = Q3 - Q1
+                                        $('#t-pic-' + day[i] + '-dQ').text(parseFloat(result['dataAnalysis']['disperPic'][day[i]][3]).toFixed(2));
+                                        //Coef de Variation
+                                        $('#t-pic-' + day[i] + '-var').text(parseFloat(result['dataAnalysis']['disperPic'][day[i]][4]).toFixed(2));
+
+                                    }
+                                    else{
+                                        //Quartile 1
+                                        $('#t-pic-' + day[i] + '-Q1').text('-');
+                                        //Quartile 2
+                                        $('#t-pic-' + day[i] + '-Q2').text('-');
+                                        //Quartile 3
+                                        $('#t-pic-' + day[i] + '-Q3').text('-');
+                                        //Inter Quartile = Q3 - Q1
+                                        $('#t-pic-' + day[i] + '-dQ').text('-');
+                                        //Coef de Variation
+                                        $('#t-pic-' + day[i] + '-var').text('-');
+
+                                    }
+
+                                }
+
+                                //MAJ de la Courbe de charge
+                                displayNewData(loadChart, result['dataAnalysis']['loadChart']['date'], Object.values(result['dataAnalysis']['loadChart']['data']), [startDate, endDate], 3, 'day');
+                                loadChart.toggleSeries('Pmoy ')
+                                loadChart.toggleSeries('Pmoy ')
+                                loadChart.toggleSeries('Pmax ')
+                                loadChart.toggleSeries('Pmax ')
+                                loadChart.toggleSeries('Puissance souscrite ')
+                                loadChart.toggleSeries('Puissance souscrite ')
+                                
+                                //MAJ de la Courbe du Monotone de Puissance
+                                displayNewData(PowerMonotoneChart, result['dataAnalysis']['monotonePower']['chart']['order'], Object.values(result['dataAnalysis']['monotonePower']['chart']['data']), [startDate, endDate], 1, 'day');
+                                PowerMonotoneChart.toggleSeries('Pmax ')
+                                PowerMonotoneChart.toggleSeries('Pmax ')
+                                //Valeur de la moyenne des Puissances max
+                                $('#t-power-moy-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['mean']).toFixed(2));
+                                //On gère la progression de la moyenne des Puissances max
+                                progress(prefixSelector='t-power-moy-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['meanProgress'], posLogique=false, isTime=false);
+                                //Valeur de la Médiane des Puissances max
+                                $('#t-power-medi-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['median']).toFixed(2));
+                                //On gère la progression de la Médiane des Puissances max
+                                progress(prefixSelector='t-power-medi-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['medianProgress'], posLogique=false, isTime=false);
+                                //Valeur Min des Puissances max
+                                $('#t-power-min-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['min']).toFixed(2));
+                                //On gère la progression du Min des Puissances max
+                                progress(prefixSelector='t-power-min-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['minProgress'], posLogique=false, isTime=false);
+                                //Valeur Max des Puissances max
+                                $('#t-power-max-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['max']).toFixed(2));
+                                //On gère la progression du Max des Puissances max
+                                progress(prefixSelector='t-power-max-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['maxProgress'], posLogique=false, isTime=false);
+                                //Valeur de Rang 10 des Puissances max
+                                $('#t-power-rang10-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['Prang10']).toFixed(2));
+                                //On gère la progression du Rang 10 des Puissances max
+                                progress(prefixSelector='t-power-rang10-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['Prang10Progress'], posLogique=false, isTime=false);
+                                //Valeur du Nombre de dépassement de la puissance souscrite
+                                $('#t-power-nbDepassement-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['nbDepassement']).toFixed(2));
+                                //On gère la progression du Nombre de dépassement de la puissance souscrite
+                                progress(prefixSelector='t-power-nbDepassement-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['nbDepassementProgress'], posLogique=false, isTime=false);
+                                
+                                
+                                //MAJ de la Courbe des Minima de Cosfi
+                                displayNewData(CosfiMinimaChart, result['dataAnalysis']['minimaCosfi']['chart']['date'], Object.values(result['dataAnalysis']['minimaCosfi']['chart']['data']), [startDate, endDate], 1, 'day');
+                                CosfiMinimaChart.toggleSeries('CosPhi min ')
+                                CosfiMinimaChart.toggleSeries('CosPhi min ')
+
+                                //Valeur Moyenne des Minima de Cosfi
+                                $('#t-cosfi-moy').text(parseFloat(result['dataAnalysis']['minimaCosfi']['stats']['mean']).toFixed(2));
+                                //On gère la progression de la Moyenne des Minima de Cosfi
+                                progress(prefixSelector='t-cosfi-moy-progress-', progValue=result['dataAnalysis']['minimaCosfi']['stats']['meanProgress'], posLogique=true, isTime=false);
+                                //Valeur Médiane des Minima de Cosfi
+                                $('#t-cosfi-medi').text(parseFloat(result['dataAnalysis']['minimaCosfi']['stats']['median']).toFixed(2));
+                                //On gère la progression de la Médiane des Minima de Cosfi
+                                progress(prefixSelector='t-cosfi-medi-progress-', progValue=result['dataAnalysis']['minimaCosfi']['stats']['medianProgress'], posLogique=true, isTime=false);
+                                //Valeur Min des Minima de Cosfi
+                                $('#t-cosfi-min').text(parseFloat(result['dataAnalysis']['minimaCosfi']['stats']['min']).toFixed(2));
+                                //On gère la progression du Min des Minima de Cosfi
+                                progress(prefixSelector='t-cosfi-min-progress-', progValue=result['dataAnalysis']['minimaCosfi']['stats']['minProgress'], posLogique=true, isTime=false);
+                                //Valeur Max des Minima de Cosfi
+                                $('#t-cosfi-max').text(parseFloat(result['dataAnalysis']['minimaCosfi']['stats']['max']).toFixed(2));
+                                //On gère la progression du Max des Minima de Cosfi
+                                progress(prefixSelector='t-cosfi-max-progress-', progValue=result['dataAnalysis']['minimaCosfi']['stats']['maxProgress'], posLogique=true, isTime=false);
+                                //Valeur du Cosfi des énergies
+                                $('#t-cosfi').text(parseFloat(result['dataAnalysis']['minimaCosfi']['stats']['cosfiEnergy']).toFixed(2));
+                                //On gère la progression du Cosfi des énergies
+                                progress(prefixSelector='t-cosfi-progress-', progValue=result['dataAnalysis']['minimaCosfi']['stats']['cosfiEnergyProgress'], posLogique=true, isTime=false);
+                                //Valeur du Nombre de Mauvais Cosfi
+                                $('#t-nbInsuffisance').text(parseFloat(result['dataAnalysis']['minimaCosfi']['stats']['nbInsuffisance']).toFixed(2));
+                                //On gère la progression du Nombre de Mauvais Cosfi
+                                progress(prefixSelector='t-nbInsuffisance-progress-', progValue=result['dataAnalysis']['minimaCosfi']['stats']['nbInsuffisanceProgress'], posLogique=false, isTime=false);
+                                
+                            }
+                        },
+                        error: function (result) {
+                            // console.log("Error");
+                            // console.log(result);
+                            swal('Oups...', "Une erreur s'est produite !", 'error'
+                            // footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]);
+    }
+
+    {# setTimeout(function(){
+        var drp_ = $('#gendaterange').data('daterangepicker');
+        console.log('drp = ' + drp.startDate.format('YYYY-MM-DD'));
+        var startDate_ = drp.startDate.format('YYYY-MM-DD');
+        var endDate_ = drp.endDate.format('YYYY-MM-DD');
+
+        $data = JSON.stringify({
+            //"selectedDate": $dat, // tabGridId,
+            "startDate": startDate_ + ' 00:00:00', // tabGridId,
+            "endDate": endDate_ + '23:59:59', // tabFuelId,
+        });
+        
+        swal.queue([{
+            title: 'Chargement...',
+            confirmButtonText: 'Confirmez',
+            text: 'Veuillez patienter svp !',
+            //showCancelButton: true,
+            showLoaderOnConfirm: true,
+            //confirmButtonClass: 'btn btn-primary',
+            //cancelButtonClass: 'btn btn-danger ml-2',
+        
+            //title: 'The graphs will be updated for the date range :',
+            //confirmButtonText: 'Confirm',
+            //text: 'From ' + startDate_ + ' To ' + endDate_,
+            //showCancelButton: true,
+            //showLoaderOnConfirm: true,
+            //confirmButtonClass: 'btn btn-primary',
+            //cancelButtonClass: 'btn btn-danger ml-2',
+            preConfirm: function () {
+                return new Promise(function (resolve) { 
+                    
+                    $.ajax({
+                        type: "POST", // method type
+                        contentType: "application/json; charset=utf-8",
+                        url: _url, // /Target function that will be return result
+                        data: $data, // parameter pass data is parameter name param is value
+                        dataType: "json",
+                        timeout: 120000, // 64241
+                        success: function (result) {
+                            // $('.fa-sync').removeClass('fa-spin');
+                            console.log(result);
+                            
+                            swal({
+                                type: 'success', 
+                                title: 'Les graphes ont été mis !',
+                                // html: 'Submitted email: ' + email
+                            });
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 1500);
+
+                            if( Object.keys(result).length > 0 ){
+                                
+                            }
+                        },
+                        error: function (result) {
+                            // console.log("Error");
+                            // console.log(result);
+                            swal('Oups...', "Une erreur s'est produite !", 'error'
+                            // footer: '<a href>Why do I have this issue?</a>'
+                            );
+
+                            setTimeout(function () {
+                                resolve()
+                            }, 5000);
+                        }
+                    });
+                })
+            },
+            allowOutsideClick: false
+        }]); 
+
+        $(".swal2-confirm").click();
+
+    }, 200) #}
+
+    {# load Profil Day High Conso Chart #}
+    var loadProfilDayHighConsoChart_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Puissance ',
+            data: {% if dataAnalysis['powerProfilHighDayConso']['data']|length > 0 %}{{ dataAnalysis['powerProfilHighDayConso']['data'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Puissance N-1 ',
+            data: {% if dataAnalysis['powerProfilHighDayConso']['data']|length > 0 %}{{ dataAnalysis['powerProfilHighDayConso']['data'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Puissance souscrite ',
+            data: {% if dataAnalysis['powerProfilHighDayConso']['data']|length > 0 %}{{ dataAnalysis['powerProfilHighDayConso']['data'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['powerProfilHighDayConso']['date'] | json_encode | raw }},                
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kW)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        }
+    }
+
+    var loadProfilDayHighConsoChart = new ApexCharts(
+        document.querySelector("#load-profile-day-High-conso"),
+        loadProfilDayHighConsoChart_options
+    );
+
+    loadProfilDayHighConsoChart.render();
+
+    {# load Profil Day Low Conso Chart #}
+    var loadProfilDayLowConsoChart_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Puissance ',
+            data: {% if dataAnalysis['powerProfilLowDayConso']['data']|length > 0 %}{{ dataAnalysis['powerProfilLowDayConso']['data'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Puissance N-1 ',
+            data: {% if dataAnalysis['powerProfilLowDayConso']['data']|length > 0 %}{{ dataAnalysis['powerProfilLowDayConso']['data'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Puissance souscrite ',
+            data: {% if dataAnalysis['powerProfilLowDayConso']['data']|length > 0 %}{{ dataAnalysis['powerProfilLowDayConso']['data'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['powerProfilLowDayConso']['date'] | json_encode | raw }},                
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kW)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                }
+            }
+        }
+    }
+
+    var loadProfilDayLowConsoChart = new ApexCharts(
+        document.querySelector("#load-profile-day-Low-conso"),
+        loadProfilDayLowConsoChart_options
+    );
+
+    loadProfilDayLowConsoChart.render();
+
+    {# Histogramme Conso Chart #}
+    var HistoConso_options = {
+        chart: {
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                //endingShape: 'rounded'  
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Conso ',
+            type: 'column',
+            data: {% if dataAnalysis['histoConso']['data']|length > 0 %}{{ dataAnalysis['histoConso']['data'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [44, 55, 57, 56, 61, 58, 63, 60, 66] #}
+        }, {
+            name: 'Conso N-1 ',
+            type: 'column',
+            data: {% if dataAnalysis['histoConso']['data']|length > 0 %}{{ dataAnalysis['histoConso']['data'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [76, 85, 101, 98, 87, 105, 91, 114, 94] #}
+        }],
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['histoConso']['date'] | json_encode | raw }},                
+            {# categories: ["2018-09-19T00:00:00", "2018-09-20T01:30:00", "2018-09-21T02:30:00", "2018-09-22T03:30:00", "2018-09-23T04:30:00", "2018-09-24T05:30:00", "2018-09-25T06:30:00", "2018-09-26T06:45:00", "2018-09-27T07:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Consommation (kWh)'
+            }
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kWh"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                    
+                }
+            }
+        }
+    }
+    
+    var HistoConsoChart = new ApexCharts(
+        document.querySelector("#histo-conso"),
+        HistoConso_options
+    );
+
+    HistoConsoChart .render();
+
+    {# Histogramme Pic Power Chart #}
+    var HistoHighPower_options = {
+        chart: {
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        series: [{
+            name: 'Puissance ',
+            type: 'column',
+            data: {% if dataAnalysis['histoHighPower']['data']|length > 0 %}{{ dataAnalysis['histoHighPower']['data'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160] #}
+        }, {
+            name: 'Puissance N-1 ',
+            type: 'column',
+            data: {% if dataAnalysis['histoHighPower']['data']|length > 0 %}{{ dataAnalysis['histoHighPower']['data'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160] #}
+        },{
+            name: 'Puissance souscrite ',
+            type: 'line',
+            data: {% if dataAnalysis['histoHighPower']['data']|length > 0 %}{{ dataAnalysis['histoHighPower']['data'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700] #}
+        }],
+        stroke: {
+            width: [0, 0, 3]
+        },
+        {# labels: {{ dataAnalysis['histoHighPower']['date'] | json_encode | raw }}, #}
+        {# labels: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'], #}
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['histoHighPower']['date'] | json_encode | raw }},
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH'
+                }
+            },
+        },
+        yaxis: [{
+            title: {
+                text: 'Puissance (kW)',
+            },
+
+        }],
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+                    
+                }
+            }
+        }
+
+    }
+
+    var HistoHighPowerChart = new ApexCharts(
+        document.querySelector("#histo-high-power"),
+        HistoHighPower_options
+    );
+
+    HistoHighPowerChart.render();
+
+    {# Dispersion Conso Chart #}
+    var data_ = {{ dataAnalysis['disperConso']['chart'] | json_encode | raw }};
+    data_.forEach(myFunction);
+    var DisperConso_options = {
+        series: [
+          {
+            name: 'box',
+            type: 'boxPlot',
+            data: data_
+          }
+        ],
+        chart: {
+            type: 'boxPlot',
+            height: 350,
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        colors: ['#008FFB', '#FEB019'],
+        xaxis: {
+            type: 'category',
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+            }
+        },
+        tooltip: {
+          shared: false,
+          intersect: true
+        }
+    };
+
+    var DisperConsochart = new ApexCharts(
+        document.querySelector("#dispers-conso-chart"), 
+        DisperConso_options
+    );
+
+    DisperConsochart.render();
+
+    {# Dispersion pics de puissance Chart #}
+    data_ = {{ dataAnalysis['disperPic']['chart'] | json_encode | raw }};
+    data_.forEach(myFunction);
+                                
+    var DisperHighPower_options = {
+        series: [
+          {
+            name: 'box',
+            type: 'boxPlot',
+            data: data_
+            {# data: [
+                {% set dayArray = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'] %} 
+                {% for day in dayArray %}
+                {
+                    x: '{{day}}',
+                    y: {{ dataAnalysis['disperPic'][day]['chart'] | json_encode | raw }}
+                    
+                },
+                {% endfor %}
+              { {
+                x: 'Lundi',
+                y: {{ dataAnalysis['disperPic']['Lundi']['chart'] | json_encode | raw }}
+                { y: [54, 66, 69, 75, 88] }
+              },
+              {
+                x: 'Mardi',
+                y: {{ dataAnalysis['disperPic']['Mardi']['chart'] | json_encode | raw }}
+                { y: [43, 65, 69, 76, 81] }
+              },
+              {
+                x: 'Mercredi',
+                y: {{ dataAnalysis['disperPic']['Mercredi']['chart'] | json_encode | raw }}
+                { y: [31, 39, 45, 51, 59] }
+              },
+              {
+                x: 'Jeudi',
+                y: {{ dataAnalysis['disperPic']['Jeudi']['chart'] | json_encode | raw }}
+                { y: [39, 46, 55, 65, 71] }
+              },
+              {
+                x: 'Vendredi',
+                y: {{ dataAnalysis['disperPic']['Vendredi']['chart'] | json_encode | raw }}
+                { y: [29, 31, 35, 39, 44] }
+              },
+              {
+                x: 'Samedi',
+                y: {{ dataAnalysis['disperPic']['Samedi']['chart'] | json_encode | raw }}
+                { y: [31, 39, 45, 51, 59] }
+              },
+              {
+                x: 'Dimanche',
+                y: {{ dataAnalysis['disperPic']['Dimanche']['chart'] | json_encode | raw }}
+                { y: [54, 66, 69, 75, 88] }
+              } }
+            ] #}
+          }
+        ],
+        chart: {
+            type: 'boxPlot',
+            height: 350,
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        colors: ['#008FFB', '#FEB019'],
+        xaxis: {
+            type: 'category',
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+            }
+        },
+        tooltip: {
+          shared: false,
+          intersect: true
+        }
+    };
+
+    var DisperHighPowerchart = new ApexCharts(
+        document.querySelector("#dispers-high-power-chart"), 
+        DisperHighPower_options
+    );
+    
+    DisperHighPowerchart.render();
+    //
+
+    {# load Chart #}
+    var loadChart_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Pmoy ',
+            data: {% if dataAnalysis['loadChart']['data']|length > 0 %}{{ dataAnalysis['loadChart']['data'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Pmax ',
+            data: {% if dataAnalysis['loadChart']['data']|length > 0 %}{{ dataAnalysis['loadChart']['data'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Puissance souscrite ',
+            data: {% if dataAnalysis['loadChart']['data']|length > 0 %}{{ dataAnalysis['loadChart']['data'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['loadChart']['date'] | json_encode | raw }},                
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kW)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        }
+    }
+
+    var loadChart = new ApexCharts(
+        document.querySelector("#load-chart"),
+        loadChart_options
+    );
+    loadChart.render();
+
+    {# Power Monotone Chart #}
+    var PowerMonotoneChart_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Pmax ',
+            data: {{ dataAnalysis['monotonePower']['chart']['data'] | json_encode | raw }}
+            {# data: [109, 100, 51, 42, 40, 31, 28] #}
+        }],
+
+        xaxis: {
+            type: 'numeric',
+            categories: {{ dataAnalysis['monotonePower']['chart']['order'] | json_encode | raw }},                
+            {# categories: [1, 2, 3, 4, 5, 6, 7],                 #}
+            
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kW)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val) {
+                    return "Rang " + val;
+                    
+                }
+            }
+        }
+    }
+
+    var PowerMonotoneChart = new ApexCharts(
+        document.querySelector("#power-monotone"),
+        PowerMonotoneChart_options
+    );
+    PowerMonotoneChart.render();
+
+    {# Cosfi Minima Chart #}
+    var CosfiMinimaChart_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'CosPhi min ',
+            data: {{ dataAnalysis['minimaCosfi']['chart']['data'] | json_encode | raw }}
+            {# data: [28, 31, 40, 42, 51, 100, 109] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['minimaCosfi']['chart']['date'] | json_encode | raw }},                
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'CosPhi min'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2)
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+                    
+                }
+            }
+        }
+    }
+
+    var CosfiMinimaChart = new ApexCharts(
+        document.querySelector("#minima-cosfi"),
+        CosfiMinimaChart_options
+    );
+    CosfiMinimaChart.render();
+
+</script> 
+{% endblock %}

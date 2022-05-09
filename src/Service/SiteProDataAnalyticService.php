@@ -938,15 +938,11 @@ class SiteProDataAnalyticService
         }
         $cosfiEnergyProgress   = ($last_cosfiEnergy > 0) ? ($cosfiEnergy - $last_cosfiEnergy) * 100 / $last_cosfiEnergy : 'INF';
 
-        // ========= Récupération des données pour les Statistques Production, Mix énergie et Stats =========  
-        // Récapitulatif Production
-        $recapProd  = $this->siteProDataService->getOverviewData($onlySrc = true);
-        $amountBill = $this->estimatedBill();
-        //dump($recapProd);
-
-        // Mix Energie et stats
-        $mix = $this->getMixEnergieData();
-        //dump($mix);
+        $recapProd = [];
+        $amountBill = 0.0;
+        $mix = [];
+        $trhData = [];
+        $powerProfilSupply = [];
 
         // ========= Dispersion des Consommations et des Pic de Puissance =========  
         // Dispersion des Consommations
@@ -1256,104 +1252,208 @@ class SiteProDataAnalyticService
         // dump($dowHighPowerData);
         // dump($Q_highPower);
 
-        // ######## Récupération des données de Durée de Fonctionnement du GE
-        $trhData = $this->gensetModService->getConsoFuelData();
         // dump($trhData);
-        return array(
-            'recapProd'                => $recapProd,
-            'amount-conso-HT'          => floatval(number_format((float) $amountBill, 2, '.', '')),
-            'mix'                      => $mix,
-            'consoTotal'               => floatval(number_format((float) $consoTotale, 2, '.', '')),
-            'consoTotalProgress'       => $consoTotaleProgress !== 'INF' ? floatval(number_format((float) $consoTotaleProgress, 2, '.', '')) : 'INF',
-            'consoMoy'                 => floatval(number_format((float) $consoMoy, 2, '.', '')),
-            'consoMoyProgress'         => $consoMoyProgress !== 'INF' ? floatval(number_format((float) $consoMoyProgress, 2, '.', '')) : 'INF',
-            'consoVariation'           => floatval(number_format((float) $consoVariation, 2, '.', '')),
-            'consoVariationProgress'   => $consoVariationProgress !== 'INF' ? floatval(number_format((float) $consoVariationProgress, 2, '.', '')) : 'INF',
-            '+forteConso'              => $strPlusForteConso,
-            '+forteConsoProgress'      => $PlusForteConsoProgress !== 'INF' ? floatval(number_format((float) $PlusForteConsoProgress, 2, '.', '')) : 'INF',
-            '+faibleConso'             => $strPlusFaibleConso,
-            '+faibleConsoProgress'     => $PlusFaibleConsoProgress !== 'INF' ? floatval(number_format((float) $PlusFaibleConsoProgress, 2, '.', '')) : 'INF',
-            'Talon'                    => $strTalon,
-            'TalonProgress'            => $TalonProgress !== 'INF' ? floatval(number_format((float) $TalonProgress, 2, '.', '')) : 'INF',
-            'Pic'                      => $strPic,
-            'PicProgress'              => $PicProgress !== 'INF' ? floatval(number_format((float) $PicProgress, 2, '.', '')) : 'INF',
-            'conso-00-08'              => floatval(number_format((float) $conso00_08kWh, 2, '.', '')),
-            'conso-00-08Progress'      => $conso00_08kWhProgress !== 'INF' ? floatval(number_format((float) $conso00_08kWhProgress, 2, '.', '')) : 'INF',
-            'conso-08-18'              => floatval(number_format((float) $conso08_18kWh, 2, '.', '')),
-            'conso-08-18Progress'      => $conso08_18kWhProgress !== 'INF' ? floatval(number_format((float) $conso08_18kWhProgress, 2, '.', '')) : 'INF',
-            'conso-18-00'              => floatval(number_format((float) $conso18_00kWh, 2, '.', '')),
-            'conso-18-00Progress'      => $conso18_00kWhProgress !== 'INF' ? floatval(number_format((float) $conso18_00kWhProgress, 2, '.', '')) : 'INF',
 
-            'histoConso'            => [
-                'date'  => $histogramConsoDate,
-                'data'  => [$histogramConsoData, $lastHistogramConsoData]
-            ],
-            'histoHighPower'            => [
-                'date'  => $histogramHighPowerDate,
-                'data'  => [$histogramHighPowerData, $lastHistogramHighPowerData, $Psous]
-            ],
-            'powerProfilHighDayConso'   => [
-                'date'  => $highDayConsoPowerProfilDate,
-                'data'  => [$highDayConsoPowerProfilData, $lastHighDayConsoPowerProfilData, $highDayConsoPowerProfilPsousData]
-            ],
-            'powerProfilLowDayConso'   => [
-                'date'  => $lowDayConsoPowerProfilDate,
-                'data'  => [$lowDayConsoPowerProfilData, $lastLowDayConsoPowerProfilData, $lowDayConsoPowerProfilPsousData]
-            ],
-            'loadChart'   => [
-                'date'  => $loadChartDataDate,
-                'data'  => [$loadChartDataPmoy, $loadChartDataPmax, $loadChartDataPsous]
-            ],
-            'monotonePower'   => [
-                'chart'     =>  [
-                    'order' => $monotonePowerOrder,
-                    'data'  => $monotonePowerPmax
+        if (!$this->site->getHasOneSmartMod()) {
+            // ========= Récupération des données pour les Statistques Production, Mix énergie et Stats =========
+            // Récapitulatif Production
+            $recapProd  = $this->siteProDataService->getOverviewData($onlySrc = true);
+            $amountBill = $this->estimatedBill();
+            //dump($recapProd);
+
+            // Mix Energie et stats
+            $mix = $this->getMixEnergieData();
+//            dump($mix);
+
+            // ######## Récupération des données de Durée de Fonctionnement du GE
+            $trhData = $this->gensetModService->getConsoFuelData();
+
+            // ######## Récupération des données pour le tracé des profils de puissance par source
+            $powerProfilSupply = $this->siteProDataService->getPowerChartDataForDateRange();
+
+            return array(
+                'recapProd' => $recapProd,
+                'amount-conso-HT' => floatval(number_format((float)$amountBill, 2, '.', '')),
+                'mix' => $mix,
+                'consoTotal' => floatval(number_format((float)$consoTotale, 2, '.', '')),
+                'consoTotalProgress' => $consoTotaleProgress !== 'INF' ? floatval(number_format((float)$consoTotaleProgress, 2, '.', '')) : 'INF',
+                'consoMoy' => floatval(number_format((float)$consoMoy, 2, '.', '')),
+                'consoMoyProgress' => $consoMoyProgress !== 'INF' ? floatval(number_format((float)$consoMoyProgress, 2, '.', '')) : 'INF',
+                'consoVariation' => floatval(number_format((float)$consoVariation, 2, '.', '')),
+                'consoVariationProgress' => $consoVariationProgress !== 'INF' ? floatval(number_format((float)$consoVariationProgress, 2, '.', '')) : 'INF',
+                '+forteConso' => $strPlusForteConso,
+                '+forteConsoProgress' => $PlusForteConsoProgress !== 'INF' ? floatval(number_format((float)$PlusForteConsoProgress, 2, '.', '')) : 'INF',
+                '+faibleConso' => $strPlusFaibleConso,
+                '+faibleConsoProgress' => $PlusFaibleConsoProgress !== 'INF' ? floatval(number_format((float)$PlusFaibleConsoProgress, 2, '.', '')) : 'INF',
+                'Talon' => $strTalon,
+                'TalonProgress' => $TalonProgress !== 'INF' ? floatval(number_format((float)$TalonProgress, 2, '.', '')) : 'INF',
+                'Pic' => $strPic,
+                'PicProgress' => $PicProgress !== 'INF' ? floatval(number_format((float)$PicProgress, 2, '.', '')) : 'INF',
+                'conso-00-08' => floatval(number_format((float)$conso00_08kWh, 2, '.', '')),
+                'conso-00-08Progress' => $conso00_08kWhProgress !== 'INF' ? floatval(number_format((float)$conso00_08kWhProgress, 2, '.', '')) : 'INF',
+                'conso-08-18' => floatval(number_format((float)$conso08_18kWh, 2, '.', '')),
+                'conso-08-18Progress' => $conso08_18kWhProgress !== 'INF' ? floatval(number_format((float)$conso08_18kWhProgress, 2, '.', '')) : 'INF',
+                'conso-18-00' => floatval(number_format((float)$conso18_00kWh, 2, '.', '')),
+                'conso-18-00Progress' => $conso18_00kWhProgress !== 'INF' ? floatval(number_format((float)$conso18_00kWhProgress, 2, '.', '')) : 'INF',
+
+                'histoConso' => [
+                    'date' => $histogramConsoDate,
+                    'data' => [$histogramConsoData, $lastHistogramConsoData]
                 ],
-                'stats'     => [
-                    'mean'                  => floatval(number_format((float) $meanPower, 2, '.', '')),
-                    'meanProgress'          => $meanPowerProgress !== 'INF' ? floatval(number_format((float) $meanPowerProgress, 2, '.', '')) : 'INF',
-                    'median'                => $medianPower,
-                    'medianProgress'        => $medianPowerProgress !== 'INF' ? floatval(number_format((float) $medianPowerProgress, 2, '.', '')) : 'INF',
-                    'min'                   => $minPower,
-                    'minProgress'           => $minPowerProgress !== 'INF' ? floatval(number_format((float) $minPowerProgress, 2, '.', '')) : 'INF',
-                    'max'                   => $maxPower,
-                    'maxProgress'           => $maxPowerProgress !== 'INF' ? floatval(number_format((float) $maxPowerProgress, 2, '.', '')) : 'INF',
-                    'nbDepassement'         => $nbDepassement,
-                    'nbDepassementProgress' => $nbDepassementProgress !== 'INF' ? floatval(number_format((float) $nbDepassementProgress, 2, '.', '')) : 'INF',
-                    'Prang10'               => $prang10,
-                    'Prang10Progress'       => $prang10Progress !== 'INF' ? floatval(number_format((float) $prang10Progress, 2, '.', '')) : 'INF'
-                ]
-            ],
-            'minimaCosfi'   => [
-                'chart'     =>  [
-                    'date'  => $minimaCosfiDate,
-                    'data'  => $minimaCosfiData
+                'histoHighPower' => [
+                    'date' => $histogramHighPowerDate,
+                    'data' => [$histogramHighPowerData, $lastHistogramHighPowerData, $Psous]
                 ],
-                'stats'     => [
-                    'mean'                   => floatval(number_format((float) $meanCosfi, 2, '.', '')),
-                    'meanProgress'           =>  $meanCosfiProgress !== 'INF' ? floatval(number_format((float) $meanCosfiProgress, 2, '.', '')) : 'INF',
-                    'median'                 => $medianCosfi,
-                    'medianProgress'         => $medianCosfiProgress !== 'INF' ? floatval(number_format((float) $medianCosfiProgress, 2, '.', '')) : 'INF',
-                    'min'                    => $minCosfi,
-                    'minProgress'            => $minCosfiProgress !== 'INF' ? floatval(number_format((float) $minCosfiProgress, 2, '.', '')) : 'INF',
-                    'max'                    => $maxCosfi,
-                    'maxProgress'            => $maxCosfiProgress !== 'INF' ? floatval(number_format((float) $maxCosfiProgress, 2, '.', '')) : 'INF',
-                    'nbInsuffisance'         => $nbInsuffisance,
-                    'nbInsuffisanceProgress' => $nbInsuffisanceProgress !== 'INF' ? floatval(number_format((float) $nbInsuffisanceProgress, 2, '.', '')) : 'INF',
-                    'cosfiEnergy'            => $cosfiEnergy,
-                    'cosfiEnergyProgress'    => $cosfiEnergyProgress !== 'INF' ? floatval(number_format((float) $cosfiEnergyProgress, 2, '.', '')) : 'INF'
-                ]
-            ],
-            'disperConso'   => $Q_conso,
-            'disperPic'     => $Q_highPower,
-            'powerProfilSupply'  => $this->siteProDataService->getPowerChartDataForDateRange(),
-            'TRHchart'            => [
-                'date'  => $trhData['dayBydayConsoData']['dateConso'],
-                'trh'   =>  $trhData['dayBydayConsoData']['duree']
-            ],
-            'statsDureeFonctionnement' => $trhData['statsDureeFonctionnement'],
-            
-        );
+                'powerProfilHighDayConso' => [
+                    'date' => $highDayConsoPowerProfilDate,
+                    'data' => [$highDayConsoPowerProfilData, $lastHighDayConsoPowerProfilData, $highDayConsoPowerProfilPsousData]
+                ],
+                'powerProfilLowDayConso' => [
+                    'date' => $lowDayConsoPowerProfilDate,
+                    'data' => [$lowDayConsoPowerProfilData, $lastLowDayConsoPowerProfilData, $lowDayConsoPowerProfilPsousData]
+                ],
+                'loadChart' => [
+                    'date' => $loadChartDataDate,
+                    'data' => [$loadChartDataPmoy, $loadChartDataPmax, $loadChartDataPsous]
+                ],
+                'monotonePower' => [
+                    'chart' => [
+                        'order' => $monotonePowerOrder,
+                        'data' => $monotonePowerPmax
+                    ],
+                    'stats' => [
+                        'mean' => floatval(number_format((float)$meanPower, 2, '.', '')),
+                        'meanProgress' => $meanPowerProgress !== 'INF' ? floatval(number_format((float)$meanPowerProgress, 2, '.', '')) : 'INF',
+                        'median' => $medianPower,
+                        'medianProgress' => $medianPowerProgress !== 'INF' ? floatval(number_format((float)$medianPowerProgress, 2, '.', '')) : 'INF',
+                        'min' => $minPower,
+                        'minProgress' => $minPowerProgress !== 'INF' ? floatval(number_format((float)$minPowerProgress, 2, '.', '')) : 'INF',
+                        'max' => $maxPower,
+                        'maxProgress' => $maxPowerProgress !== 'INF' ? floatval(number_format((float)$maxPowerProgress, 2, '.', '')) : 'INF',
+                        'nbDepassement' => $nbDepassement,
+                        'nbDepassementProgress' => $nbDepassementProgress !== 'INF' ? floatval(number_format((float)$nbDepassementProgress, 2, '.', '')) : 'INF',
+                        'Prang10' => $prang10,
+                        'Prang10Progress' => $prang10Progress !== 'INF' ? floatval(number_format((float)$prang10Progress, 2, '.', '')) : 'INF'
+                    ]
+                ],
+                'minimaCosfi' => [
+                    'chart' => [
+                        'date' => $minimaCosfiDate,
+                        'data' => $minimaCosfiData
+                    ],
+                    'stats' => [
+                        'mean' => floatval(number_format((float)$meanCosfi, 2, '.', '')),
+                        'meanProgress' => $meanCosfiProgress !== 'INF' ? floatval(number_format((float)$meanCosfiProgress, 2, '.', '')) : 'INF',
+                        'median' => $medianCosfi,
+                        'medianProgress' => $medianCosfiProgress !== 'INF' ? floatval(number_format((float)$medianCosfiProgress, 2, '.', '')) : 'INF',
+                        'min' => $minCosfi,
+                        'minProgress' => $minCosfiProgress !== 'INF' ? floatval(number_format((float)$minCosfiProgress, 2, '.', '')) : 'INF',
+                        'max' => $maxCosfi,
+                        'maxProgress' => $maxCosfiProgress !== 'INF' ? floatval(number_format((float)$maxCosfiProgress, 2, '.', '')) : 'INF',
+                        'nbInsuffisance' => $nbInsuffisance,
+                        'nbInsuffisanceProgress' => $nbInsuffisanceProgress !== 'INF' ? floatval(number_format((float)$nbInsuffisanceProgress, 2, '.', '')) : 'INF',
+                        'cosfiEnergy' => $cosfiEnergy,
+                        'cosfiEnergyProgress' => $cosfiEnergyProgress !== 'INF' ? floatval(number_format((float)$cosfiEnergyProgress, 2, '.', '')) : 'INF'
+                    ]
+                ],
+                'disperConso' => $Q_conso,
+                'disperPic' => $Q_highPower,
+                'powerProfilSupply' => $powerProfilSupply,
+                'TRHchart' => [
+                    'date' => $trhData['dayBydayConsoData']['dateConso'],
+                    'trh' => $trhData['dayBydayConsoData']['duree']
+                ],
+                'statsDureeFonctionnement' => $trhData['statsDureeFonctionnement'],
+
+            );
+        }else {
+            return array(
+                'consoTotal' => floatval(number_format((float)$consoTotale, 2, '.', '')),
+                'consoTotalProgress' => $consoTotaleProgress !== 'INF' ? floatval(number_format((float)$consoTotaleProgress, 2, '.', '')) : 'INF',
+                'consoMoy' => floatval(number_format((float)$consoMoy, 2, '.', '')),
+                'consoMoyProgress' => $consoMoyProgress !== 'INF' ? floatval(number_format((float)$consoMoyProgress, 2, '.', '')) : 'INF',
+                'consoVariation' => floatval(number_format((float)$consoVariation, 2, '.', '')),
+                'consoVariationProgress' => $consoVariationProgress !== 'INF' ? floatval(number_format((float)$consoVariationProgress, 2, '.', '')) : 'INF',
+                '+forteConso' => $strPlusForteConso,
+                '+forteConsoProgress' => $PlusForteConsoProgress !== 'INF' ? floatval(number_format((float)$PlusForteConsoProgress, 2, '.', '')) : 'INF',
+                '+faibleConso' => $strPlusFaibleConso,
+                '+faibleConsoProgress' => $PlusFaibleConsoProgress !== 'INF' ? floatval(number_format((float)$PlusFaibleConsoProgress, 2, '.', '')) : 'INF',
+                'Talon' => $strTalon,
+                'TalonProgress' => $TalonProgress !== 'INF' ? floatval(number_format((float)$TalonProgress, 2, '.', '')) : 'INF',
+                'Pic' => $strPic,
+                'PicProgress' => $PicProgress !== 'INF' ? floatval(number_format((float)$PicProgress, 2, '.', '')) : 'INF',
+                'conso-00-08' => floatval(number_format((float)$conso00_08kWh, 2, '.', '')),
+                'conso-00-08Progress' => $conso00_08kWhProgress !== 'INF' ? floatval(number_format((float)$conso00_08kWhProgress, 2, '.', '')) : 'INF',
+                'conso-08-18' => floatval(number_format((float)$conso08_18kWh, 2, '.', '')),
+                'conso-08-18Progress' => $conso08_18kWhProgress !== 'INF' ? floatval(number_format((float)$conso08_18kWhProgress, 2, '.', '')) : 'INF',
+                'conso-18-00' => floatval(number_format((float)$conso18_00kWh, 2, '.', '')),
+                'conso-18-00Progress' => $conso18_00kWhProgress !== 'INF' ? floatval(number_format((float)$conso18_00kWhProgress, 2, '.', '')) : 'INF',
+
+                'histoConso' => [
+                    'date' => $histogramConsoDate,
+                    'data' => [$histogramConsoData, $lastHistogramConsoData]
+                ],
+                'histoHighPower' => [
+                    'date' => $histogramHighPowerDate,
+                    'data' => [$histogramHighPowerData, $lastHistogramHighPowerData, $Psous]
+                ],
+                'powerProfilHighDayConso' => [
+                    'date' => $highDayConsoPowerProfilDate,
+                    'data' => [$highDayConsoPowerProfilData, $lastHighDayConsoPowerProfilData, $highDayConsoPowerProfilPsousData]
+                ],
+                'powerProfilLowDayConso' => [
+                    'date' => $lowDayConsoPowerProfilDate,
+                    'data' => [$lowDayConsoPowerProfilData, $lastLowDayConsoPowerProfilData, $lowDayConsoPowerProfilPsousData]
+                ],
+                'loadChart' => [
+                    'date' => $loadChartDataDate,
+                    'data' => [$loadChartDataPmoy, $loadChartDataPmax, $loadChartDataPsous]
+                ],
+                'monotonePower' => [
+                    'chart' => [
+                        'order' => $monotonePowerOrder,
+                        'data' => $monotonePowerPmax
+                    ],
+                    'stats' => [
+                        'mean' => floatval(number_format((float)$meanPower, 2, '.', '')),
+                        'meanProgress' => $meanPowerProgress !== 'INF' ? floatval(number_format((float)$meanPowerProgress, 2, '.', '')) : 'INF',
+                        'median' => $medianPower,
+                        'medianProgress' => $medianPowerProgress !== 'INF' ? floatval(number_format((float)$medianPowerProgress, 2, '.', '')) : 'INF',
+                        'min' => $minPower,
+                        'minProgress' => $minPowerProgress !== 'INF' ? floatval(number_format((float)$minPowerProgress, 2, '.', '')) : 'INF',
+                        'max' => $maxPower,
+                        'maxProgress' => $maxPowerProgress !== 'INF' ? floatval(number_format((float)$maxPowerProgress, 2, '.', '')) : 'INF',
+                        'nbDepassement' => $nbDepassement,
+                        'nbDepassementProgress' => $nbDepassementProgress !== 'INF' ? floatval(number_format((float)$nbDepassementProgress, 2, '.', '')) : 'INF',
+                        'Prang10' => $prang10,
+                        'Prang10Progress' => $prang10Progress !== 'INF' ? floatval(number_format((float)$prang10Progress, 2, '.', '')) : 'INF'
+                    ]
+                ],
+                'minimaCosfi' => [
+                    'chart' => [
+                        'date' => $minimaCosfiDate,
+                        'data' => $minimaCosfiData
+                    ],
+                    'stats' => [
+                        'mean' => floatval(number_format((float)$meanCosfi, 2, '.', '')),
+                        'meanProgress' => $meanCosfiProgress !== 'INF' ? floatval(number_format((float)$meanCosfiProgress, 2, '.', '')) : 'INF',
+                        'median' => $medianCosfi,
+                        'medianProgress' => $medianCosfiProgress !== 'INF' ? floatval(number_format((float)$medianCosfiProgress, 2, '.', '')) : 'INF',
+                        'min' => $minCosfi,
+                        'minProgress' => $minCosfiProgress !== 'INF' ? floatval(number_format((float)$minCosfiProgress, 2, '.', '')) : 'INF',
+                        'max' => $maxCosfi,
+                        'maxProgress' => $maxCosfiProgress !== 'INF' ? floatval(number_format((float)$maxCosfiProgress, 2, '.', '')) : 'INF',
+                        'nbInsuffisance' => $nbInsuffisance,
+                        'nbInsuffisanceProgress' => $nbInsuffisanceProgress !== 'INF' ? floatval(number_format((float)$nbInsuffisanceProgress, 2, '.', '')) : 'INF',
+                        'cosfiEnergy' => $cosfiEnergy,
+                        'cosfiEnergyProgress' => $cosfiEnergyProgress !== 'INF' ? floatval(number_format((float)$cosfiEnergyProgress, 2, '.', '')) : 'INF'
+                    ]
+                ],
+                'disperConso' => $Q_conso,
+                'disperPic' => $Q_highPower,
+
+            );
+        }
     }
 
     public function getMixEnergieData()

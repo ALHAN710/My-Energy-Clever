@@ -279,7 +279,8 @@
                                     <tbody class="text-center">
                                         {% for site in enterprise.sites %}
                                         <tr>
-                                            <td><div class="td-content customer-name"><a href="{{path('site_pro_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>
+                                            {% if site.hasOneSmartMod %}  <td><div class="td-content customer-name"><a href="{{path('historical_analytic_depart_site_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>
+                                            {% else %} <td><div class="td-content customer-name"><a href="{{path('site_pro_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>{% endif %}
                                             <td><div class="td-content product-brand" id="power-{{site.slug}}">{{sitesParams[site.slug]['Power']}}</div></td>
                                             <td>
                                                 <div class="td-content">
@@ -293,9 +294,13 @@
                                             <td><div class="td-content pricing"><span class="" id="emission-value-{{site.slug}}">{{sitesParams[site.slug]['currentGasEmission']}}</span></div></td>
                                             <td>
                                                 <div class="td-content">
-                                                    {% set isGenset = sitesParams[site.slug]['isGenset'] %}
-                                                    <span class="badge outline-badge-{% if isGenset == 0 %}success{% else %}danger{% endif %} mt-1" id="st-grid-{{site.slug}}">Grid</span>
-                                                    <span class="badge outline-badge-{% if isGenset == 1 %}success{% else %}danger{% endif %} mt-1" id="st-genset-{{site.slug}}">Genset</span>
+                                                    {% if site.hasOneSmartMod %}
+                                                        <span class="mt-1" id="st-{{site.slug}}">-</span>
+                                                    {% else %}
+                                                        {% set isGenset = sitesParams[site.slug]['isGenset'] %}
+                                                        <span class="badge outline-badge-{% if isGenset == 0 %}success{% else %}danger{% endif %} mt-1" id="st-grid-{{site.slug}}">Grid</span>
+                                                        <span class="badge outline-badge-{% if isGenset == 1 %}success{% else %}danger{% endif %} mt-1" id="st-genset-{{site.slug}}">Genset</span>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                             {# <td><div class="td-content" id="last_update-{{site.slug}}">{{sitesParams[site.slug]['lastDatetimeData']|date('d M Y H:i:s')}}</div></td> #}

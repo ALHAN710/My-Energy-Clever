@@ -680,7 +680,6 @@ class SiteDashboardDataService
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                             AND d.dateTime LIKE :currentMonth
-                                            GROUP BY jour
                                             ORDER BY kW ASC")
                 ->setParameters(array(
                     'currentMonth' => $this->currentMonthStringDate,
@@ -881,7 +880,7 @@ class SiteDashboardDataService
             $monthByMonthData[$monthData['day_']->format('F')]['kgCO2'] = floatval($monthData['kgCO2']);
             $monthByMonthData[$monthData['day_']->format('F')]['Pmax'] = floatval($monthData['Pmax']);
             $monthByMonthData[$monthData['day_']->format('F')]['talon'] = floatval($monthData['talon']);
-            $monthByMonthData[$monthData['day_']->format('F')]['consoMoy'] = $monthByMonthData[$monthData['day_']->format('F')]['nbDay'] > 0 ? $monthByMonthData[$monthData['day_']->format('F')]['EA'] / $monthByMonthData[$monthData['day_']->format('F')]['nbDay'] : 0;;
+            $monthByMonthData[$monthData['day_']->format('F')]['consoMoy'] = $monthByMonthData[$monthData['day_']->format('F')]['nbDay'] != 0 ? $monthByMonthData[$monthData['day_']->format('F')]['EA'] / $monthByMonthData[$monthData['day_']->format('F')]['nbDay'] : 0;;
         }
         //dump($monthByMonthData);
 

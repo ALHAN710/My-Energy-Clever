@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use DateTime;
 use DateInterval;
 use App\Entity\Site;
@@ -175,6 +176,41 @@ class SiteController extends ApplicationController
             // 'kgCO2'           => $dataAnalysis['kgCO2'],
         ]);
     }
+
+    /**
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/historical-analytic/measurements", name="historical_analytic_depart_site_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDataAnalyticService $siteAnalytic
+     * @return Response
+     * @throws \Exception
+     */
+    public function show_historical_analytic_depart_site(Site $site, SiteProDataAnalyticService $siteAnalytic): Response
+    {
+        $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // dump($startDate);
+        // dump($endDate);
+
+        $siteAnalytic->setSite($site)
+            ->setPower_unit(1)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+        $dataAnalysis = $siteAnalytic->getDataAnalysis();
+        // dump($dataAnalysis['TRHchart']);
+        // dump($dataAnalysis['statsDureeFonctionnement']);
+        return $this->render('site/home_depart.html.twig', [
+            'site'            => $site,
+            'dataAnalysis'    => $dataAnalysis,
+            // 'loadSiteData'    => $dataAnalysis['loadSiteData'],
+            // 'gridData'        => $dataAnalysis['gridData'],
+            // 'gensetData'      => $dataAnalysis['gensetData'],
+            // 'hasgensetMod'    => $dataAnalysis['hasgensetMod'],
+            // 'contriGensetKWh' => $dataAnalysis['contriGensetKWh'],
+            // 'kgCO2'           => $dataAnalysis['kgCO2'],
+        ]);
+    }
+
 
     /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/data/monitoring", name="site_data_monitoring_show", methods={"GET"})
@@ -542,5 +578,63 @@ class SiteController extends ApplicationController
             'code' => 403,
             'message' => 'Empty Array or Not exists !',
         ], 403);
+    }
+
+    /**
+     * Fonction test pour le reporting GE
+     *
+     * @Route("/installation/{slug<[a-zA-Z0-9-_]+>}/data-analysis-report/{id<\d+>}", name="data_analysis_report")
+     *
+     * @param string $slug
+     * @param SmartMod $smartMod
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
+    public function dataAnalysisWeeklyReport($slug, SmartMod $smartMod, EntityManagerInterface $manager, SiteProDataAnalyticService $siteProAnalytic): Response
+    {
+        $site = $manager->getRepository(Site::class)->findOneBy(['slug' => $slug]);
+
+        $date = new DateTime('now');
+        $date->modify('-6 days');
+        $week = $date->format("W");
+        $year = $date->format("Y");
+        // dump("Week Number : $week");
+
+        $dates = $this->getStartAndEndDate($week,$year);
+        // dump($dates);
+
+        $startDate = new DateTime($dates['start_date'] . '00:00:00');
+        $endDate   = new DateTime($dates['end_date'] . '23:59:59');
+        // $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        // $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // dump($startDate);
+        // dump($endDate);
+
+        // Example of how to obtain an user:
+        $users = $this->getDoctrine()->getManager()->getRepository(User::class)->findBy(array('enterprise' => $site->getEnterprise()));
+        $user = null;
+        foreach($users as $user_)
+        {
+            if($user_->getRoles()[0] === 'ROLE_ADMIN') {
+                $user = $user_;
+                break;
+            }
+        }
+        $this->loginAction($user);
+
+        $siteProAnalytic->setSite($site)
+            ->setPower_unit(1)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+
+        $dataAnalysis = $siteProAnalytic->getDataAnalysis();
+
+        return $this->render('email/data-analysis-report.html.twig', [
+            'site'            => $site,
+            'smartMod'        => $smartMod,
+            'startDate'       => $startDate,
+            'endDate'         => $endDate,
+            'dataAnalysis'    => $dataAnalysis,
+        ]);
     }
 }
