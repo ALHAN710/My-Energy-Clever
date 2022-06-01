@@ -27,7 +27,7 @@
 
 {% block body %}
     <div class="border-top-tab">
-        <div class="row ml-auto mr-auto d-print-none">
+        <div class="row ml-auto mt-2 mr-auto d-print-none">
             <a href="javascript:window.print()"  class="btn btn-info text-light waves-effect mr-2"><i class="fa fa-print"></i></a>
         </div>
         <div class="statbox widget box layout-spacing layout-top-spacing d-print-none">
@@ -329,6 +329,23 @@
 
                     <div class="widget-content">
                         <div id="histo-high-power"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Consommation journalière par phase #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Consommation journalière par phase</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="conso-per-phase"></div>
                     </div>
                 </div>
             </div>
@@ -711,6 +728,40 @@
             </div>
         </div>
 
+        {# Profil de puissance active par phase #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Profil de puissance active par phase</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="load-profile-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Profil de puissance apparente par phase #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Profil de puissance apparente par phase</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="apparent-profile-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {# Courbe de charge #}
         <div class="row widget-statistic layout-top-spacing">
             <div class="col-12 layout-spacing">
@@ -858,7 +909,41 @@
             </div>
         </div>
 
-        {# Courbe Minima de cosPhi #}
+        {# Profil de tension par phase #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Profil de tension par phase</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="voltage-profile-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Courbes Minima de cosPhi par phase #}
+        <div class="row widget-statistic layout-top-spacing">
+            <div class="col-12 layout-spacing">
+                <div class="widget widget-chart-three">
+                    <div class="widget-heading">
+                        <div class="">
+                            <h5 class="">Courbes Minima de cosPhi par phase</h5>
+                        </div>
+                    </div>
+
+                    <div class="widget-content">
+                        <div id="minima-cosfi-per-phase"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Courbe Minima de cosPhi 3~ #}
         <div class="row widget-statistic layout-top-spacing">
             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-12 layout-spacing">
                 <div class="widget widget-chart-three">
@@ -1388,6 +1473,15 @@
                                 HistoConsoChart.toggleSeries('Conso N-1 ')
                                 HistoConsoChart.toggleSeries('Conso N-1 ')
 
+                                //MAJ des Histogrammes de Consommation journalière par phase d'énergie active
+                                displayNewData(HistoConsoPerPhaseChart, result['dataAnalysis']['histoConso']['date'], Object.values(result['dataAnalysis']['histoConso']['dataPerPhase']), [startDate, endDate], 3, 'day');
+                                HistoConsoPerPhaseChart.toggleSeries('Phase A ')
+                                HistoConsoPerPhaseChart.toggleSeries('Phase A ')
+                                HistoConsoPerPhaseChart.toggleSeries('Phase B ')
+                                HistoConsoPerPhaseChart.toggleSeries('Phase B ')
+                                HistoConsoPerPhaseChart.toggleSeries('Phase C ')
+                                HistoConsoPerPhaseChart.toggleSeries('Phase C ')
+
                                 //MAJ des Histogrammes de Pic de puissance
                                 displayNewData(HistoHighPowerChart, result['dataAnalysis']['histoHighPower']['date'], Object.values(result['dataAnalysis']['histoHighPower']['data']), [startDate, endDate], 3, 'day');
                                 HistoHighPowerChart.toggleSeries('Puissance ')
@@ -1497,6 +1591,33 @@
                                 loadChart.toggleSeries('Puissance souscrite ')
                                 loadChart.toggleSeries('Puissance souscrite ')
                                 
+                                //MAJ des profils de charge par phase
+                                displayNewData(loadProfileChartPerPhase, result['dataAnalysis']['loadChart']['date'], Object.values(result['dataAnalysis']['loadChart']['dataP']), [startDate, endDate], 3, 'day');
+                                loadProfileChartPerPhase.toggleSeries('Phase A ')
+                                loadProfileChartPerPhase.toggleSeries('Phase A ')
+                                loadProfileChartPerPhase.toggleSeries('Phase B ')
+                                loadProfileChartPerPhase.toggleSeries('Phase B ')
+                                loadProfileChartPerPhase.toggleSeries('Phase C ')
+                                loadProfileChartPerPhase.toggleSeries('Phase C ')
+
+                                //MAJ des profils de puissance apparente par phase
+                                displayNewData(apparentPowerProfileChartPerPhase, result['dataAnalysis']['loadChart']['date'], Object.values(result['dataAnalysis']['loadChart']['dataS']), [startDate, endDate], 3, 'day');
+                                apparentPowerProfileChartPerPhase.toggleSeries('Phase A ')
+                                apparentPowerProfileChartPerPhase.toggleSeries('Phase A ')
+                                apparentPowerProfileChartPerPhase.toggleSeries('Phase B ')
+                                apparentPowerProfileChartPerPhase.toggleSeries('Phase B ')
+                                apparentPowerProfileChartPerPhase.toggleSeries('Phase C ')
+                                apparentPowerProfileChartPerPhase.toggleSeries('Phase C ')
+
+                                //MAJ des profils de charge par phase
+                                displayNewData(loadProfileChartPerPhase, result['dataAnalysis']['loadChart']['date'], Object.values(result['dataAnalysis']['loadChart']['dataP']), [startDate, endDate], 3, 'day');
+                                loadProfileChartPerPhase.toggleSeries('Phase A ')
+                                loadProfileChartPerPhase.toggleSeries('Phase A ')
+                                loadProfileChartPerPhase.toggleSeries('Phase B ')
+                                loadProfileChartPerPhase.toggleSeries('Phase B ')
+                                loadProfileChartPerPhase.toggleSeries('Phase C ')
+                                loadProfileChartPerPhase.toggleSeries('Phase C ')
+
                                 //MAJ de la Courbe du Monotone de Puissance
                                 displayNewData(PowerMonotoneChart, result['dataAnalysis']['monotonePower']['chart']['order'], Object.values(result['dataAnalysis']['monotonePower']['chart']['data']), [startDate, endDate], 1, 'day');
                                 PowerMonotoneChart.toggleSeries('Pmax ')
@@ -1525,8 +1646,26 @@
                                 $('#t-power-nbDepassement-kW').text(parseFloat(result['dataAnalysis']['monotonePower']['stats']['nbDepassement']).toFixed(2));
                                 //On gère la progression du Nombre de dépassement de la puissance souscrite
                                 progress(prefixSelector='t-power-nbDepassement-kW-progress-', progValue=result['dataAnalysis']['monotonePower']['stats']['nbDepassementProgress'], posLogique=false, isTime=false);
-                                
-                                
+
+
+                                //MAJ des profils de puissance apparente par phase
+                                displayNewData(voltageProfileChartPerPhase, result['dataAnalysis']['voltageProfile']['date'], Object.values(result['dataAnalysis']['voltageProfile']['data']), [startDate, endDate], 3, 'day');
+                                voltageProfileChartPerPhase.toggleSeries('Phase A ')
+                                voltageProfileChartPerPhase.toggleSeries('Phase A ')
+                                voltageProfileChartPerPhase.toggleSeries('Phase B ')
+                                voltageProfileChartPerPhase.toggleSeries('Phase B ')
+                                voltageProfileChartPerPhase.toggleSeries('Phase C ')
+                                voltageProfileChartPerPhase.toggleSeries('Phase C ')
+
+                                //MAJ des Courbes des Minima de Cosfi par phase
+                                displayNewData(cosfiMinProfileChartPerPhase, result['dataAnalysis']['minimaCosfi']['chart']['date'], Object.values(result['dataAnalysis']['minimaCosfi']['chart']['dataPerPhase']), [startDate, endDate], 3, 'day');
+                                cosfiMinProfileChartPerPhase.toggleSeries('Phase A ')
+                                cosfiMinProfileChartPerPhase.toggleSeries('Phase A ')
+                                cosfiMinProfileChartPerPhase.toggleSeries('Phase B ')
+                                cosfiMinProfileChartPerPhase.toggleSeries('Phase B ')
+                                cosfiMinProfileChartPerPhase.toggleSeries('Phase C ')
+                                cosfiMinProfileChartPerPhase.toggleSeries('Phase C ')
+
                                 //MAJ de la Courbe des Minima de Cosfi
                                 displayNewData(CosfiMinimaChart, result['dataAnalysis']['minimaCosfi']['chart']['date'], Object.values(result['dataAnalysis']['minimaCosfi']['chart']['data']), [startDate, endDate], 1, 'day');
                                 CosfiMinimaChart.toggleSeries('CosPhi min ')
@@ -2043,6 +2182,102 @@
 
     HistoHighPowerChart.render();
 
+    {# Histogramme Consommation journalière par phase Chart #}
+    var HistoConsoPerPhase_options = {
+        chart: {
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        series: [{
+            name: 'Phase A ',
+            type: 'column',
+            data: {% if dataAnalysis['histoConso']['dataPerPhase']|length > 0 %}{{ dataAnalysis['histoConso']['dataPerPhase'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160] #}
+        }, {
+            name: 'Phase B ',
+            type: 'column',
+            data: {% if dataAnalysis['histoConso']['dataPerPhase']|length > 0 %}{{ dataAnalysis['histoConso']['dataPerPhase'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320, 257, 160] #}
+        },{
+            name: 'Phase C ',
+            type: 'column',
+            data: {% if dataAnalysis['histoConso']['dataPerPhase']|length > 0 %}{{ dataAnalysis['histoConso']['dataPerPhase'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700, 700] #}
+        }],
+        stroke: {
+            width: [0, 0, 0]
+        },
+        {# labels: {{ dataAnalysis['histoHighPower']['date'] | json_encode | raw }}, #}
+        {# labels: ['01 Jan 2001', '02 Jan 2001', '03 Jan 2001', '04 Jan 2001', '05 Jan 2001', '06 Jan 2001', '07 Jan 2001', '08 Jan 2001', '09 Jan 2001', '10 Jan 2001', '11 Jan 2001', '12 Jan 2001'], #}
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['histoConso']['date'] | json_encode | raw }},
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH'
+                }
+            },
+        },
+        yaxis: [{
+            title: {
+                text: 'Énergie Active (kWh)',
+            },
+
+        }],
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kWh"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY")
+
+                }
+            }
+        }
+
+    }
+
+    var HistoConsoPerPhaseChart = new ApexCharts(
+        document.querySelector("#conso-per-phase"),
+        HistoConsoPerPhase_options
+    );
+
+    HistoConsoPerPhaseChart.render();
+
     {# Dispersion Conso Chart #}
     var data_ = {{ dataAnalysis['disperConso']['chart'] | json_encode | raw }};
     data_.forEach(myFunction);
@@ -2180,7 +2415,7 @@
     DisperHighPowerchart.render();
     //
 
-    {# load Chart #}
+    {# Load Chart #}
     var loadChart_options = {
         chart: {
             height: 350,
@@ -2274,6 +2509,194 @@
     );
     loadChart.render();
 
+    {# Load Profile Chart Per Phase #}
+    var loadProfileChartPerPhase_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Phase A ',
+            data: {% if dataAnalysis['loadChart']['dataP']|length > 0 %}{{ dataAnalysis['loadChart']['dataP'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Phase B ',
+            data: {% if dataAnalysis['loadChart']['dataP']|length > 0 %}{{ dataAnalysis['loadChart']['dataP'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Phase C ',
+            data: {% if dataAnalysis['loadChart']['dataP']|length > 0 %}{{ dataAnalysis['loadChart']['dataP'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['loadChart']['date'] | json_encode | raw }},
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kW)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kW"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+
+                }
+            }
+        }
+    }
+
+    var loadProfileChartPerPhase = new ApexCharts(
+        document.querySelector("#load-profile-chart"),
+        loadProfileChartPerPhase_options
+    );
+    loadProfileChartPerPhase.render();
+
+    {# Apparent Power Profile Chart Per Phase #}
+    var apparentPowerProfileChartPerPhase_options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 2,
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Phase A ',
+            data: {% if dataAnalysis['loadChart']['dataS']|length > 0 %}{{ dataAnalysis['loadChart']['dataS'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Phase B ',
+            data: {% if dataAnalysis['loadChart']['dataS']|length > 0 %}{{ dataAnalysis['loadChart']['dataS'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Phase C ',
+            data: {% if dataAnalysis['loadChart']['dataS']|length > 0 %}{{ dataAnalysis['loadChart']['dataS'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['loadChart']['date'] | json_encode | raw }},
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Puissance (kVA)'
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " kVA"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+
+                }
+            }
+        }
+    }
+
+    var apparentPowerProfileChartPerPhase = new ApexCharts(
+        document.querySelector("#apparent-profile-chart"),
+        apparentPowerProfileChartPerPhase_options
+    );
+    apparentPowerProfileChartPerPhase.render();
+
     {# Power Monotone Chart #}
     var PowerMonotoneChart_options = {
         chart: {
@@ -2347,6 +2770,227 @@
         PowerMonotoneChart_options
     );
     PowerMonotoneChart.render();
+
+    {# Voltage Profile Chart Per Phase #}
+    var voltageProfileChartPerPhase_options = {
+        chart: {
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: [2,2,2],
+        },
+        fill: {
+            opacity: [1, 1, 1],
+            gradient: {
+                inverseColors: false,
+                shade: 'light',
+                type: "vertical",
+                opacityFrom: 0.85,
+                opacityTo: 0.55,
+                stops: [0, 100, 100, 100]
+            }
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        annotations: {
+            yaxis: [{
+                y: 209,
+                y2: 241,
+                borderColor: '#000',
+                fillColor: 'rgba(183,179,177,0.8)',
+                opacity: 0.2,
+                label: {
+                    borderColor: '#333',
+                    position: 'right',
+                    style: {
+                        fontSize: '10px',
+                        color: '#333',
+                        background: 'rgba(183,179,177,0.5)',
+                    },
+                    text: 'Plage de Tension Admissible',
+                }
+            }],
+
+        },
+        series: [{
+            name: 'Phase A ',
+            data: {% if dataAnalysis['voltageProfile']['data']|length > 0 %}{{ dataAnalysis['voltageProfile']['data'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Phase B ',
+            data: {% if dataAnalysis['voltageProfile']['data']|length > 0 %}{{ dataAnalysis['voltageProfile']['data'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Phase C ',
+            data: {% if dataAnalysis['voltageProfile']['data']|length > 0 %}{{ dataAnalysis['voltageProfile']['data'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['voltageProfile']['date'] | json_encode | raw }},
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Tension (V)'
+            },
+            min: 201
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2) + " V"
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+
+                }
+            }
+        }
+    }
+
+    var voltageProfileChartPerPhase = new ApexCharts(
+        document.querySelector("#voltage-profile-chart"),
+        voltageProfileChartPerPhase_options
+    );
+    voltageProfileChartPerPhase.render();
+
+    {# Cosfi min Profile Chart Per Phase #}
+    var cosfiMinProfileChartPerPhase_options = {
+        chart: {
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: [2,2,2],
+        },
+        noData: {
+            text: 'Data not yet available',
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: 'Nunito, sans-serif'
+            }
+        },
+        series: [{
+            name: 'Phase A ',
+            data: {% if dataAnalysis['minimaCosfi']['chart']['dataPerPhase']|length > 0 %}{{ dataAnalysis['minimaCosfi']['chart']['dataPerPhase'][0] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [31, 40, 28, 51, 42, 109, 100] #}
+        }, {
+            name: 'Phase B ',
+            data: {% if dataAnalysis['minimaCosfi']['chart']['dataPerPhase']|length > 0 %}{{ dataAnalysis['minimaCosfi']['chart']['dataPerPhase'][1] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [11, 32, 45, 32, 34, 52, 41] #}
+        }, {
+            name: 'Phase C ',
+            data: {% if dataAnalysis['minimaCosfi']['chart']['dataPerPhase']|length > 0 %}{{ dataAnalysis['minimaCosfi']['chart']['dataPerPhase'][2] | json_encode | raw }}{% else %}[]{% endif %}
+            {# data: [50, 50, 50, 50, 50, 50, 50] #}
+        }],
+
+        xaxis: {
+            type: 'datetime',
+            categories: {{ dataAnalysis['minimaCosfi']['chart']['date'] | json_encode | raw }},
+            {# categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],                 #}
+            labels: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Nunito, sans-serif',
+                    cssClass: 'apexcharts-xaxis-title',
+                },
+                datetimeFormatter: {
+                    year: 'yyyy',
+                    month: 'MMM \'yy',
+                    day: 'dd MMM',
+                    hour: 'HH:mm'
+                }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Cosfi min'
+            },
+            //min: 0.05
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function (y) {
+                    //console.log(y)
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(2)
+                    }
+                    return y;
+                }
+            },
+            x: {
+                formatter: function (val, timestamp) {
+                    return moment(new Date(val)).format("DD MMM YYYY HH:mm")
+
+                }
+            }
+        }
+    }
+
+    var cosfiMinProfileChartPerPhase = new ApexCharts(
+        document.querySelector("#minima-cosfi-per-phase"),
+        cosfiMinProfileChartPerPhase_options
+    );
+    cosfiMinProfileChartPerPhase.render();
 
     {# Cosfi Minima Chart #}
     var CosfiMinimaChart_options = {
@@ -2436,3 +3080,15 @@
 
 </script> 
 {% endblock %}
+
+{#{% set urlPath = '' %}
+                            {% if site.hasOneSmartMod %}
+                                {% if site.smartMods[0].modType == 'Load Meter' %}
+                                    {% set urlPath = path('historical_analytic_depart_site_show', {'slug':site.slug}) %}
+                                {% elseif site.smartMods[0].modType == 'GENSET' %}
+                                    {% set urlPath = path('genset_home', {'slug':site.slug, 'id':site.smartMods[0].id}) %}
+                                {% endif %}
+                            {% else %}
+                                {% set urlPath = path('site_pro_show', {'slug': site.slug}) %}
+                            {% endif %}#}
+                            {# <li class=""><a href="{{ urlPath }}">Dashboard</a></li>#}sit

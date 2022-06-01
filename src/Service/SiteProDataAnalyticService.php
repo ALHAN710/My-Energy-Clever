@@ -158,6 +158,12 @@ class SiteProDataAnalyticService
         //Tableau pour les graphes des Histogrammes de consommation
         $histogramConsoData = [];
         $histogramConsoData_ = [];
+        $histogramConsoAPerPhaseData = [];
+        $histogramConsoAPerPhaseData_ = [];
+        $histogramConsoBPerPhaseData = [];
+        $histogramConsoBPerPhaseData_ = [];
+        $histogramConsoCPerPhaseData = [];
+        $histogramConsoCPerPhaseData_ = [];
         $histogramConsoDate = [];
         $lastHistogramConsoData = [];
         $lastHistogramConsoData_ = [];
@@ -190,6 +196,10 @@ class SiteProDataAnalyticService
                 $histogramConsoDate[]     = $value->format('Y-m-d');
                 $histogramConsoData_[$value->format('Y-m-d')]   = 0.0;
 
+                $histogramConsoAPerPhaseData_[$value->format('Y-m-d')]   = 0.0;
+                $histogramConsoBPerPhaseData_[$value->format('Y-m-d')]   = 0.0;
+                $histogramConsoCPerPhaseData_[$value->format('Y-m-d')]   = 0.0;
+
                 $histogramHighPowerDate[]     = $value->format('Y-m-d');
                 $histogramHighPowerData_[$value->format('Y-m-d')]   = 0.0;
             }
@@ -197,6 +207,10 @@ class SiteProDataAnalyticService
             //$date[]     = $this->endDate->format('Y-m-d');
             $histogramConsoDate[]     = $this->endDate->format('Y-m-d');
             $histogramConsoData_[$this->endDate->format('Y-m-d')]   = 0.0;
+
+            $histogramConsoAPerPhaseData_[$this->endDate->format('Y-m-d')]   = 0.0;
+            $histogramConsoBPerPhaseData_[$this->endDate->format('Y-m-d')]   = 0.0;
+            $histogramConsoCPerPhaseData_[$this->endDate->format('Y-m-d')]   = 0.0;
 
             $histogramHighPowerDate[]     = $this->endDate->format('Y-m-d');
             $histogramHighPowerData_[$this->endDate->format('Y-m-d')]   = 0.0;
@@ -231,6 +245,11 @@ class SiteProDataAnalyticService
                 $lastStrHour = $lastStartDate->format('Y-m-d') . ' ' . $strHour_ . ':00:00';
                 $histogramConsoDate[]     = $strHour;
                 $histogramConsoData_[$strHour]   = 0.0;
+
+                $histogramConsoAPerPhaseData_[$strHour]   = 0.0;
+                $histogramConsoBPerPhaseData_[$strHour]   = 0.0;
+                $histogramConsoCPerPhaseData_[$strHour]   = 0.0;
+
                 $lastHistogramConsoDate[]     = $lastStrHour;
                 $lastHistogramConsoData_[$lastStrHour]   = 0.0;
 
@@ -246,7 +265,8 @@ class SiteProDataAnalyticService
         $consoMoyProgress = ($lastConsoMoy > 0) ? ($consoMoy - $lastConsoMoy) * 100 / $lastConsoMoy : 'INF';
 
         // ========= Détermination des jours les plus et mois consommateur =========  
-        $consoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS kWh
+        $consoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS kWh, SUM(d.pamoy)*:time AS kWha,
+                                                SUM(d.pbmoy)*:time AS kWhb, SUM(d.pcmoy)*:time AS kWhc
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -261,6 +281,7 @@ class SiteProDataAnalyticService
                 'siteId'     => $this->site->getId(),
             ))
             ->getResult();
+//        dump($consoQuery);
 
         $lastConsoQuery = $this->manager->createQuery("SELECT SUBSTRING(d.dateTime,1,:length_) AS jour, SUM(d.pmoy)*:time AS kWh
                                                 FROM App\Entity\LoadEnergyData d
@@ -304,6 +325,10 @@ class SiteProDataAnalyticService
                     $hour = new DateTime($data['jour'] . ':00:00');
                     $histogramConsoData_[$hour->format('Y-m-d H:i:s')] = floatval(number_format((float) $data['kWh'], 2, '.', ''));
 
+                    $histogramConsoAPerPhaseData_[$hour->format('Y-m-d H:i:s')] = floatval(number_format((float) $data['kWha'], 2, '.', ''));
+                    $histogramConsoBPerPhaseData_[$hour->format('Y-m-d H:i:s')] = floatval(number_format((float) $data['kWhb'], 2, '.', ''));
+                    $histogramConsoCPerPhaseData_[$hour->format('Y-m-d H:i:s')] = floatval(number_format((float) $data['kWhc'], 2, '.', ''));
+
                     $consoTotale += $data['kWh'];
                 }
 
@@ -324,6 +349,10 @@ class SiteProDataAnalyticService
                 foreach ($consoQuery as $data) {
                     $histogramConsoData_[$data['jour']] = floatval(number_format((float) $data['kWh'], 2, '.', ''));
 
+                    $histogramConsoAPerPhaseData_[$data['jour']] = floatval(number_format((float) $data['kWha'], 2, '.', ''));
+                    $histogramConsoBPerPhaseData_[$data['jour']] = floatval(number_format((float) $data['kWhb'], 2, '.', ''));
+                    $histogramConsoCPerPhaseData_[$data['jour']] = floatval(number_format((float) $data['kWhc'], 2, '.', ''));
+
                     $consoTotale += $data['kWh'];
                 }
 
@@ -334,13 +363,26 @@ class SiteProDataAnalyticService
                     $lastConsoTotale += $data['kWh'];
                 }
             }
+//            dump($histogramConsoPerPhaseData_);
             //dump($lowConso);
             //dump($highConso);
             //number_format((float) $d['kW'], 2, '.', '')
             foreach ($histogramConsoData_ as $key => $value) {
                 $histogramConsoData[] = $value;
             }
-            //dump($histogramConsoData);
+            foreach ($histogramConsoAPerPhaseData_ as $key => $value) {
+                $histogramConsoAPerPhaseData[] = $value;
+            }
+//            dump($histogramConsoAPerPhaseData);
+            foreach ($histogramConsoBPerPhaseData_ as $key => $value) {
+                $histogramConsoBPerPhaseData[] = $value;
+            }
+//            dump($histogramConsoBPerPhaseData);
+            foreach ($histogramConsoCPerPhaseData_ as $key => $value) {
+                $histogramConsoCPerPhaseData[] = $value;
+            }
+//            dump($histogramConsoCPerPhaseData);
+
             if (!empty($lastConsoQuery)) {
                 $lastLowConso      = end($lastConsoQuery);
                 $lastHighConso     = reset($lastConsoQuery);
@@ -711,7 +753,9 @@ class SiteProDataAnalyticService
         }
 
         // ========= Récupération des données pour le tracé de la Courbe de charge =========  
-        $loadChartDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.pmoy/:power_unit AS kW, d.pmax/:power_unit AS Pmax
+        $loadChartDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.pmoy/:power_unit AS kW, d.pmax/:power_unit AS Pmax,
+                                                d.pamoy/:power_unit AS kWa, d.pbmoy/:power_unit AS kWb, d.pcmoy/:power_unit AS kWc, d.vamoy AS VA,
+                                                d.vbmoy AS VB, d.vcmoy AS VC, d.samoy/:power_unit AS kVAa, d.sbmoy/:power_unit AS kVAb, d.scmoy/:power_unit AS kVAc
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -727,13 +771,37 @@ class SiteProDataAnalyticService
             ->getResult();
         $loadChartDataDate      = [];
         $loadChartDataPmoy      = [];
-        $loadChartDataPsous     = [];
+        $loadChartDataPamoy     = [];
+        $loadChartDataPbmoy     = [];
+        $loadChartDataPcmoy     = [];
         $loadChartDataPmax      = [];
+        $loadChartDataPsous     = [];
+
+        $loadChartDataSamoy     = [];
+        $loadChartDataSbmoy     = [];
+        $loadChartDataScmoy     = [];
+
+        $Vamoy     = [];
+        $Vbmoy     = [];
+        $Vcmoy     = [];
+//        dump($loadChartDataQuery);
         foreach ($loadChartDataQuery as $data) {
             $loadChartDataDate[]      = $data['jour']->format('Y-m-d H:i:s');
             $loadChartDataPmoy[]      = floatval(number_format((float) $data['kW'], 2, '.', ''));
+            $loadChartDataPamoy[]     = floatval(number_format((float) $data['kWa'], 2, '.', ''));
+            $loadChartDataPbmoy[]     = floatval(number_format((float) $data['kWb'], 2, '.', ''));
+            $loadChartDataPcmoy[]     = floatval(number_format((float) $data['kWc'], 2, '.', ''));
             $loadChartDataPmax[]      = floatval(number_format((float) $data['Pmax'], 2, '.', ''));
             $loadChartDataPsous[]     = $psous;
+
+            $loadChartDataSamoy[]     = floatval(number_format((float) $data['kVAa'], 2, '.', ''));
+            $loadChartDataSbmoy[]     = floatval(number_format((float) $data['kVAb'], 2, '.', ''));
+            $loadChartDataScmoy[]     = floatval(number_format((float) $data['kVAc'], 2, '.', ''));
+
+            $Vamoy[]     = floatval(number_format((float) $data['VA'], 2, '.', ''));
+            $Vbmoy[]     = floatval(number_format((float) $data['VB'], 2, '.', ''));
+            $Vcmoy[]     = floatval(number_format((float) $data['VC'], 2, '.', ''));
+
         }
 
         // ========= Récupération des données pour le tracé du Monotone de Puissance (Puissance ordonnée par ordre décroissant) et le Calcul de données Statistiques =========  
@@ -821,7 +889,8 @@ class SiteProDataAnalyticService
         $prang10Progress        = ($last_prang10 > 0) ? ($prang10 - $last_prang10) * 100 / $last_prang10 : 'INF';
 
         // ========= Récupération des données pour le tracé du Minima de Cosfi et le Calcul de données Statistiques =========  
-        $minimaCosfiDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.cosfimin AS Cosfi
+        $minimaCosfiDataQuery = $this->manager->createQuery("SELECT d.dateTime AS jour, d.cosfimin AS Cosfi,
+                                                d.cosfiamin AS Cosfiamin, d.cosfibmin AS Cosfibmin, d.cosficmin AS Cosficmin
                                                 FROM App\Entity\LoadEnergyData d
                                                 JOIN d.smartMod sm
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -835,12 +904,18 @@ class SiteProDataAnalyticService
             ))
             ->setMaxResults(2000)
             ->getResult();
-        // dump($minimaCosfiDataQuery);
+//        dump($minimaCosfiDataQuery);
         $minimaCosfiDate  = [];
         $minimaCosfiData  = [];
+        $CosfiminaData  = [];
+        $CosfiminbData  = [];
+        $CosfimincData  = [];
         foreach ($minimaCosfiDataQuery as $data) {
             $minimaCosfiDate[]      = $data['jour']->format('Y-m-d H:i:s');
             $minimaCosfiData[]      = floatval(number_format((float) $data['Cosfi'], 2, '.', ''));
+            $CosfiminaData[]        = floatval(number_format((float) $data['Cosfiamin'], 2, '.', ''));
+            $CosfiminbData[]        = floatval(number_format((float) $data['Cosfibmin'], 2, '.', ''));
+            $CosfimincData[]        = floatval(number_format((float) $data['Cosficmin'], 2, '.', ''));
 
         }
 
@@ -1298,7 +1373,8 @@ class SiteProDataAnalyticService
 
                 'histoConso' => [
                     'date' => $histogramConsoDate,
-                    'data' => [$histogramConsoData, $lastHistogramConsoData]
+                    'data' => [$histogramConsoData, $lastHistogramConsoData],
+                    'dataPerPhase' => $histogramConsoPerPhaseData
                 ],
                 'histoHighPower' => [
                     'date' => $histogramHighPowerDate,
@@ -1391,7 +1467,8 @@ class SiteProDataAnalyticService
 
                 'histoConso' => [
                     'date' => $histogramConsoDate,
-                    'data' => [$histogramConsoData, $lastHistogramConsoData]
+                    'data' => [$histogramConsoData, $lastHistogramConsoData],
+                    'dataPerPhase' => [$histogramConsoAPerPhaseData, $histogramConsoBPerPhaseData, $histogramConsoCPerPhaseData]
                 ],
                 'histoHighPower' => [
                     'date' => $histogramHighPowerDate,
@@ -1405,9 +1482,15 @@ class SiteProDataAnalyticService
                     'date' => $lowDayConsoPowerProfilDate,
                     'data' => [$lowDayConsoPowerProfilData, $lastLowDayConsoPowerProfilData, $lowDayConsoPowerProfilPsousData]
                 ],
+                'voltageProfile' => [
+                    'date' => $loadChartDataDate,
+                    'data' => [$Vamoy, $Vbmoy, $Vcmoy]
+                ],
                 'loadChart' => [
                     'date' => $loadChartDataDate,
-                    'data' => [$loadChartDataPmoy, $loadChartDataPmax, $loadChartDataPsous]
+                    'data' => [$loadChartDataPmoy, $loadChartDataPmax, $loadChartDataPsous],
+                    'dataP' => [$loadChartDataPamoy, $loadChartDataPbmoy, $loadChartDataPcmoy],
+                    'dataS' => [$loadChartDataSamoy, $loadChartDataSbmoy, $loadChartDataScmoy],
                 ],
                 'monotonePower' => [
                     'chart' => [
@@ -1432,7 +1515,8 @@ class SiteProDataAnalyticService
                 'minimaCosfi' => [
                     'chart' => [
                         'date' => $minimaCosfiDate,
-                        'data' => $minimaCosfiData
+                        'data' => $minimaCosfiData,
+                        'dataPerPhase' => [$CosfiminaData, $CosfiminbData, $CosfimincData]
                     ],
                     'stats' => [
                         'mean' => floatval(number_format((float)$meanCosfi, 2, '.', '')),
