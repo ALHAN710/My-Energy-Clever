@@ -157,6 +157,16 @@ class GensetRealTimeData
      */
     private $s;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $battState;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $battEnergy;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -494,6 +504,30 @@ class GensetRealTimeData
     public function setS(?float $s): self
     {
         $this->s = $s;
+
+        return $this;
+    }
+
+    public function getBattState(): ?bool
+    {
+        return $this->battState;
+    }
+
+    public function setBattState(?bool $battState): self
+    {
+        $this->battState = $battState;
+
+        return $this;
+    }
+
+    public function getBattEnergy(): ?float
+    {
+        return $this->battEnergy;
+    }
+
+    public function setBattEnergy(?float $battEnergy): self
+    {
+        $this->battEnergy = $battEnergy;
 
         return $this;
     }

@@ -267,6 +267,16 @@ class GensetData
      */
     private $qmax;
 
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $battVoltage;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $battEnergy;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -868,6 +878,30 @@ class GensetData
     public function setQmax(?float $qmax): self
     {
         $this->qmax = $qmax;
+
+        return $this;
+    }
+
+    public function getBattVoltage(): ?float
+    {
+        return $this->battVoltage;
+    }
+
+    public function setBattVoltage(?float $battVoltage): self
+    {
+        $this->battVoltage = $battVoltage;
+
+        return $this;
+    }
+
+    public function getBattEnergy(): ?float
+    {
+        return $this->battEnergy;
+    }
+
+    public function setBattEnergy(?float $battEnergy): self
+    {
+        $this->battEnergy = $battEnergy;
 
         return $this;
     }
