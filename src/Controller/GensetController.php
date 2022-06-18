@@ -711,6 +711,40 @@ class GensetController extends ApplicationController
                     ], 200);
                 }
             }
+            else if ($smartMod->getModType() == 'DC') {
+                if (array_key_exists("date1", $paramJSON)) {
+                    $dataMod = $smartMod->getGensetRealTimeData();
+                    if (!$dataMod) {
+                        $dataMod = new GensetRealTimeData();
+                        $dataMod->setSmartMod($smartMod);
+                        $isNew = true;
+                    } else {
+                        //$oldData = clone $smartMod->getGensetRealTimeData();
+                    }
+
+                    if ($paramJSON['date1'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date1']);
+                    else $date = new DateTime('now');
+                    $dataMod->setDateTime($date);
+                    if (array_key_exists("BV", $paramJSON)) {
+                        $dataMod->setBattVoltage($paramJSON['BV']);
+                    }
+                    if (array_key_exists("ST", $paramJSON)) {
+                        $dataMod->setBattState($paramJSON['ST']);
+                    }
+                    if (array_key_exists("Ed", $paramJSON)) {
+                        $dataMod->setBattEnergy($paramJSON['Ed']);
+                    }
+
+                    $manager->persist($dataMod);
+                    $manager->flush();
+
+                    return $this->json([
+                        'code' => 200,
+                        'received' => $paramJSON,
+
+                    ], 200);
+                }
+            }
 
             return $this->json([
                 'code' => 200,
@@ -807,7 +841,12 @@ class GensetController extends ApplicationController
                     if (array_key_exists("FL", $paramJSON)) {
                         $GensetData->setFuelLevel($paramJSON['FL']);
                     }
-                } else if ($smartMod->getModType() == 'Inverter') {
+                }
+                else if ($smartMod->getModType() == 'DC') {
+                    $GensetData->setDateTime($date)
+                        ->setSmartMod($smartMod);
+                }
+                /*else if ($smartMod->getModType() == 'Inverter') {
                     //Recherche des modules dans la BDD
                     $gridMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_0']);
                     $gensetMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_1']);
@@ -823,14 +862,14 @@ class GensetController extends ApplicationController
                         $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
 
                         //Test si un enregistrement correspond à cette date pour ce module
-                        /*$data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
-                    if ($data) {
-                        return $this->json([
-                            'code'    => 200,
-                            'message' => 'data already saved'
-
-                        ], 200);
-                    }*/
+//                        $data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
+//                        if ($data) {
+//                            return $this->json([
+//                                'code'    => 200,
+//                                'message' => 'data already saved'
+//
+//                            ], 200);
+//                        }
                         $gridData->setDateTime($date);
                         $loadSiteData->setDateTime($date);
                         $GensetData->setDateTime($date);
@@ -1227,7 +1266,7 @@ class GensetController extends ApplicationController
                         'received' => $paramJSON
 
                     ], 200);
-                }
+                }*/
 
                 // //dump($GensetData);
                 //die();

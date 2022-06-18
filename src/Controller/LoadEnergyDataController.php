@@ -1210,6 +1210,535 @@ class LoadEnergyDataController extends ApplicationController
 
                 ], 200);
             }
+            else if ($smartMod->getModType() == 'Inverter DC') {
+                //Recherche des modules dans la BDD
+                $gridMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_0']);
+                $gensetMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_1']);
+                $loadSiteMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_2']);
+                $InvMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_3']);
+                $loadId = $loadSiteMod !== null ? $loadSiteMod->getId() : 0;
+
+                $gridData = new LoadEnergyData();
+                $loadSiteData = new LoadEnergyData();
+                $GensetData = new GensetData();
+                $InvData = new LoadEnergyData();
+
+                //Paramétrage des champs de la nouvelle LoadDataEnergy aux valeurs contenues dans la requête du module
+                if (array_key_exists("date", $paramJSON)) {
+
+                    //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
+//                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
+
+                    //Test si un enregistrement correspond à cette date pour ce module
+                    /*$data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
+                    if ($data) {
+                        return $this->json([
+                            'code'    => 200,
+                            'message' => 'data already saved'
+
+                        ], 200);
+                    }*/
+                    $gridData->setDateTime($date);
+                    $loadSiteData->setDateTime($date);
+                    $GensetData->setDateTime($date);
+                    $InvData->setDateTime($date);
+
+                    $oldPRecord = $manager->createQuery("SELECT d.pmoy AS Pmoy
+                                                FROM App\Entity\LoadEnergyData d
+                                                JOIN d.smartMod sm 
+                                                WHERE d.dateTime =  (SELECT max(d1.dateTime) FROM App\Entity\LoadEnergyData d1 JOIN d1.smartMod sm1 WHERE sm1.id = :smartModId)
+                                                AND sm.id = :smartModId                   
+                                                ")
+                        ->setParameters(array(
+                            'smartModId'   => $loadId
+                        ))
+                        ->getResult();
+
+                    $oldPmoy = null;
+                    $oldPmoy = count($oldPRecord) > 0 ? $oldPRecord[0]['Pmoy'] : null;
+
+                    if ($smartMod->getNbPhases() === 1) {
+                        if (array_key_exists("Cosfi", $paramJSON)) {
+                            if (count($paramJSON['Cosfi']) >= 4) {
+                                $gridData->setCosfi($paramJSON['Cosfi'][0]);
+                                $GensetData->setCosfi($paramJSON['Cosfi'][1]);
+                                $loadSiteData->setCosfi($paramJSON['Cosfi'][2]);
+                                $InvData->setCosfi($paramJSON['Cosfi'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfimin", $paramJSON)) {
+                            if (count($paramJSON['Cosfimin']) >= 4) {
+                                $gridData->setCosfimin($paramJSON['Cosfimin'][0]); // En kW
+                                $GensetData->setCosfimin($paramJSON['Cosfimin'][1]); // En kW
+                                $loadSiteData->setCosfimin($paramJSON['Cosfimin'][2]); // En kW
+                                $InvData->setCosfimin($paramJSON['Cosfimin'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Va", $paramJSON)) {
+                            if (count($paramJSON['Va']) >= 4) {
+                                $gridData->setVamoy($paramJSON['Va'][0]);
+                                // $GensetData->setVamoy($paramJSON['Va'][1]);
+                                $loadSiteData->setVamoy($paramJSON['Va'][2]);
+                                $InvData->setVamoy($paramJSON['Va'][3]);
+                            }
+                        }
+
+                        if (array_key_exists("P", $paramJSON)) {
+                            if (count($paramJSON['P']) >= 4) {
+                                $gridData->setPmoy($paramJSON['P'][0]); // En kWatts
+                                $GensetData->setP($paramJSON['P'][1]); // En kWatts
+                                $loadSiteData->setPmoy($paramJSON['P'][2]); // En kWatts
+                                $InvData->setPmoy($paramJSON['P'][3]); // En kWatts
+//                                dd($smartMod->getSite()->getPowerSubscribed());
+                                if($oldPmoy !== null && $smartMod->getSite()->getPowerSubscribed()){
+                                    $Psous = $smartMod->getSite()->getPowerSubscribed();
+                                    if($paramJSON['P'][2] > $Psous && $oldPmoy < $Psous){
+//                                        dump($paramJSON['P'][2]);
+//                                        dd($oldPmoy);
+                                    }
+                                }
+                            }
+                        }
+                        if (array_key_exists("Pmax", $paramJSON)) {
+                            if (count($paramJSON['Pmax']) >= 4) {
+                                $gridData->setPmax($paramJSON['Pmax'][0]); // En kW
+                                $GensetData->setPmax($paramJSON['Pmax'][1]); // En kW
+                                $loadSiteData->setPmax($paramJSON['Pmax'][2]); // En kW
+                                $InvData->setPmax($paramJSON['Pmax'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Q", $paramJSON)) {
+                            if (count($paramJSON['Q']) >= 4) {
+                                $gridData->setQmoy($paramJSON['Q'][0]); // En kVAR
+                                // $GensetData->setQmoy($paramJSON['Q'][1]); // En kVAR
+                                $loadSiteData->setQmoy($paramJSON['Q'][2]); // En kVAR
+                                $InvData->setQmoy($paramJSON['Q'][3]); // En kVAR
+
+                            }
+                        }
+                        if (array_key_exists("S", $paramJSON)) {
+                            if (count($paramJSON['S']) >= 4) {
+                                $gridData->setSmoy($paramJSON['S'][0]); // En kVA
+                                $GensetData->setSmoy($paramJSON['S'][1]); // En kVA
+                                $loadSiteData->setSmoy($paramJSON['S'][2]); // En kVA
+                                $InvData->setSmoy($paramJSON['S'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Ea", $paramJSON)) {
+                            if (count($paramJSON['Ea']) >= 4) {
+                                $gridData->setEa($paramJSON['Ea'][0]); // En kWh
+                                $GensetData->setTotalEnergy($paramJSON['Ea'][1]); // En kWh
+                                $loadSiteData->setEa($paramJSON['Ea'][2]); // En kWh
+                                $InvData->setEa($paramJSON['Ea'][3]); // En kWh
+
+                            }
+                        }
+                        if (array_key_exists("Er", $paramJSON)) {
+                            if (count($paramJSON['Er']) >= 4) {
+                                $gridData->setEr($paramJSON['Er'][0]); // En kVARh
+                                // $GensetData->setEr($paramJSON['Er'][1]); // En kVARh
+                                $loadSiteData->setEr($paramJSON['Er'][2]); // En kVARh
+                                $InvData->setEr($paramJSON['Er'][3]); // En kVARh
+
+                            }
+                        }
+                    }
+                    else if ($smartMod->getNbPhases() === 3) {
+                        if (array_key_exists("Va", $paramJSON)) {
+                            if (count($paramJSON['Va']) >= 4) {
+                                $gridData->setVamoy($paramJSON['Va'][0]);
+                                $GensetData->setVa($paramJSON['Va'][1]);
+                                $loadSiteData->setVamoy($paramJSON['Va'][2]);
+                                $InvData->setVamoy($paramJSON['Va'][3]);
+                            }
+                        }
+                        if (array_key_exists("Vb", $paramJSON)) {
+                            if (count($paramJSON['Vb']) >= 4) {
+                                $gridData->setVbmoy($paramJSON['Vb'][0]);
+                                $GensetData->setVb($paramJSON['Vb'][1]);
+                                $loadSiteData->setVbmoy($paramJSON['Vb'][2]);
+                                $InvData->setVbmoy($paramJSON['Vb'][3]);
+                            }
+                        }
+                        if (array_key_exists("Vc", $paramJSON)) {
+                            if (count($paramJSON['Vc']) >= 4) {
+                                $gridData->setVcmoy($paramJSON['Vc'][0]);
+                                $GensetData->setVc($paramJSON['Vc'][1]);
+                                $loadSiteData->setVcmoy($paramJSON['Vc'][2]);
+                                $InvData->setVcmoy($paramJSON['Vc'][3]);
+                            }
+                        }
+                        if (array_key_exists("Pa", $paramJSON)) {
+                            if (count($paramJSON['Pa']) >= 4) {
+                                $gridData->setPamoy($paramJSON['Pa'][0]); // En kW
+                                $GensetData->setPamoy($paramJSON['Pa'][1]); // En kW
+                                $loadSiteData->setPamoy($paramJSON['Pa'][2]); // En kW
+                                $InvData->setPamoy($paramJSON['Pa'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Pb", $paramJSON)) {
+                            if (count($paramJSON['Pb']) >= 4) {
+                                $gridData->setPbmoy($paramJSON['Pb'][0]); // En kW
+                                $GensetData->setPbmoy($paramJSON['Pb'][1]); // En kW
+                                $loadSiteData->setPbmoy($paramJSON['Pb'][2]); // En kW
+                                $InvData->setPbmoy($paramJSON['Pb'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Pc", $paramJSON)) {
+                            if (count($paramJSON['Pc']) >= 4) {
+                                $gridData->setPcmoy($paramJSON['Pc'][0]); // En kW
+                                $GensetData->setPcmoy($paramJSON['Pc'][1]); // En kW
+                                $loadSiteData->setPcmoy($paramJSON['Pc'][2]); // En kW
+                                $InvData->setPcmoy($paramJSON['Pc'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("P", $paramJSON)) {
+                            if (count($paramJSON['P']) >= 4) {
+                                $gridData->setPmoy($paramJSON['P'][0]); // En kW
+                                $GensetData->setP($paramJSON['P'][1]); // En kW
+                                $loadSiteData->setPmoy($paramJSON['P'][2]); // En kW
+                                $InvData->setPmoy($paramJSON['P'][3]); // En kW
+
+                                //dd($smartMod->getSite()->getPowerSubscribed());
+                                if($oldPmoy !== null && $smartMod->getSite()->getPowerSubscribed()){
+                                    $Psous = $smartMod->getSite()->getPowerSubscribed();
+                                    if($paramJSON['P'][2] > $Psous && $oldPmoy < $Psous){
+                                        $PSOV = "PSOV"; // 1
+
+                                        $mess = "{\"code\":\"{$PSOV}\",\"date\":\"{$date->format('Y-m-d H:i:s')}\"}";
+
+                                        $response = $this->forward(
+                                            'App\Controller\LoadEnergyDataController::sendToAlarmController',
+                                            [
+                                                'mess'   => $mess,
+                                                'modId'  => $loadSiteMod->getModuleId(),
+                                            ]
+                                        );
+                                        // dump($loadSiteMod->getModuleId());
+                                        // dump($paramJSON['P'][2]);
+                                        // dd($oldPmoy);
+                                    }
+                                }
+                            }
+                        }
+                        if (array_key_exists("Pamax", $paramJSON)) {
+                            if (count($paramJSON['Pamax']) >= 4) {
+                                $gridData->setPamax($paramJSON['Pamax'][0]); // En kW
+                                $GensetData->setPamax($paramJSON['Pamax'][1]); // En kW
+                                $loadSiteData->setPamax($paramJSON['Pamax'][2]); // En kW
+                                $InvData->setPamax($paramJSON['Pamax'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Pbmax", $paramJSON)) {
+                            if (count($paramJSON['Pbmax']) >= 4) {
+                                $gridData->setPbmax($paramJSON['Pbmax'][0]); // En kW
+                                $GensetData->setPbmax($paramJSON['Pbmax'][1]); // En kW
+                                $loadSiteData->setPbmax($paramJSON['Pbmax'][2]); // En kW
+                                $InvData->setPbmax($paramJSON['Pbmax'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Pcmax", $paramJSON)) {
+                            if (count($paramJSON['Pcmax']) >= 4) {
+                                $gridData->setPcmax($paramJSON['Pcmax'][0]); // En kW
+                                $GensetData->setPcmax($paramJSON['Pcmax'][1]); // En kW
+                                $loadSiteData->setPcmax($paramJSON['Pcmax'][2]); // En kW
+                                $InvData->setPcmax($paramJSON['Pcmax'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Pmax", $paramJSON)) {
+                            if (count($paramJSON['Pmax']) >= 4) {
+                                $gridData->setPmax($paramJSON['Pmax'][0]); // En kW
+                                $GensetData->setPmax($paramJSON['Pmax'][1]); // En kW
+                                $loadSiteData->setPmax($paramJSON['Pmax'][2]); // En kW
+                                $InvData->setPmax($paramJSON['Pmax'][3]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Sa", $paramJSON)) {
+                            if (count($paramJSON['Sa']) >= 4) {
+                                $gridData->setSamoy($paramJSON['Sa'][0]); // En kVA
+                                $GensetData->setSamoy($paramJSON['Sa'][1]); // En kVA
+                                $loadSiteData->setSamoy($paramJSON['Sa'][2]); // En kVA
+                                $InvData->setSamoy($paramJSON['Sa'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Sb", $paramJSON)) {
+                            if (count($paramJSON['Sb']) >= 4) {
+                                $gridData->setSbmoy($paramJSON['Sb'][0]); // En kVA
+                                $GensetData->setSbmoy($paramJSON['Sb'][1]); // En kVA
+                                $loadSiteData->setSbmoy($paramJSON['Sb'][2]); // En kVA
+                                $InvData->setSbmoy($paramJSON['Sb'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Sc", $paramJSON)) {
+                            if (count($paramJSON['Sc']) >= 4) {
+                                $gridData->setScmoy($paramJSON['Sc'][0]); // En kVA
+                                $GensetData->setScmoy($paramJSON['Sc'][1]); // En kVA
+                                $loadSiteData->setScmoy($paramJSON['Sc'][2]); // En kVA
+                                $InvData->setScmoy($paramJSON['Sc'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("S", $paramJSON)) {
+                            if (count($paramJSON['S']) >= 4) {
+                                $gridData->setSmoy($paramJSON['S'][0]); // En kVA
+                                $GensetData->setSmoy($paramJSON['S'][1]); // En kVA
+                                $loadSiteData->setSmoy($paramJSON['S'][2]); // En kVA
+                                $InvData->setSmoy($paramJSON['S'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Samax", $paramJSON)) {
+                            if (count($paramJSON['Samax']) >= 4) {
+                                $gridData->setSamax($paramJSON['Samax'][0]); // En kVA
+                                $GensetData->setSamax($paramJSON['Samax'][1]); // En kVA
+                                $loadSiteData->setSamax($paramJSON['Samax'][2]); // En kVA
+                                $InvData->setSamax($paramJSON['Samax'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Sbmax", $paramJSON)) {
+                            if (count($paramJSON['Sbmax']) >= 4) {
+                                $gridData->setSbmax($paramJSON['Sbmax'][0]); // En kVA
+                                $GensetData->setSbmax($paramJSON['Sbmax'][1]); // En kVA
+                                $loadSiteData->setSbmax($paramJSON['Sbmax'][2]); // En kVA
+                                $InvData->setSbmax($paramJSON['Sbmax'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Scmax", $paramJSON)) {
+                            if (count($paramJSON['Scmax']) >= 4) {
+                                $gridData->setScmax($paramJSON['Scmax'][0]); // En kVA
+                                $GensetData->setScmax($paramJSON['Scmax'][1]); // En kVA
+                                $loadSiteData->setScmax($paramJSON['Scmax'][2]); // En kVA
+                                $InvData->setScmax($paramJSON['Scmax'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Smax", $paramJSON)) {
+                            if (count($paramJSON['Smax']) >= 4) {
+                                $gridData->setSmax($paramJSON['Smax'][0]); // En kVA
+                                $GensetData->setSmax($paramJSON['Smax'][1]); // En kVA
+                                $loadSiteData->setSmax($paramJSON['Smax'][2]); // En kVA
+                                $InvData->setSmax($paramJSON['Smax'][3]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Qa", $paramJSON)) {
+                            if (count($paramJSON['Qa']) >= 4) {
+                                $gridData->setQamoy($paramJSON['Qa'][0]); // En kVAR
+                                $GensetData->setQa($paramJSON['Qa'][1]); // En kVAR
+                                $loadSiteData->setQamoy($paramJSON['Qa'][2]); // En kVAR
+                                $InvData->setQamoy($paramJSON['Qa'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Qb", $paramJSON)) {
+                            if (count($paramJSON['Qb']) >= 4) {
+                                $gridData->setQbmoy($paramJSON['Qb'][0]); // En kVAR
+                                $GensetData->setQb($paramJSON['Qb'][1]); // En kVAR
+                                $loadSiteData->setQbmoy($paramJSON['Qb'][2]); // En kVAR
+                                $InvData->setQbmoy($paramJSON['Qb'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Qc", $paramJSON)) {
+                            if (count($paramJSON['Qc']) >= 4) {
+                                $gridData->setQcmoy($paramJSON['Qc'][0]); // En kVAR
+                                $GensetData->setQc($paramJSON['Qc'][1]); // En kVAR
+                                $loadSiteData->setQcmoy($paramJSON['Qc'][2]); // En kVAR
+                                $InvData->setQcmoy($paramJSON['Qc'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Q", $paramJSON)) {
+                            if (count($paramJSON['Q']) >= 4) {
+                                $gridData->setQmoy($paramJSON['Q'][0]); // En kVAR
+                                $GensetData->setQ($paramJSON['Q'][1]); // En kVAR
+                                $loadSiteData->setQmoy($paramJSON['Q'][2]); // En kVAR
+                                $InvData->setQmoy($paramJSON['Q'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Qamax", $paramJSON)) {
+                            if (count($paramJSON['Qamax']) >= 4) {
+                                $gridData->setQamax($paramJSON['Qamax'][0]); // En kVAR
+                                $GensetData->setQamax($paramJSON['Qamax'][1]); // En kVAR
+                                $loadSiteData->setQamax($paramJSON['Qamax'][2]); // En kVAR
+                                $InvData->setQamax($paramJSON['Qamax'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Qbmax", $paramJSON)) {
+                            if (count($paramJSON['Qbmax']) >= 4) {
+                                $gridData->setQbmax($paramJSON['Qbmax'][0]); // En kVAR
+                                $GensetData->setQbmax($paramJSON['Qbmax'][1]); // En kVAR
+                                $loadSiteData->setQbmax($paramJSON['Qbmax'][2]); // En kVAR
+                                $InvData->setQbmax($paramJSON['Qbmax'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Qcmax", $paramJSON)) {
+                            if (count($paramJSON['Qcmax']) >= 4) {
+                                $gridData->setQcmax($paramJSON['Qcmax'][0]); // En kVAR
+                                $GensetData->setQcmax($paramJSON['Qcmax'][1]); // En kVAR
+                                $loadSiteData->setQcmax($paramJSON['Qcmax'][2]); // En kVAR
+                                $InvData->setQcmax($paramJSON['Qcmax'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Qmax", $paramJSON)) {
+                            if (count($paramJSON['Qmax']) >= 4) {
+                                $gridData->setQmax($paramJSON['Qmax'][0]); // En kVAR
+                                $GensetData->setQmax($paramJSON['Qmax'][1]); // En kVAR
+                                $loadSiteData->setQmax($paramJSON['Qmax'][2]); // En kVAR
+                                $InvData->setQmax($paramJSON['Qmax'][3]); // En kVAR
+                            }
+                        }
+                        if (array_key_exists("Cosfia", $paramJSON)) {
+                            if (count($paramJSON['Cosfia']) >= 4) {
+                                $gridData->setCosfia($paramJSON['Cosfia'][0]);
+                                $GensetData->setCosfia($paramJSON['Cosfia'][1]);
+                                $loadSiteData->setCosfia($paramJSON['Cosfia'][2]);
+                                $InvData->setCosfia($paramJSON['Cosfia'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfib", $paramJSON)) {
+                            if (count($paramJSON['Cosfib']) >= 4) {
+                                $gridData->setCosfib($paramJSON['Cosfib'][0]);
+                                $GensetData->setCosfib($paramJSON['Cosfib'][1]);
+                                $loadSiteData->setCosfib($paramJSON['Cosfib'][2]);
+                                $InvData->setCosfib($paramJSON['Cosfib'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfic", $paramJSON)) {
+                            if (count($paramJSON['Cosfic']) >= 4) {
+                                $gridData->setCosfic($paramJSON['Cosfic'][0]);
+                                $GensetData->setCosfic($paramJSON['Cosfic'][1]);
+                                $loadSiteData->setCosfic($paramJSON['Cosfic'][2]);
+                                $InvData->setCosfic($paramJSON['Cosfic'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfi", $paramJSON)) {
+                            if (count($paramJSON['Cosfi']) >= 4) {
+                                $gridData->setCosfi($paramJSON['Cosfi'][0]);
+                                $GensetData->setCosfi($paramJSON['Cosfi'][1]);
+                                $loadSiteData->setCosfi($paramJSON['Cosfi'][2]);
+                                $InvData->setCosfi($paramJSON['Cosfi'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfiamin", $paramJSON)) {
+                            if (count($paramJSON['Cosfiamin']) >= 4) {
+                                $gridData->setCosfiamin($paramJSON['Cosfiamin'][0]);
+                                $GensetData->setCosfiamin($paramJSON['Cosfiamin'][1]);
+                                $loadSiteData->setCosfiamin($paramJSON['Cosfiamin'][2]);
+                                $InvData->setCosfiamin($paramJSON['Cosfiamin'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfibmin", $paramJSON)) {
+                            if (count($paramJSON['Cosfibmin']) >= 4) {
+                                $gridData->setCosfibmin($paramJSON['Cosfibmin'][0]);
+                                $GensetData->setCosfibmin($paramJSON['Cosfibmin'][1]);
+                                $loadSiteData->setCosfibmin($paramJSON['Cosfibmin'][2]);
+                                $InvData->setCosfibmin($paramJSON['Cosfibmin'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosficmin", $paramJSON)) {
+                            if (count($paramJSON['Cosficmin']) >= 4) {
+                                $gridData->setCosficmin($paramJSON['Cosficmin'][0]);
+                                $GensetData->setCosficmin($paramJSON['Cosficmin'][1]);
+                                $loadSiteData->setCosficmin($paramJSON['Cosficmin'][2]);
+                                $InvData->setCosficmin($paramJSON['Cosficmin'][3]);
+                            }
+                        }
+                        if (array_key_exists("Cosfimin", $paramJSON)) {
+                            if (count($paramJSON['Cosfimin']) >= 4) {
+                                $gridData->setCosfimin($paramJSON['Cosfimin'][0]);
+                                $GensetData->setCosfimin($paramJSON['Cosfimin'][1]);
+                                $loadSiteData->setCosfimin($paramJSON['Cosfimin'][2]);
+                                $InvData->setCosfimin($paramJSON['Cosfimin'][3]);
+                            }
+                        }
+                        if (array_key_exists("Eaa", $paramJSON)) {
+                            if (count($paramJSON['Eaa']) >= 4) {
+                                $gridData->setEaa($paramJSON['Eaa'][0]); // En kWh
+                                $GensetData->setEaa($paramJSON['Eaa'][1]); // En kWh
+                                $loadSiteData->setEaa($paramJSON['Eaa'][2]); // En kWh
+                                $InvData->setEaa($paramJSON['Eaa'][3]); // En kWh
+                            }
+                        }
+                        if (array_key_exists("Eab", $paramJSON)) {
+                            if (count($paramJSON['Eab']) >= 4) {
+                                $gridData->setEab($paramJSON['Eab'][0]); // En kWh
+                                $GensetData->setEab($paramJSON['Eab'][1]); // En kWh
+                                $loadSiteData->setEab($paramJSON['Eab'][2]); // En kWh
+                                $InvData->setEab($paramJSON['Eab'][3]); // En kWh
+                            }
+                        }
+                        if (array_key_exists("Eac", $paramJSON)) {
+                            if (count($paramJSON['Eac']) >= 4) {
+                                $gridData->setEac($paramJSON['Eac'][0]); // En kWh
+                                $GensetData->setEac($paramJSON['Eac'][1]); // En kWh
+                                $loadSiteData->setEac($paramJSON['Eac'][2]); // En kWh
+                                $InvData->setEac($paramJSON['Eac'][3]); // En kWh
+                            }
+                        }
+                        if (array_key_exists("Ea", $paramJSON)) {
+                            if (count($paramJSON['Ea']) >= 4) {
+                                $gridData->setEa($paramJSON['Ea'][0]); // En kWh
+                                $GensetData->setTotalEnergy($paramJSON['Ea'][1]); // En kWh
+                                $loadSiteData->setEa($paramJSON['Ea'][2]); // En kWh
+                                $InvData->setEa($paramJSON['Ea'][3]); // En kWh
+                            }
+                        }
+                        if (array_key_exists("Era", $paramJSON)) {
+                            if (count($paramJSON['Era']) >= 4) {
+                                $gridData->setEra($paramJSON['Era'][0]); // En kVARh
+                                $GensetData->setEra($paramJSON['Era'][1]); // En kVARh
+                                $loadSiteData->setEra($paramJSON['Era'][2]); // En kVARh
+                                $InvData->setEra($paramJSON['Era'][3]); // En kVARh
+                            }
+                        }
+                        if (array_key_exists("Erb", $paramJSON)) {
+                            if (count($paramJSON['Erb']) >= 4) {
+                                $gridData->setErb($paramJSON['Erb'][0]); // En kVARh
+                                $GensetData->setErb($paramJSON['Erb'][1]); // En kVARh
+                                $loadSiteData->setErb($paramJSON['Erb'][2]); // En kVARh
+                                $InvData->setErb($paramJSON['Erb'][3]); // En kVARh
+                            }
+                        }
+                        if (array_key_exists("Erc", $paramJSON)) {
+                            if (count($paramJSON['Erc']) >= 4) {
+                                $gridData->setErc($paramJSON['Erc'][0]); // En kVARh
+                                $GensetData->setErc($paramJSON['Erc'][1]); // En kVARh
+                                $loadSiteData->setErc($paramJSON['Erc'][2]); // En kVARh
+                                $InvData->setErc($paramJSON['Erc'][3]); // En kVARh
+                            }
+                        }
+                        if (array_key_exists("Er", $paramJSON)) {
+                            if (count($paramJSON['Er']) >= 4) {
+                                $gridData->setEr($paramJSON['Er'][0]); // En kVARh
+                                $GensetData->setEr($paramJSON['Er'][1]); // En kVARh
+                                $loadSiteData->setEr($paramJSON['Er'][2]); // En kVARh
+                                $InvData->setEr($paramJSON['Er'][3]); // En kVARh
+                            }
+                        }
+                    }
+
+                    if ($gridMod) {
+                        $gridData->setSmartMod($gridMod);
+                        $manager->persist($gridData);
+                    }
+                    if ($gensetMod) {
+                        $GensetData->setSmartMod($gensetMod);
+                        $manager->persist($GensetData);
+                    }
+                    if ($loadSiteMod) {
+                        $loadSiteData->setSmartMod($loadSiteMod);
+                        $manager->persist($loadSiteData);
+                    }
+                    if ($InvMod) {
+                        $InvData->setSmartMod($InvMod);
+                        $manager->persist($InvData);
+                    }
+                    $manager->flush();
+                }
+
+                return $this->json([
+                    'code' => 200,
+                    'server Time' => $date->format('Y-m-d H:i:s'),
+                    'received' => $paramJSON
+
+                ], 200);
+            }
 
             // //dump($datetimeData);
             //die();
