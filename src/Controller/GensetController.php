@@ -845,6 +845,15 @@ class GensetController extends ApplicationController
                 else if ($smartMod->getModType() == 'DC') {
                     $GensetData->setDateTime($date)
                         ->setSmartMod($smartMod);
+                    if (array_key_exists("BV", $paramJSON)) {
+                        $GensetData->setBattVoltage($paramJSON['BV']);
+                    }
+                    /*if (array_key_exists("ST", $paramJSON)) {
+                        $GensetData->setBattState($paramJSON['ST']);
+                    }*/
+                    if (array_key_exists("Ed", $paramJSON)) {
+                        $GensetData->setBattEnergy($paramJSON['Ed']);
+                    }
                 }
                 /*else if ($smartMod->getModType() == 'Inverter') {
                     //Recherche des modules dans la BDD
