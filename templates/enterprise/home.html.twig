@@ -280,13 +280,15 @@
                                         {% for site in enterprise.sites %}
                                         <tr>
                                             {% if site.hasOneSmartMod %}  <td><div class="td-content customer-name"><a href="{{path('historical_analytic_depart_site_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>
-                                            {% else %} <td><div class="td-content customer-name"><a href="{{path('site_pro_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>{% endif %}
+                                            {% elseif site.activityArea == 'B-Center' %} <td><div class="td-content customer-name"><a href="{{path('site_pro_dc_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>
+                                            {% else %} <td><div class="td-content customer-name"><a href="{{path('site_pro_show', {'slug':site.slug})}}">{{ site.name }}</a></div></td>
+                                            {% endif %}
                                             <td><div class="td-content product-brand" id="power-{{site.slug}}">{{sitesParams[site.slug]['Power']}}</div></td>
                                             <td>
                                                 <div class="td-content">
                                                     <span id="currentkWh-{{site.slug}}">{{sitesParams[site.slug]['currentConsokWh']}}</span> <span id="conso-progress-{{site.slug}}-color" class="text-{% if sitesParams[site.slug]['currentConsokWhProgress'] < 0 %}success{% else %}danger{% endif %}" style="font-size:11px;letter-spacing: 0px;margin-bottom: 0;"><span id="conso-progress-{{site.slug}}-value">{% if sitesParams[site.slug]['currentConsokWhProgress'] >= 0 or sitesParams[site.slug]['currentConsokWhProgress'] == 'INF'  %}+{% endif %}{% if sitesParams[site.slug]['currentConsokWhProgress'] matches '/^[-+]?[0-9]*\\.?[0-9]+$/' %}{{sitesParams[site.slug]['currentConsokWhProgress']}}{% else %}{{sitesParams[site.slug]['currentConsokWhProgress']}}{% endif %}</span>% 
-                                                    <svg id="conso-progress-{{site.slug}}-up-icon" class="{% if sitesParams[site.slug]['currentConsokWhProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                                                    <svg id="conso-progress-{{site.slug}}-down-icon" class="{% if sitesParams[site.slug]['currentConsokWhProgress'] > 0 or sitesParams[site.slug]['currentConsokWhProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                                                    <svg id="feather feather-arrow-up conso-progress-{{site.slug}}-up-icon" class="{% if sitesParams[site.slug]['currentConsokWhProgress'] <= 0 %}d-none{% endif %}" style="vertical-align: baseline;width: 12px;height: 12px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                                                    <svg id="feather feather-arrow-down conso-progress-{{site.slug}}-down-icon" class="{% if sitesParams[site.slug]['currentConsokWhProgress'] > 0 or sitesParams[site.slug]['currentConsokWhProgress'] == 'INF' %}d-none{% endif %}" style="vertical-align: baseline;width: 14px;height: 14px;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                                     </span>          
                                                 </div>
                                             </td>
@@ -296,6 +298,11 @@
                                                 <div class="td-content">
                                                     {% if site.hasOneSmartMod %}
                                                         <span class="mt-1" id="st-{{site.slug}}">-</span>
+                                                    {% elseif site.activityArea == 'B-Center' %}
+                                                        {% set isGenset = sitesParams[site.slug]['isGenset'] %}
+                                                        <span class="badge outline-badge-{% if isGenset == 0 %}success{% else %}danger{% endif %} mt-1" id="st-grid-{{site.slug}}">Grid</span>
+                                                        <span class="badge outline-badge-{% if isGenset == 1 %}success{% else %}danger{% endif %} mt-1" id="st-genset-{{site.slug}}">Genset</span>
+                                                        <span class="badge outline-badge-{% if isGenset == 1 %}success{% else %}danger{% endif %} mt-1" id="st-genset-{{site.slug}}">DC Input</span>
                                                     {% else %}
                                                         {% set isGenset = sitesParams[site.slug]['isGenset'] %}
                                                         <span class="badge outline-badge-{% if isGenset == 0 %}success{% else %}danger{% endif %} mt-1" id="st-grid-{{site.slug}}">Grid</span>

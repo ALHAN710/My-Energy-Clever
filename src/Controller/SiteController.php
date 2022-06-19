@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\SiteProDCDataAnalyticService;
+use App\Service\SiteProDCDataService;
 use DateTime;
 use DateInterval;
 use App\Entity\Site;
@@ -144,6 +146,53 @@ class SiteController extends ApplicationController
     }
 
     /**
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/dc", name="site_pro_dc_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDataService $siteDash
+     * @return Response
+     * @throws \Exception
+     */
+    public function show_site_pro_dc(Site $site, SiteProDCDataService $siteDash): Response
+    {
+        $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+
+        $siteDash->setSite($site)
+            ->setPower_unit(1)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+        $overViewData = $siteDash->getOverviewData();
+        dump($overViewData);
+        $smartMods = $site->getSmartMods();
+        $gensetMod  = null;
+        $isGensetFuel = false;
+        foreach ($smartMods as $smartMod) {
+            if ($smartMod->getModType() === 'GENSET') {
+                $gensetMod = $smartMod;
+                if(strpos($gensetMod->getSubType(), 'FL') !== false || $gensetMod->getSubType() === 'ModBus'){
+                    $isGensetFuel = true;
+                }
+            }
+        }
+        // dump($gensetMod);
+//        return $this->render('site/home_pro.html.twig', [
+        return $this->render('site/home_pro_dc.html.twig', [
+            'site'            => $site,
+            'gensetId'        => $gensetMod !== null ? $gensetMod->getId() : 0,
+            'isGensetFuel'    => $isGensetFuel,
+            'loadSiteData'    => $overViewData['loadSiteData'],
+            'gridData'        => $overViewData['gridData'],
+            'dcInputData'     => $overViewData['dcInputData'],
+            'gensetData'      => $overViewData['gensetData'],
+            'dcData'          => $overViewData['dcData'],
+            'hasgensetMod'    => $overViewData['hasgensetMod'],
+            'contriGensetKWh' => $overViewData['contriGensetKWh'],
+            'kgCO2'           => $overViewData['kgCO2'],
+        ]);
+    }
+
+    /**
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/historical-analytic", name="historical_analytic_site_pro_show", methods={"GET"})
      * @IsGranted("ROLE_USER")
      * @param Site $site
@@ -166,6 +215,40 @@ class SiteController extends ApplicationController
         // dump($dataAnalysis['TRHchart']);
         // dump($dataAnalysis['statsDureeFonctionnement']);
         return $this->render('site/historical_analytic.html.twig', [
+            'site'            => $site,
+            'dataAnalysis'    => $dataAnalysis,
+            // 'loadSiteData'    => $dataAnalysis['loadSiteData'],
+            // 'gridData'        => $dataAnalysis['gridData'],
+            // 'gensetData'      => $dataAnalysis['gensetData'],
+            // 'hasgensetMod'    => $dataAnalysis['hasgensetMod'],
+            // 'contriGensetKWh' => $dataAnalysis['contriGensetKWh'],
+            // 'kgCO2'           => $dataAnalysis['kgCO2'],
+        ]);
+    }
+
+    /**
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/dc/historical-analytic", name="historical_analytic_site_pro_dc_show", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDataAnalyticService $siteAnalytic
+     * @return Response
+     * @throws \Exception
+     */
+    public function show_historical_analytic_site_pro_dc(Site $site, SiteProDCDataAnalyticService $siteAnalytic): Response
+    {
+        $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // dump($startDate);
+        // dump($endDate);
+
+        $siteAnalytic->setSite($site)
+            ->setPower_unit(1)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+        $dataAnalysis = $siteAnalytic->getDataAnalysis();
+        // dump($dataAnalysis['TRHchart']);
+        // dump($dataAnalysis['statsDureeFonctionnement']);
+        return $this->render('site/pro_dc_historical_analytic.html.twig', [
             'site'            => $site,
             'dataAnalysis'    => $dataAnalysis,
             // 'loadSiteData'    => $dataAnalysis['loadSiteData'],
@@ -469,6 +552,44 @@ class SiteController extends ApplicationController
     }
 
     /**
+     * Permet la MAJ des données de l'interface dashboard d'un site pro DC
+     *
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/dc/overview/update", name="site_pro_dc_overview_update_data")
+     * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDCDataService $overview
+     * @param EntityManagerInterface $manager
+     * @return JsonResponse
+     */
+    public function updateSiteProDCOverview(Site $site, SiteProDCDataService $overview, EntityManagerInterface $manager): JsonResponse
+    {
+        $startDate = new DateTime(date("Y-m-01", strtotime(date('Y-m-d'))) . '00:00:00');
+        $endDate   = new DateTime(date("Y-m-t", strtotime(date('Y-m-d'))) . '23:59:59');
+        // dump($startDate);
+        // dump($endDate);
+
+        $overview->setSite($site)
+            ->setPower_unit(1)
+            ->setStartDate($startDate)
+            ->setEndDate($endDate);
+
+        $overViewData = $overview->getOverviewData();
+        //dump($overViewData);
+
+        return $this->json([
+            'code'            => 200,
+            'loadSiteData'    => $overViewData['loadSiteData'],
+            'gridData'        => $overViewData['gridData'],
+            'dcInputData'     => $overViewData['dcInputData'],
+            'gensetData'      => $overViewData['gensetData'],
+            'dcData'          => $overViewData['dcData'],
+            'hasgensetMod'    => $overViewData['hasgensetMod'],
+            'contriGensetKWh' => $overViewData['contriGensetKWh'],
+            'kgCO2'           => $overViewData['kgCO2'],
+        ], 200);
+    }
+
+    /**
      * Permet la MAJ des historiques de courbes
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/histo-graphs/update", name="site_histo_update")
@@ -549,6 +670,44 @@ class SiteController extends ApplicationController
 
     /**
      * Permet la MAJ des historiques des sites pro
+     *
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/dc/histo-graphs/update", name="site_pro_dc_histo_update")
+     * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDCDataService $histo
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateSiteProDCHisto(Site $site, SiteProDCDataService $histo, Request $request): JsonResponse
+    {
+        //Récupération et vérification des paramètres au format JSON contenu dans la requête
+        $paramJSON = $this->getJSONRequest($request->getContent());
+        if (array_key_exists("startDate", $paramJSON) && array_key_exists("endDate", $paramJSON)) {
+            //Initialisation du service
+            $histo->setSite($site)
+                ->setStartDate(new DateTime($paramJSON['startDate']))
+                ->setEndDate(new DateTime($paramJSON['endDate']));
+            $updateHistoPro = $histo->getChartDataForDateRange();
+
+            return $this->json([
+                'code'         => 200,
+                'totalkWh'     => $updateHistoPro['totalkWh'],
+                'Mixed_Conso'  => [
+                    'date'  => $updateHistoPro['consoDate'],
+                    'conso' => $updateHistoPro['consoData']
+                ],
+                'pieChart'   => $updateHistoPro['dataPie'],
+            ], 200);
+        }
+
+        return $this->json([
+            'code' => 403,
+            'message' => 'Empty Array or Not exists !',
+        ], 403);
+    }
+
+    /**
+     * Permet la MAJ des historiques des sites pro
      * 
      * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/historical-analytic/update", name="site_pro_historical_analytic_update")
      * @IsGranted("ROLE_USER")
@@ -558,6 +717,39 @@ class SiteController extends ApplicationController
      * @return JsonResponse
      */
     public function update_historical_analytic_site_pro(Site $site, SiteProDataAnalyticService $siteAnalytic, Request $request): JsonResponse
+    {
+        //Récupération et vérification des paramètres au format JSON contenu dans la requête
+        $paramJSON = $this->getJSONRequest($request->getContent());
+        if (array_key_exists("startDate", $paramJSON) && array_key_exists("endDate", $paramJSON)) {
+            //Initialisation du service
+            $siteAnalytic->setSite($site)
+                ->setPower_unit(1)
+                ->setStartDate(new DateTime($paramJSON['startDate']))
+                ->setEndDate(new DateTime($paramJSON['endDate']));
+            $dataAnalysis = $siteAnalytic->getDataAnalysis();
+            return $this->json([
+                'code'         => 200,
+                'dataAnalysis'    => $dataAnalysis,
+            ], 200);
+        }
+
+        return $this->json([
+            'code' => 403,
+            'message' => 'Empty Array or Not exists !',
+        ], 403);
+    }
+
+    /**
+     * Permet la MAJ des historiques des sites pro
+     *
+     * @Route("/{slug<[a-zA-Z0-9-_]+>}/pro/dc/historical-analytic/update", name="site_pro_dc_historical_analytic_update")
+     * @IsGranted("ROLE_USER")
+     * @param Site $site
+     * @param SiteProDCDataAnalyticService $siteAnalytic
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function update_historical_analytic_site_pro_dc(Site $site, SiteProDCDataAnalyticService $siteAnalytic, Request $request): JsonResponse
     {
         //Récupération et vérification des paramètres au format JSON contenu dans la requête
         $paramJSON = $this->getJSONRequest($request->getContent());

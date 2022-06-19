@@ -10,7 +10,7 @@ use App\Entity\SmartMod;
 use App\Service\SiteProDataService;
 use Doctrine\ORM\EntityManagerInterface;
 
-class SiteProDataAnalyticService
+class SiteProDCDataAnalyticService
 {
     /**
      * Prix du kWh en F CFA
@@ -110,6 +110,13 @@ class SiteProDataAnalyticService
     private $gensetMod;
 
     /**
+     * Module DC Input
+     *
+     * @var SmartMod
+     */
+    private $dcInputMod;
+
+    /**
      * Interval de temps d'envoi des données du module GRID
      *
      * @var float
@@ -124,26 +131,36 @@ class SiteProDataAnalyticService
     private $gensetIntervalTime = 5.0/60.0;
 
     /**
+     * Interval de temps d'envoi des données du module DC Input
+     *
+     * @var float
+     */
+    private $dcInputIntervalTime = 5.0/60.0;
+
+    /**
      * Interval de temps d'envoi des données du module Load Site
      *
      * @var float
      */
     private $loadSiteIntervalTime = 5.0/60.0;
 
-    private $siteProDataService;
+    private $siteProDCDataService;
 
     private $siteDashboardDataService;
 
     private $gensetModService;
 
     private $currentMonthStringDate = '';
+    private $dcModService;
 
-    public function __construct(EntityManagerInterface $manager, SiteProDataService $siteProDataService, SiteDashboardDataService $siteDashboardDataService, GensetModService $gensetModService)
+    public function __construct(EntityManagerInterface $manager, SiteProDCDataService $siteProDCDataService,
+                                SiteDashboardDataService $siteDashboardDataService, GensetModService $gensetModService, DCModService $dcModService)
     {
         $this->manager                      = $manager;
-        $this->siteProDataService           = $siteProDataService;
+        $this->siteProDCDataService         = $siteProDCDataService;
         $this->siteDashboardDataService     = $siteDashboardDataService;
         $this->gensetModService             = $gensetModService;
+        $this->dcModService                 = $dcModService;
         $this->currentMonthStringDate       = date('Y-m') . '%';
     }
 
@@ -1332,7 +1349,7 @@ class SiteProDataAnalyticService
         if (!$this->site->getHasOneSmartMod()) {
             // ========= Récupération des données pour les Statistques Production, Mix énergie et Stats =========
             // Récapitulatif Production
-            $recapProd  = $this->siteProDataService->getOverviewData($onlySrc = true);
+            $recapProd  = $this->siteProDCDataService->getOverviewData($onlySrc = true);
             $amountBill = $this->estimatedBill();
             //dump($recapProd);
 
@@ -1344,7 +1361,7 @@ class SiteProDataAnalyticService
             $trhData = $this->gensetModService->getConsoFuelData();
 
             // ######## Récupération des données pour le tracé des profils de puissance par source
-            $powerProfilSupply = $this->siteProDataService->getPowerChartDataForDateRange();
+            $powerProfilSupply = $this->siteProDCDataService->getPowerChartDataForDateRange();
 
             return array(
                 'recapProd' => $recapProd,
@@ -1568,7 +1585,7 @@ class SiteProDataAnalyticService
 
         ];
 
-        $solarData = [
+        $dcInputData = [
             'EA'     => 0.0,
             'EAmoy'  => 0.0,
             'Pmoy'   => 0.0,
@@ -1642,11 +1659,65 @@ class SiteProDataAnalyticService
         $gridData['PmoyProgress'] = $gridData['PmoyProgress'] !== 'INF' ? floatval(number_format((float) $gridData['PmoyProgress'], 2, '.', '')) : 'INF';
         $gridData['Pmoy']         = floatval(number_format((float) $gridData['Pmoy'], 2, '.', ''));
 
+        // DC Input Data
+        $dcInputProdDataQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)*:time AS kWh, AVG(d.pmoy*:time) AS EAmoy, AVG(d.pmoy) AS Pmoy
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='DC' AND stm.subType='Onduleur')
+                                            AND d.dateTime BETWEEN :startDate AND :endDate
+                                            ")
+            ->setParameters(array(
+                'time'       => $this->dcInputIntervalTime,
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'     => $this->site->getId()
+            ))
+            ->getResult();
+        foreach ($dcInputProdDataQuery as $d) {
+            $dcInputData['EA']     = floatval($d['kWh']);
+            $dcInputData['EAmoy']  = floatval($d['EAmoy']);
+            $dcInputData['Pmoy']   = floatval($d['Pmoy']);
+        }
+        $lastDCInputProdDataQuery = $this->manager->createQuery("SELECT SUM(d.pmoy)*:time AS kWh, AVG(d.pmoy*:time) AS EAmoy, AVG(d.pmoy) AS Pmoy
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='DC' AND  stm.subType='Onduleur')
+                                            AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
+                                            ")
+            ->setParameters(array(
+                'time'           => $this->dcInputIntervalTime,
+                'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
+                'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
+                'siteId'         => $this->site->getId()
+            ))
+            ->getResult();
+
+        //dump($lastDCInputProdDataQuery);
+        $lastEA = 0.0;
+        $lastEAmoy = 0.0;
+        $lastPmoy = 0.0;
+        foreach ($lastDCInputProdDataQuery as $d) {
+            $lastEA     = floatval($d['kWh']);
+            $lastEAmoy  = floatval($d['EAmoy']);
+            $lastPmoy   = floatval($d['Pmoy']);
+        }
+        $dcInputData['EAProgress'] = ($lastEA > 0) ? ($dcInputData['EAProgress'] - $lastEA) * 100 / $lastEA : 'INF';
+        $dcInputData['EAProgress'] = $dcInputData['EAProgress'] !== 'INF' ? floatval(number_format((float) $dcInputData['EAProgress'], 2, '.', '')) : 'INF';
+        $dcInputData['EA']         = floatval(number_format((float) $dcInputData['EA'], 2, '.', ''));
+
+        $dcInputData['EAmoyProgress'] = ($lastEAmoy > 0) ? ($dcInputData['EAmoyProgress'] - $lastEAmoy) * 100 / $lastEAmoy : 'INF';
+        $dcInputData['EAmoyProgress'] = $dcInputData['EAmoyProgress'] !== 'INF' ? floatval(number_format((float) $dcInputData['EAmoyProgress'], 2, '.', '')) : 'INF';
+        $dcInputData['EAmoy']         = floatval(number_format((float) $dcInputData['EAmoy'], 2, '.', ''));
+
+        $dcInputData['PmoyProgress'] = ($lastPmoy > 0) ? ($dcInputData['PmoyProgress'] - $lastPmoy) * 100 / $lastPmoy : 'INF';
+        $dcInputData['PmoyProgress'] = $dcInputData['PmoyProgress'] !== 'INF' ? floatval(number_format((float) $dcInputData['PmoyProgress'], 2, '.', '')) : 'INF';
+        $dcInputData['Pmoy']         = floatval(number_format((float) $dcInputData['Pmoy'], 2, '.', ''));
+
         // Genset Data
         $gensetProdDataQuery = [];
 
         if($this->gensetMod->getSubType() === 'ModBus'){ //Si le module GENSET est de type Modbus
-            $gensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
+        $gensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
                                             MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
@@ -1654,14 +1725,14 @@ class SiteProDataAnalyticService
                                             AND d.dateTime BETWEEN :startDate AND :endDate
                                             GROUP BY dt
                                             ORDER BY dt ASC")
-                ->setParameters(array(
-                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
-                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
-                    'siteId'     => $this->site->getId()
-                ))
-                ->getResult();
+            ->setParameters(array(
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'     => $this->site->getId()
+            ))
+            ->getResult();
         } else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter
-            $gensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
+        $gensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
                                             SUM(d.p)*:time AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
@@ -1669,13 +1740,13 @@ class SiteProDataAnalyticService
                                             AND d.dateTime BETWEEN :startDate AND :endDate
                                             GROUP BY dt
                                             ORDER BY dt ASC")
-                ->setParameters(array(
-                    'time'       => $this->gensetIntervalTime,
-                    'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
-                    'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
-                    'siteId'     => $this->site->getId()
-                ))
-                ->getResult();
+            ->setParameters(array(
+                'time'       => $this->gensetIntervalTime,
+                'startDate'  => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'    => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'     => $this->site->getId()
+            ))
+            ->getResult();
         }
         // dump($gensetProdDataQuery);
         $EA = [];
@@ -1704,7 +1775,7 @@ class SiteProDataAnalyticService
 
         $lastGensetProdDataQuery = [];
         if($this->gensetMod->getSubType() === 'ModBus'){ //Si le module GENSET est de type Modbus
-            $lastGensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
+        $lastGensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
                                             MAX(d.totalEnergy) - MIN(NULLIF(d.totalEnergy,0)) AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
@@ -1712,14 +1783,14 @@ class SiteProDataAnalyticService
                                             AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
                                             GROUP BY dt
                                             ORDER BY dt ASC")
-                ->setParameters(array(
-                    'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
-                    'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
-                    'siteId'         => $this->site->getId()
-                ))
-                ->getResult();
+            ->setParameters(array(
+                'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
+                'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
+                'siteId'         => $this->site->getId()
+            ))
+            ->getResult();
         } else if(strpos($this->gensetMod->getSubType(), 'Inv') !== false ) { //Si le module GENSET est de type Inverter
-            $lastGensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
+        $lastGensetProdDataQuery = $this->manager->createQuery("SELECT DISTINCT SUBSTRING(d.dateTime,1,13) AS dt, 
                                             SUM(d.p)*:time AS TEP
                                             FROM App\Entity\GensetData d
                                             JOIN d.smartMod sm
@@ -1727,13 +1798,13 @@ class SiteProDataAnalyticService
                                             AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
                                             GROUP BY dt
                                             ORDER BY dt ASC")
-                ->setParameters(array(
-                    'time'       => $this->gensetIntervalTime,
-                    'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
-                    'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
-                    'siteId'         => $this->site->getId()
-                ))
-                ->getResult();
+            ->setParameters(array(
+                'time'       => $this->gensetIntervalTime,
+                'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
+                'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
+                'siteId'         => $this->site->getId()
+            ))
+            ->getResult();
         }
         $EA = [];
         $lastEA = 0.0;
@@ -1777,8 +1848,9 @@ class SiteProDataAnalyticService
 
         return array(
             'gridData'    => $gridData,
+            'dcInputData' => $dcInputData,
             'gensetData'  => $gensetData,
-            'dataPie'     => [$gridData['EA'], $gensetData['EA'], $solarData['EA'], $batteryData['EA']]
+            'dataPie'     => [$gridData['EA'], $gensetData['EA'], $dcInputData['EA']]
         );
     }
 
@@ -1865,10 +1937,10 @@ class SiteProDataAnalyticService
                                                 WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='GRID')
                                                 AND d.dateTime BETWEEN :startDate AND :endDate")
                 ->setParameters(array(
-                    'time'          => $this->gridIntervalTime,
-                    'startDate'     => $this->startDate->format('Y-m-d H:i:s'),
-                    'endDate'       => $this->endDate->format('Y-m-d H:i:s'),
-                    'siteId'        => $this->site->getId()
+                'time'          => $this->gridIntervalTime,
+                'startDate'     => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'       => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'        => $this->site->getId()
                 ))
                 ->getResult();
 
@@ -2085,7 +2157,7 @@ class SiteProDataAnalyticService
     {
         $this->site = $site;
 
-        $this->siteProDataService->setSite($site);
+        $this->siteProDCDataService->setSite($site);
         $this->siteDashboardDataService->setSite($site);
         // $smartMods = $this->site->getSmartMods();
         // foreach ($smartMods as $smartMod) {
@@ -2106,7 +2178,7 @@ class SiteProDataAnalyticService
                 // dump($intervalTime);
                 $this->setGridIntervalTime($intervalTime);
             }
-            if ($smartMod->getModType() === 'GENSET') {
+            else if ($smartMod->getModType() === 'GENSET') {
                 $this->setGensetMod($smartMod);
 
                 $this->gensetModService->setGensetMod($smartMod);
@@ -2115,9 +2187,20 @@ class SiteProDataAnalyticService
                 if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
                 else $intervalTime = 5.0/60.0;// dump($intervalTime);
                 // dump($intervalTime);
-                $this->setGridIntervalTime($intervalTime);
+//                $this->setGridIntervalTime($intervalTime);
             }
-            if ($smartMod->getModType() === 'Load Meter') {
+            else if ($smartMod->getModType() === 'DC' && $smartMod->getSubType() === 'Onduleur') {
+                $this->setDcInputMod($smartMod);
+
+                //$this->dcModService->setDcMod($smartMod);
+
+                $config = json_decode($this->dcInputMod->getConfiguration(), true);
+                if($config) $intervalTime = array_key_exists("Frs", $config) ? $config['Frs']/60.0 : 5.0/60.0 ;//Temps en minutes converti en heure
+                else $intervalTime = 5.0/60.0;// dump($intervalTime);
+                // dump($intervalTime);
+                $this->setDcInputIntervalTime($intervalTime);
+            }
+            else if ($smartMod->getModType() === 'Load Meter') {
                 $this->setLoadSiteMod($smartMod);
 
                 $config = json_decode($this->loadSiteMod->getConfiguration(), true);
@@ -2150,7 +2233,7 @@ class SiteProDataAnalyticService
     public function setKWhPrice(float $kWhPrice)
     {
         $this->kWhPrice = $kWhPrice;
-        $this->siteProDataService->setKWhPrice($kWhPrice);
+        $this->siteProDCDataService->setKWhPrice($kWhPrice);
         return $this;
     }
 
@@ -2174,7 +2257,7 @@ class SiteProDataAnalyticService
     public function setCO2PerkWh(float $CO2PerkWh)
     {
         $this->CO2PerkWh = $CO2PerkWh;
-        $this->siteProDataService->setCO2PerkWh($CO2PerkWh);
+        $this->siteProDCDataService->setCO2PerkWh($CO2PerkWh);
         return $this;
     }
 
@@ -2198,7 +2281,7 @@ class SiteProDataAnalyticService
     public function setStartDate(DateTime $startDate)
     {
         $this->startDate = $startDate;
-        $this->siteProDataService->setStartDate($startDate);
+        $this->siteProDCDataService->setStartDate($startDate);
         $this->gensetModService->setStartDate($startDate);
         return $this;
     }
@@ -2223,7 +2306,7 @@ class SiteProDataAnalyticService
     public function setEndDate(DateTime $endDate)
     {
         $this->endDate = $endDate;
-        $this->siteProDataService->setEndDate($endDate);
+        $this->siteProDCDataService->setEndDate($endDate);
         $this->gensetModService->setEndDate($endDate);
 
         return $this;
@@ -2249,7 +2332,7 @@ class SiteProDataAnalyticService
     public function setPower_unit($power_unit)
     {
         $this->power_unit = $power_unit;
-        $this->siteProDataService->setPower_unit($power_unit);
+        $this->siteProDCDataService->setPower_unit($power_unit);
         return $this;
     }
 
@@ -2374,6 +2457,30 @@ class SiteProDataAnalyticService
     }
 
     /**
+     * Get interval de temps d'envoi des données du module DC Input
+     *
+     * @return  float
+     */
+    public function getDcInputIntervalTime()
+    {
+        return $this->dcInputIntervalTime;
+    }
+
+    /**
+     * Set interval de temps d'envoi des données du module DC Input
+     *
+     * @param  float  $dcInputIntervalTime  Interval de temps d'envoi des données du module DC Input
+     *
+     * @return  self
+     */
+    public function setDcInputIntervalTime(float $dcInputIntervalTime)
+    {
+        $this->dcInputIntervalTime = $dcInputIntervalTime;
+
+        return $this;
+    }
+
+    /**
      * Get interval de temps d'envoi des données du module Load Site
      *
      * @return  float
@@ -2395,5 +2502,21 @@ class SiteProDataAnalyticService
         $this->loadSiteIntervalTime = $loadSiteIntervalTime;
 
         return $this;
+    }
+
+    /**
+     * @return SmartMod
+     */
+    public function getDcInputMod(): SmartMod
+    {
+        return $this->dcInputMod;
+    }
+
+    /**
+     * @param SmartMod $dcInputMod
+     */
+    public function setDcInputMod(SmartMod $dcInputMod): void
+    {
+        $this->dcInputMod = $dcInputMod;
     }
 }
