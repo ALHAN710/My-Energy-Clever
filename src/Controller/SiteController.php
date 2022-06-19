@@ -163,7 +163,7 @@ class SiteController extends ApplicationController
             ->setStartDate($startDate)
             ->setEndDate($endDate);
         $overViewData = $siteDash->getOverviewData();
-        dump($overViewData);
+//        dump($overViewData);
         $smartMods = $site->getSmartMods();
         $gensetMod  = null;
         $isGensetFuel = false;
