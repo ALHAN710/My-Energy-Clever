@@ -407,7 +407,7 @@ class SiteProDataAnalyticService
         }
 
         // ========= Détermination des Pic et Talon de puissance =========
-        $powerQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, NULLIF(d.pmoy/:power_unit, 0) AS kW 
+        $powerQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, NULLIF(d.pmoy/:power_unit, 0) AS kW
                                             FROM App\Entity\LoadEnergyData d
                                             JOIN d.smartMod sm
                                             WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
@@ -420,6 +420,21 @@ class SiteProDataAnalyticService
                 'power_unit'   => $this->power_unit,
             ))
             ->getResult();
+
+        $powerMaxQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, NULLIF(d.pmax/:power_unit, 0) AS Pmax 
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                            AND d.dateTime BETWEEN :startDate AND :endDate
+                                            ORDER BY Pmax ASC")
+            ->setParameters(array(
+                'startDate'    => $this->startDate->format('Y-m-d H:i:s'),
+                'endDate'      => $this->endDate->format('Y-m-d H:i:s'),
+                'siteId'       => $this->site->getId(),
+                'power_unit'   => $this->power_unit,
+            ))
+            ->getResult();
+//        dump($powerMaxQuery);
 
         $lastPowerQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, NULLIF(d.pmoy/:power_unit, 0) AS kW 
                                             FROM App\Entity\LoadEnergyData d
@@ -435,6 +450,21 @@ class SiteProDataAnalyticService
             ))
             ->getResult();
 
+        $lastPowerMaxQuery = $this->manager->createQuery("SELECT DISTINCT d.dateTime AS jour, NULLIF(d.pmoy/:power_unit, 0) AS Pmax 
+                                            FROM App\Entity\LoadEnergyData d
+                                            JOIN d.smartMod sm
+                                            WHERE sm.id IN (SELECT stm.id FROM App\Entity\SmartMod stm JOIN stm.site s WHERE s.id = :siteId AND stm.modType='Load Meter' AND stm.levelZone=1)
+                                            AND d.dateTime BETWEEN :lastStartDate AND :lastEndDate
+                                            ORDER BY Pmax ASC")
+            ->setParameters(array(
+                'lastStartDate'  => $lastStartDate->format('Y-m-d H:i:s'),
+                'lastEndDate'    => $lastEndDate->format('Y-m-d H:i:s'),
+                'siteId'         => $this->site->getId(),
+                'power_unit'     => $this->power_unit,
+            ))
+            ->getResult();
+//        dump($lastPowerMaxQuery);
+
         $strPic = '-';
         $PicProgress = 'INF';
         $strTalon = '-';
@@ -442,7 +472,9 @@ class SiteProDataAnalyticService
         if (!empty($powerQuery)) {
 
             //$lowPower = reset($powerQuery);
-            $highPower = end($powerQuery);
+//            $highPower = end($powerQuery);
+            $highPower = end($powerMaxQuery);
+//            dd($highPower);
             $lowPower = null;
             $array = $powerQuery;
             $min = 0;
@@ -470,12 +502,14 @@ class SiteProDataAnalyticService
             //dump($lowPower);
             // $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' W @ ' . $lowPower['jour']->format('d M Y H:i:s') : '-';
             $strTalon = $lowPower != null ? number_format((float) ($lowPower['kW']), 2, '.', ' ') . ' ' . $powerUnitStr . ' @ ' . $lowPower['jour']->format('d M Y H:i:s') : '-';
-            $strPic   = $highPower != null ? number_format((float) ($highPower['kW']), 2, '.', ' ') . ' ' . $powerUnitStr . ' @ ' . $highPower['jour']->format('d M Y H:i:s') : '-';
-
+//            $strPic   = $highPower != null ? number_format((float) ($highPower['kW']), 2, '.', ' ') . ' ' . $powerUnitStr . ' @ ' . $highPower['jour']->format('d M Y H:i:s') : '-';
+            $strPic   = $highPower != null ? number_format((float) ($highPower['Pmax']), 2, '.', ' ') . ' ' . $powerUnitStr . ' @ ' . $highPower['jour']->format('d M Y H:i:s') : '-';
+//            dd($strPic);
             if (!empty($lastPowerQuery)) {
 
                 //$lowPower = reset($lastPowerQuery);
-                $lastHighPower = end($lastPowerQuery);
+//                $lastHighPower = end($lastPowerQuery);
+                $lastHighPower = end($lastPowerMaxQuery);
                 $lastLowPower = null;
                 $array = $lastPowerQuery;
                 $min = 0;
@@ -487,7 +521,8 @@ class SiteProDataAnalyticService
                     }
                 }
 
-                $PicProgress   = $lastHighPower != null ? (floatval($lastHighPower['kW']) > 0 ? (floatval($highPower['kW']) - floatval($lastHighPower['kW'])) * 100 / floatval($lastHighPower['kW']) : 'INF') : 'INF';
+//                $PicProgress   = $lastHighPower != null ? (floatval($lastHighPower['kW']) > 0 ? (floatval($highPower['kW']) - floatval($lastHighPower['kW'])) * 100 / floatval($lastHighPower['kW']) : 'INF') : 'INF';
+                $PicProgress   = $lastHighPower != null ? (floatval($lastHighPower['Pmax']) > 0 ? (floatval($highPower['Pmax']) - floatval($lastHighPower['Pmax'])) * 100 / floatval($lastHighPower['Pmax']) : 'INF') : 'INF';
                 $TalonProgress = $lastLowPower != null ? (floatval($lastLowPower['kW']) > 0 ? (floatval($lowPower['kW']) - floatval($lastLowPower['kW'])) * 100 / floatval($lastLowPower['kW']) : 'INF') : 'INF';
             }
         }
