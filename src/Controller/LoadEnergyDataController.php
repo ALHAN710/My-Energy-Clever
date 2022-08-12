@@ -271,7 +271,8 @@ class LoadEnergyDataController extends ApplicationController
                     'received' => $paramJSON
 
                 ], 200);
-            } else if ($smartMod->getModType() == 'Inverter') {
+            }
+            else if ($smartMod->getModType() == 'Inverter') {
                 //Recherche des modules dans la BDD
                 $gridMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_0']);
                 $gensetMod = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_1']);
@@ -2255,6 +2256,501 @@ class LoadEnergyDataController extends ApplicationController
                         $manager->persist($loadSiteData);
                     }
                     //dd($paramJSON);
+                    $manager->flush();
+                }
+
+                return $this->json([
+                    'code' => 200,
+                    'server Time' => $date->format('Y-m-d H:i:s'),
+                    'received' => $paramJSON
+
+                ], 200);
+            }
+            else if ($smartMod->getModType() == 'Central Meter_X6') {
+                //Recherche des modules dans la BDD
+                $mod = [];
+                $data = [];
+                for ($i = 0; $i < 6; $i++) {
+                    $mod[] = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . "_{$i}"]);
+                    $data[] = new LoadEnergyData();
+                }
+
+                /*$mod0 = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_0']);
+                $mod1 = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_1']);
+                $mod2 = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_2']);
+                $mod3 = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_3']);
+                $mod4 = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_4']);
+                $mod5 = $manager->getRepository('App:SmartMod')->findOneBy(['moduleId' => $smartMod->getModuleId() . '_5']);
+
+                $data0 = new LoadEnergyData();
+                $data1 = new LoadEnergyData();
+                $data2 = new LoadEnergyData();
+                $data3 = new LoadEnergyData();
+                $data4 = new LoadEnergyData();
+                $data5 = new LoadEnergyData();*/
+
+                //Paramétrage des champs de la nouvelle LoadDataEnergy aux valeurs contenues dans la requête du module
+                if (array_key_exists("date", $paramJSON)) {
+
+                    //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
+//                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
+
+                    for ($i = 0; $i < 6; $i++) {
+                        $data[$i]->setDateTime($date);
+                    }
+                    /*$data0->setDateTime($date);
+                    $data1->setDateTime($date);
+                    $data2->setDateTime($date);
+                    $data3->setDateTime($date);
+                    $data4->setDateTime($date);
+                    $data5->setDateTime($date);*/
+
+                    if ($smartMod->getNbPhases() === 1) {
+                        if (array_key_exists("Cosfi", $paramJSON)) {
+                            if (count($paramJSON['Cosfi']) >= 3) {
+                                $firstData->setCosfi($paramJSON['Cosfi'][0]);
+                                $secondData->setCosfi($paramJSON['Cosfi'][1]);
+                            }
+                        }
+                        if (array_key_exists("Cosfimin", $paramJSON)) {
+                            if (count($paramJSON['Cosfimin']) >= 3) {
+                                $firstData->setCosfimin($paramJSON['Cosfimin'][0]); // En kW
+                                $secondData->setCosfimin($paramJSON['Cosfimin'][1]); // En kW
+                                //$GensetData->setCosfimin($paramJSON['Cosfimin'][1]); // En kW
+                                $loadSiteData->setCosfimin($paramJSON['Cosfimin'][2]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Va", $paramJSON)) {
+                            if (count($paramJSON['Va']) >= 3) {
+                                $firstData->setVamoy($paramJSON['Va'][0]);
+                                $secondData->setVamoy($paramJSON['Va'][1]);
+                                //// $GensetData->setVamoy($paramJSON['Va'][1]);
+                                $loadSiteData->setVamoy($paramJSON['Va'][2]);
+                            }
+                        }
+
+                        if (array_key_exists("P", $paramJSON)) {
+                            if (count($paramJSON['P']) >= 3) {
+                                $firstData->setPmoy($paramJSON['P'][0]); // En kWatts
+                                $secondData->setPmoy($paramJSON['P'][1]); // En kWatts
+                                //$GensetData->setP($paramJSON['P'][1]); // En kWatts
+                                $loadSiteData->setPmoy($paramJSON['P'][2]); // En kWatts
+//                                dd($smartMod->getSite()->getPowerSubscribed());
+                                if($oldPmoy !== null && $smartMod->getSite()->getPowerSubscribed()){
+                                    $Psous = $smartMod->getSite()->getPowerSubscribed();
+                                    if($paramJSON['P'][2] > $Psous && $oldPmoy < $Psous){
+//                                        dump($paramJSON['P'][2]);
+//                                        dd($oldPmoy);
+                                    }
+                                }
+                            }
+                        }
+                        if (array_key_exists("Pmax", $paramJSON)) {
+                            if (count($paramJSON['Pmax']) >= 3) {
+                                $firstData->setPmax($paramJSON['Pmax'][0]); // En kW
+                                $secondData->setPmax($paramJSON['Pmax'][1]); // En kW
+                                //$GensetData->setPmax($paramJSON['Pmax'][1]); // En kW
+                                $loadSiteData->setPmax($paramJSON['Pmax'][2]); // En kW
+                            }
+                        }
+                        if (array_key_exists("Q", $paramJSON)) {
+                            if (count($paramJSON['Q']) >= 3) {
+                                $firstData->setQmoy($paramJSON['Q'][0]); // En kVAR
+                                $secondData->setQmoy($paramJSON['Q'][1]); // En kVAR
+                                //// $GensetData->setQmoy($paramJSON['Q'][1]); // En kVAR
+                                $loadSiteData->setQmoy($paramJSON['Q'][2]); // En kVAR
+
+                            }
+                        }
+                        if (array_key_exists("S", $paramJSON)) {
+                            if (count($paramJSON['S']) >= 3) {
+                                $firstData->setSmoy($paramJSON['S'][0]); // En kVA
+                                $secondData->setSmoy($paramJSON['S'][1]); // En kVA
+                                //$GensetData->setSmoy($paramJSON['S'][1]); // En kVA
+                                $loadSiteData->setSmoy($paramJSON['S'][2]); // En kVA
+                            }
+                        }
+                        if (array_key_exists("Ea", $paramJSON)) {
+                            if (count($paramJSON['Ea']) >= 3) {
+                                $firstData->setEa($paramJSON['Ea'][0]); // En kWh
+                                $secondData->setEa($paramJSON['Ea'][1]); // En kWh
+                                //$GensetData->setTotalEnergy($paramJSON['Ea'][1]); // En kWh
+                                $loadSiteData->setEa($paramJSON['Ea'][2]); // En kWh
+
+                            }
+                        }
+                        if (array_key_exists("Er", $paramJSON)) {
+                            if (count($paramJSON['Er']) >= 3) {
+                                $firstData->setEr($paramJSON['Er'][0]); // En kVARh
+                                $secondData->setEr($paramJSON['Er'][1]); // En kVARh
+                                // $GensetData->setEr($paramJSON['Er'][1]); // En kVARh
+                                $loadSiteData->setEr($paramJSON['Er'][2]); // En kVARh
+
+                            }
+                        }
+                    }
+                    else if ($smartMod->getNbPhases() === 3) {
+                        if (array_key_exists("Va", $paramJSON)) {
+                            if (count($paramJSON['Va']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setVamoy($paramJSON['Va'][$i]);
+                                }
+
+                                /*$data0->setVamoy($paramJSON['Va'][0]);
+                                $data1->setVamoy($paramJSON['Va'][1]);
+                                $data2->setVamoy($paramJSON['Va'][2]);
+                                $data3->setVamoy($paramJSON['Va'][3]);
+                                $data4->setVamoy($paramJSON['Va'][4]);
+                                $data5->setVamoy($paramJSON['Va'][5]);*/
+
+                            }
+                        }
+                        if (array_key_exists("Vb", $paramJSON)) {
+                            if (count($paramJSON['Vb']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setVbmoy($paramJSON['Vb'][$i]);
+                                }
+
+                                /*$data0->setVbmoy($paramJSON['Vb'][0]);
+                                $data1->setVbmoy($paramJSON['Vb'][1]);
+                                $data2->setVbmoy($paramJSON['Vb'][2]);
+                                $data3->setVbmoy($paramJSON['Vb'][3]);
+                                $data4->setVbmoy($paramJSON['Vb'][4]);
+                                $data5->setVbmoy($paramJSON['Vb'][5]);*/
+
+                            }
+                        }
+                        if (array_key_exists("Vc", $paramJSON)) {
+                            if (count($paramJSON['Vc']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setVcmoy($paramJSON['Vc'][$i]);
+                                }
+
+                                /*$data0->setVcmoy($paramJSON['Vc'][0]);
+                                $data1->setVcmoy($paramJSON['Vc'][1]);
+                                $data2->setVcmoy($paramJSON['Vc'][2]);
+                                $data3->setVcmoy($paramJSON['Vc'][3]);
+                                $data4->setVcmoy($paramJSON['Vc'][4]);
+                                $data5->setVcmoy($paramJSON['Vc'][5]);*/
+
+                            }
+                        }
+                        if (array_key_exists("Pa", $paramJSON)) {
+                            if (count($paramJSON['Pa']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPamoy($paramJSON['Pa'][$i]); // En kW
+                                }
+
+                                /*$data0->setPamoy($paramJSON['Pa'][0]); // En kW
+                                $data1->setPamoy($paramJSON['Pa'][1]); // En kW
+                                $data2->setPamoy($paramJSON['Pa'][2]); // En kW
+                                $data3->setPamoy($paramJSON['Pa'][3]); // En kW
+                                $data4->setPamoy($paramJSON['Pa'][4]); // En kW
+                                $data5->setPamoy($paramJSON['Pa'][5]); // En kW*/
+
+                            }
+                        }
+                        if (array_key_exists("Pb", $paramJSON)) {
+                            if (count($paramJSON['Pb']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPbmoy($paramJSON['Pb'][$i]); // En kW
+                                }
+
+                                /*$data0->setPbmoy($paramJSON['Pb'][0]); // En kW
+                                $data1->setPbmoy($paramJSON['Pb'][1]); // En kW
+                                $data2->setPbmoy($paramJSON['Pb'][2]); // En kW
+                                $data3->setPbmoy($paramJSON['Pb'][3]); // En kW
+                                $data4->setPbmoy($paramJSON['Pb'][4]); // En kW
+                                $data5->setPbmoy($paramJSON['Pb'][5]); // En kW*/
+
+                            }
+                        }
+                        if (array_key_exists("Pc", $paramJSON)) {
+                            if (count($paramJSON['Pc']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPcmoy($paramJSON['Pc'][$i]); // En kW
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("P", $paramJSON)) {
+                            if (count($paramJSON['P']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPmoy($paramJSON['P'][$i]); // En kW
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Pamax", $paramJSON)) {
+                            if (count($paramJSON['Pamax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPamax($paramJSON['Pamax'][$i]); // En kW
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Pbmax", $paramJSON)) {
+                            if (count($paramJSON['Pbmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPbmax($paramJSON['Pbmax'][$i]); // En kW
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Pcmax", $paramJSON)) {
+                            if (count($paramJSON['Pcmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPcmax($paramJSON['Pcmax'][$i]); // En kW
+                                }
+                            }
+                        }
+                        if (array_key_exists("Pmax", $paramJSON)) {
+                            if (count($paramJSON['Pmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setPmax($paramJSON['Pmax'][$i]); // En kW
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Sa", $paramJSON)) {
+                            if (count($paramJSON['Sa']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setSamoy($paramJSON['Sa'][$i]); // En kVA
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Sb", $paramJSON)) {
+                            if (count($paramJSON['Sb']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setSbmoy($paramJSON['Sb'][$i]); // En kVA
+                                }
+                            }
+                        }
+                        if (array_key_exists("Sc", $paramJSON)) {
+                            if (count($paramJSON['Sc']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setScmoy($paramJSON['Sc'][$i]); // En kVA
+                                }
+                            }
+                        }
+                        if (array_key_exists("S", $paramJSON)) {
+                            if (count($paramJSON['S']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setSmoy($paramJSON['S'][$i]); // En kVA
+                                }
+                            }
+                        }
+                        if (array_key_exists("Samax", $paramJSON)) {
+                            if (count($paramJSON['Samax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setSamax($paramJSON['Samax'][$i]); // En kVA
+                                }
+                            }
+                        }
+                        if (array_key_exists("Sbmax", $paramJSON)) {
+                            if (count($paramJSON['Sbmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setSbmax($paramJSON['Sbmax'][$i]); // En kVA
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Scmax", $paramJSON)) {
+                            if (count($paramJSON['Scmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setScmax($paramJSON['Scmax'][$i]); // En kVA
+                                }
+                            }
+                        }
+                        if (array_key_exists("Smax", $paramJSON)) {
+                            if (count($paramJSON['Smax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setSmax($paramJSON['Smax'][$i]); // En kVA
+                                }
+
+                            }
+                        }
+                        if (array_key_exists("Qa", $paramJSON)) {
+                            if (count($paramJSON['Qa']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQamoy($paramJSON['Qa'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Qb", $paramJSON)) {
+                            if (count($paramJSON['Qb']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQbmoy($paramJSON['Qb'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Qc", $paramJSON)) {
+                            if (count($paramJSON['Qc']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQcmoy($paramJSON['Qc'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Q", $paramJSON)) {
+                            if (count($paramJSON['Q']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQmoy($paramJSON['Q'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Qamax", $paramJSON)) {
+                            if (count($paramJSON['Qamax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQamax($paramJSON['Qamax'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Qbmax", $paramJSON)) {
+                            if (count($paramJSON['Qbmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQbmax($paramJSON['Qbmax'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Qcmax", $paramJSON)) {
+                            if (count($paramJSON['Qcmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQcmax($paramJSON['Qcmax'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Qmax", $paramJSON)) {
+                            if (count($paramJSON['Qmax']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setQmax($paramJSON['Qmax'][$i]); // En kVAR
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfia", $paramJSON)) {
+                            if (count($paramJSON['Cosfia']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfia($paramJSON['Cosfia'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfib", $paramJSON)) {
+                            if (count($paramJSON['Cosfib']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfib($paramJSON['Cosfib'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfic", $paramJSON)) {
+                            if (count($paramJSON['Cosfic']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfic($paramJSON['Cosfic'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfi", $paramJSON)) {
+                            if (count($paramJSON['Cosfi']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfi($paramJSON['Cosfi'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfiamin", $paramJSON)) {
+                            if (count($paramJSON['Cosfiamin']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfiamin($paramJSON['Cosfiamin'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfibmin", $paramJSON)) {
+                            if (count($paramJSON['Cosfibmin']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfibmin($paramJSON['Cosfibmin'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosficmin", $paramJSON)) {
+                            if (count($paramJSON['Cosficmin']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosficmin($paramJSON['Cosficmin'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Cosfimin", $paramJSON)) {
+                            if (count($paramJSON['Cosfimin']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setCosfimin($paramJSON['Cosfimin'][$i]);
+                                }
+                            }
+                        }
+                        if (array_key_exists("Eaa", $paramJSON)) {
+                            if (count($paramJSON['Eaa']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setEaa($paramJSON['Eaa'][$i]); // En kWh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Eab", $paramJSON)) {
+                            if (count($paramJSON['Eab']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setEab($paramJSON['Eab'][$i]); // En kWh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Eac", $paramJSON)) {
+                            if (count($paramJSON['Eac']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setEac($paramJSON['Eac'][$i]); // En kWh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Ea", $paramJSON)) {
+                            if (count($paramJSON['Ea']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setEa($paramJSON['Ea'][$i]); // En kWh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Era", $paramJSON)) {
+                            if (count($paramJSON['Era']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setEra($paramJSON['Era'][$i]); // En kVARh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Erb", $paramJSON)) {
+                            if (count($paramJSON['Erb']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setErb($paramJSON['Erb'][$i]); // En kVARh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Erc", $paramJSON)) {
+                            if (count($paramJSON['Erc']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setErc($paramJSON['Erc'][$i]); // En kVARh
+                                }
+                            }
+                        }
+                        if (array_key_exists("Er", $paramJSON)) {
+                            if (count($paramJSON['Er']) >= 6) {
+                                for ($i = 0; $i < 6; $i++) {
+                                    $data[$i]->setEr($paramJSON['Er'][$i]); // En kVARh
+                                }
+                            }
+                        }
+                    }
+
+                    for ($i = 0; $i < 6; $i++) {
+                        if ($mod[$i]) {
+                            $data[$i]->setSmartMod($mod[$i]);
+                            $manager->persist($data[$i]);
+                        }
+                    }
+
+                    if ($this->getParameter('app.env') === "dev") dd($paramJSON);
                     $manager->flush();
                 }
 
