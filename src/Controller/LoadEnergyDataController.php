@@ -758,8 +758,9 @@ class LoadEnergyDataController extends ApplicationController
 
                     //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
 //                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
+                    $date = new DateTime('now');
+//                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+//                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
 
                     //Test si un enregistrement correspond à cette date pour ce module
                     /*$data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
@@ -1229,8 +1230,9 @@ class LoadEnergyDataController extends ApplicationController
 
                     //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
 //                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
+                    $date = new DateTime('now');
+//                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+//                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
 
                     //Test si un enregistrement correspond à cette date pour ce module
                     /*$data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
@@ -1758,8 +1760,9 @@ class LoadEnergyDataController extends ApplicationController
 
                     //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
 //                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
+                    $date = new DateTime('now');
+//                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+//                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
 
                     //Test si un enregistrement correspond à cette date pour ce module
                     /*$data = $manager->getRepository('App:LoadEnergyData')->findOneBy(['dateTime' => $date, 'smartMod' => $smartMod->getId()]);
@@ -2294,8 +2297,9 @@ class LoadEnergyDataController extends ApplicationController
 
                     //Récupération de la date dans la requête et transformation en object de type Date au format date SQL
 //                    $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
-                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
+                    $date = new DateTime('now');
+//                    if($paramJSON['date'] !== '2000-01-01 00:00:00') $date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
+//                    else $date = new DateTime('now', new DateTimeZone('Africa/Douala'));
 
                     for ($i = 0; $i < 6; $i++) {
                         $data[$i]->setDateTime($date);
@@ -2789,8 +2793,8 @@ class LoadEnergyDataController extends ApplicationController
             // dump($smartMod);
             $alarmCode = $manager->getRepository('App:Alarm')->findOneBy(['code' => $paramJSON['code']]);
             if ($alarmCode) {
-                //$date = new DateTime('now');
-                $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $paramJSON['date']) !== false ? DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $paramJSON['date']) : new DateTimeImmutable('now');
+                $date = new DateTime('now');
+//                $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $paramJSON['date']) !== false ? DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $paramJSON['date']) : new DateTimeImmutable('now');
                 //$date = DateTime::createFromFormat('Y-m-d H:i:s', $paramJSON['date']);
                 $alarmReporting = new AlarmReporting();
                 $alarmReporting->setSmartMod($smartMod)
